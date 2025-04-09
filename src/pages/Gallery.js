@@ -1,10 +1,9 @@
 // src/pages/Gallery.js
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import SEO from '../components/SEO';
 import AnimatedSection from '../components/AnimatedSection';
 import './Gallery.scss';
 
-// Liste des catégories
 const categories = [
     { id: 'oldschool', name: 'Old School' },
     { id: 'realiste', name: 'Réaliste' },
@@ -14,7 +13,6 @@ const categories = [
     { id: 'minimaliste', name: 'Minimaliste' },
 ];
 
-// Chargement dynamique des images
 const importImages = (r) => r.keys().map(r);
 
 const galleryImages = {
@@ -29,11 +27,33 @@ const galleryImages = {
 const Gallery = () => {
     const [activeCategory, setActiveCategory] = useState('oldschool');
     const [images, setImages] = useState([]);
+    const [selectedImage, setSelectedImage] = useState(null);
+    const imageRef = useRef(null);
 
     useEffect(() => {
-        // Charge automatiquement les images de la catégorie sélectionnée
         setImages(galleryImages[activeCategory]);
     }, [activeCategory]);
+
+    // Désactive le scroll du body quand une image est ouverte
+    useEffect(() => {
+        document.body.style.overflow = selectedImage ? 'hidden' : 'auto';
+    }, [selectedImage]);
+
+    // Fermer l'overlay avec la touche "Escape"
+    useEffect(() => {
+        const handleKey = (e) => {
+            if (e.key === 'Escape') setSelectedImage(null);
+        };
+        window.addEventListener('keydown', handleKey);
+        return () => window.removeEventListener('keydown', handleKey);
+    }, []);
+
+    // Fermer si clic en dehors de l'image zoomée
+    const handleOverlayClick = (e) => {
+        if (imageRef.current && !imageRef.current.contains(e.target)) {
+            setSelectedImage(null);
+        }
+    };
 
     return (
         <>
@@ -63,12 +83,26 @@ const Gallery = () => {
                         {images.map((imgSrc, idx) => (
                             <AnimatedSection key={idx} delay={0.2 * idx}>
                                 <div className="gallery__item">
-                                    <img src={imgSrc} alt={`${activeCategory} tattoo ${idx + 1}`} />
+                                    <img
+                                        src={imgSrc}
+                                        alt={`${activeCategory} tattoo ${idx + 1}`}
+                                        onClick={() => setSelectedImage(imgSrc)}
+                                    />
                                 </div>
                             </AnimatedSection>
                         ))}
                     </div>
                 </AnimatedSection>
+
+                {selectedImage && (
+                    <div className="gallery__overlay" onClick={handleOverlayClick}>
+                        <img
+                            ref={imageRef}
+                            src={selectedImage}
+                            alt="Tatouage zoomé"
+                        />
+                    </div>
+                )}
             </div>
         </>
     );
