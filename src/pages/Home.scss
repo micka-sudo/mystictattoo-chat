@@ -1,0 +1,22 @@
+// src/pages/Home.scss
+.home {
+  &__hero {
+    position: relative;
+    height: 80vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__hero-overlay {
+    background: rgba(0, 0, 0, 0.5);
+    padding: 20px;
+    text-align: center;
+    color: #fff;
+  }
+
+  &__content {
+    padding: 40px 20px;
+    text-align: center;
+  }
+}

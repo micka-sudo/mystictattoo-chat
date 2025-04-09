@@ -1,0 +1,18 @@
+# Dépendances
+/node_modules
+
+# Dossiers de build
+/build
+/dist
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Cache et configuration système
+.cache
+.DS_Store
+
+# Variables d'environnement
+.env

@@ -1,0 +1,39 @@
+// src/components/Header.scss
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #1a1a1a;
+  padding: 20px 40px;
+  color: #fff;
+
+  &__logo a {
+    color: #fff;
+    font-size: 1.8em;
+    font-weight: bold;
+    text-decoration: none;
+  }
+
+  &__nav ul {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+
+    li {
+      margin-left: 25px;
+
+      a {
+        color: #fff;
+        text-decoration: none;
+        font-size: 1em;
+        transition: color 0.3s ease;
+
+        &:hover,
+        &.active {
+          color: #ff4081;
+        }
+      }
+    }
+  }
+}
