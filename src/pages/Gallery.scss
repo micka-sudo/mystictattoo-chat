@@ -5,7 +5,7 @@
   flex-direction: column;
   box-sizing: border-box;
   padding: 30px;
-  overflow: hidden;
+  overflow: hidden;  /* Le conteneur principal ne scroll pas */
 
   &__categories {
     margin: 20px 0;
@@ -36,17 +36,23 @@
       box-shadow: 0 0 12px var(--color-violet);
       transform: translateY(-1px);
     }
+
+    &.active {
+      background: var(--color-violet);
+      color: black;
+    }
   }
 
   &__grid {
     flex: 1;
-    overflow-y: auto;
+    overflow-y: auto; /* Le scroll se fait ici, pas sur toute la page */
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    grid-template-columns: repeat(8, 1fr);  // 8 images max par ligne
     gap: 15px;
     margin-top: 30px;
     justify-content: center;
     max-width: 100%;
+    height: 100%;  /* Assurer qu'il occupe l'espace restant */
   }
 
   &__item {
@@ -101,5 +107,23 @@
   @keyframes fadeIn {
     from { opacity: 0; }
     to   { opacity: 1; }
+  }
+
+  @media (max-width: 1200px) {
+    &__grid {
+      grid-template-columns: repeat(6, 1fr); // 6 images max par ligne si la largeur est plus petite
+    }
+  }
+
+  @media (max-width: 992px) {
+    &__grid {
+      grid-template-columns: repeat(4, 1fr); // 4 images max par ligne pour les tailles plus petites
+    }
+  }
+
+  @media (max-width: 768px) {
+    &__grid {
+      grid-template-columns: repeat(2, 1fr); // 2 images max par ligne sur mobile
+    }
   }
 }

@@ -65,7 +65,6 @@ const Gallery = () => {
             <div className="gallery">
                 <AnimatedSection>
                     <h2>Galerie</h2>
-                    <p>Choisissez une catégorie pour découvrir nos réalisations :</p>
 
                     <div className="gallery__categories">
                         {categories.map((cat) => (

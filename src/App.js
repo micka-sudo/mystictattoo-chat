@@ -17,7 +17,7 @@ function App() {
         <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
             <Router>
                 <Header />
-                <main style={{ flexGrow: 1, overflow: 'hidden' }}>
+                <main style={{ flexGrow: 1, overflow: 'auto' }}>
                     <Routes>
                         <Route path="/" element={<Home />} />
                         <Route path="/gallery" element={<Gallery />} />

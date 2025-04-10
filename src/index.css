@@ -28,7 +28,7 @@ h1, h2, h3 {
     font-family: var(--font-gothic);
     letter-spacing: 1px;
     text-transform: uppercase;
-    color: var(--color-violet);
+    color: white;
     margin: 0.5em 0;
 }
 

@@ -3,25 +3,16 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  height: 100%;
+  width: 100%;
+  text-align: center;
 
   &__title {
     font-family: var(--font-gothic);
-    font-size: 2.8rem;
+    font-size: 3rem;
     color: white;
     text-shadow: 0 0 10px var(--color-violet);
-    margin: 30px 0 10px;
-    text-align: center;
-  }
-
-  &__hero {
-    width: 50%;
-    height: 50vh;
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    border-radius: 12px;
-    overflow: hidden;
-    margin-bottom: 30px;
+    margin: 30px 0;
   }
 
   &__main {
@@ -32,15 +23,27 @@
     width: 100%;
   }
 
+  &__hero {
+    width: 50%;
+    height: 50vh;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    border-radius: 12px;
+    overflow: hidden;
+    margin-right: 20px;
+    opacity: 0;
+    animation: fadeInZoomMove 1.5s ease-out forwards; /* Animation ici */
+  }
+
   &__content {
-    width: 75%;
+    width: 50%;
     background: #111;
     color: var(--color-light);
     padding: 40px;
     font-family: var(--font-default);
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(127, 0, 255, 0.2);
-    margin-left: 20px;
 
     h3 {
       font-family: var(--font-gothic);
@@ -55,19 +58,27 @@
     }
   }
 
-  @media (max-width: 768px) {
-    &__title {
-      font-size: 2rem;
-      margin: 20px 0;
+  @keyframes fadeInZoomMove {
+    0% {
+      opacity: 0;
+      transform: scale(1.1) translateY(20px); /* Commence légèrement zoomée et en bas */
     }
+    100% {
+      opacity: 1;
+      transform: scale(1) translateY(0); /* Reviens à la taille normale avec translation vers le haut */
+    }
+  }
 
-    &__hero {
-      width: 90%;
+  @media (max-width: 768px) {
+    flex-direction: column;
+
+    &__hero,
+    &__content {
+      width: 100%;
       height: 40vh;
     }
 
     &__content {
-      width: 90%;
       padding: 20px;
       text-align: center;
 
