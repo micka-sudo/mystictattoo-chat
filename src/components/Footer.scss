@@ -1,12 +1,105 @@
-// src/components/Footer.scss
 .footer {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  background: #1a1a1a; /* ou la couleur de votre choix */
-  color: #fff;
-  text-align: center;
-  padding: 10px;
-  z-index: 9999; /* Pour être au-dessus d’autres éléments si besoin */
+  background-color: var(--color-dark);
+  color: var(--color-light);
+  font-family: var(--font-gothic);
+  border-top: 2px solid var(--color-violet);
+  padding: 20px 40px;
+  box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.3);
+  font-size: 0.95rem;
+
+  .footer__container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: nowrap; // ✅ tout sur une seule ligne
+    gap: 30px;
+  }
+
+  .footer__address {
+    white-space: nowrap;
+    font-size: 1rem;
+  }
+
+  .footer__newsletter {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    label {
+      display: none;
+    }
+
+    form {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+
+      input[type="email"] {
+        padding: 8px 14px;
+        border-radius: 8px;
+        border: 1px solid var(--color-violet);
+        background-color: rgba(0, 0, 0, 0.6);
+        color: white;
+        font-family: var(--font-gothic);
+        outline: none;
+        white-space: nowrap;
+      }
+
+      button {
+        padding: 8px 16px;
+        background: var(--color-violet);
+        color: black;
+        border: none;
+        border-radius: 8px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-family: var(--font-gothic);
+
+        &:hover {
+          box-shadow: 0 0 10px var(--color-violet);
+          transform: translateY(-1px);
+        }
+      }
+    }
+  }
+
+  .footer__links {
+    display: flex;
+    gap: 20px;
+
+    a {
+      color: var(--color-violet);
+      text-decoration: none;
+      font-weight: bold;
+      transition: color 0.3s ease;
+
+      &:hover {
+        color: white;
+        text-shadow: 0 0 8px var(--color-violet);
+      }
+    }
+  }
+
+  @media (max-width: 768px) {
+    .footer__container {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 15px;
+    }
+
+    .footer__newsletter form {
+      flex-direction: column;
+      align-items: stretch;
+
+      input,
+      button {
+        width: 100%;
+      }
+    }
+
+    .footer__links {
+      flex-wrap: wrap;
+    }
+  }
 }
