@@ -2,28 +2,43 @@
     --font-default: 'Montserrat', sans-serif;
     --font-gothic: 'UnifrakturCook', cursive;
 
-    --color-violet: #5619bf;
+    --color-violet: rgba(137, 115, 172, 0.91);
     --color-dark: #000;
     --color-light: #fff;
 }
 
-/* Applique la police par défaut sur tout le site */
-body {
-    font-family: var(--font-default);
+html, body, #root {
+    height: 100%;
     margin: 0;
     padding: 0;
     background: var(--color-dark);
     color: var(--color-light);
+    font-family: var(--font-default);
+    display: flex;
+    flex-direction: column;
+    scroll-behavior: smooth;
 }
 
-/* Liens */
 a {
     text-decoration: none;
     color: inherit;
 }
 
-/* Tu peux ajouter un style global pour les titres */
 h1, h2, h3 {
     font-family: var(--font-gothic);
     letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--color-violet);
+    margin: 0.5em 0;
+}
+
+p {
+    line-height: 1.6;
+    font-size: 1.05rem;
+    max-width: 900px;
+    margin: 0 auto 1.5em;
+}
+
+button, .nav__btn {
+    transition: all 0.3s ease-in-out;
 }
