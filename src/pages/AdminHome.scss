@@ -1,0 +1,40 @@
+.admin-home {
+  padding: 30px;
+  font-family: var(--font-gothic);
+  color: var(--color-light);
+
+  h2 {
+    color: var(--color-violet);
+    font-size: 2rem;
+    margin-bottom: 10px;
+  }
+
+  p {
+    margin-bottom: 20px;
+  }
+
+  &__links {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+
+    .admin-btn {
+      padding: 10px 20px;
+      background: rgba(0, 0, 0, 0.6);
+      color: white;
+      border: 1px solid var(--color-violet);
+      border-radius: 12px;
+      font-family: var(--font-gothic);
+      font-weight: bold;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(4px);
+
+      &:hover {
+        background: var(--color-violet);
+        color: black;
+        box-shadow: 0 0 12px var(--color-violet);
+      }
+    }
+  }
+}

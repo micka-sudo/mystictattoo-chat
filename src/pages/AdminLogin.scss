@@ -1,0 +1,42 @@
+.admin-login {
+  max-width: 400px;
+  margin: 50px auto;
+  font-family: var(--font-gothic);
+  padding: 30px;
+
+  h2 {
+    color: var(--color-violet);
+    margin-bottom: 20px;
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+
+    input {
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid var(--color-violet);
+    }
+
+    button {
+      padding: 10px;
+      background: var(--color-violet);
+      color: black;
+      font-weight: bold;
+      border-radius: 8px;
+      cursor: pointer;
+
+      &:hover {
+        background: black;
+        color: white;
+      }
+    }
+  }
+
+  .status {
+    margin-top: 10px;
+    font-weight: bold;
+  }
+}
