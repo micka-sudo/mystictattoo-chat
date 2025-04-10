@@ -10,19 +10,26 @@ const AdminLogin = () => {
     const handleLogin = async (e) => {
         e.preventDefault();
 
-        const res = await fetch('http://localhost:4000/api/login', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ password }),
-        });
+        try {
+            const res = await fetch('http://localhost:4000/api/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ password }),
+            });
 
-        const data = await res.json();
+            const data = await res.json();
 
-        if (res.ok) {
-            localStorage.setItem('admin_token', data.token);
-            navigate('/admin/dashboard');
-        } else {
-            setStatus('❌ Mot de passe incorrect');
+            if (res.ok) {
+                // ✅ Stocke le token et redirige
+                localStorage.setItem('admin_token', data.token);
+                setStatus('✅ Connexion réussie');
+                navigate('/admin');
+            } else {
+                setStatus('❌ Mot de passe incorrect');
+            }
+        } catch (err) {
+            setStatus('❌ Erreur de connexion');
+            console.error(err);
         }
     };
 

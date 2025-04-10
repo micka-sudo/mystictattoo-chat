@@ -10,25 +10,45 @@ import AdminLogin from './pages/AdminLogin';
 import AdminDashboard from './pages/AdminDashboard';
 import AdminUpload from './pages/AdminUpload';
 import AdminHome from './pages/AdminHome';
+import RequireAuth from './components/RequireAuth';
 
 function App() {
-  return (
-      <Router>
-        <Header />
-        <main style={{ padding: '20px' }}>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/gallery" element={<Gallery />} />
-            <Route path="/reservation" element={<Reservation />} />
-            <Route path="/admin/login" element={<AdminLogin />} />
-            <Route path="/admin/dashboard" element={<AdminDashboard />} />
-            <Route path="/admin" element={<AdminUpload />} />
-            <Route path="/admin/home" element={<AdminHome />} />
-          </Routes>
-        </main>
-        <Footer />
-      </Router>
-  );
+    return (
+        <Router>
+            <Header />
+            <main style={{ padding: '20px' }}>
+                <Routes>
+                    <Route path="/" element={<Home />} />
+                    <Route path="/gallery" element={<Gallery />} />
+                    <Route path="/reservation" element={<Reservation />} />
+
+                    {/* Routes publiques admin */}
+                    <Route path="/admin/login" element={<AdminLogin />} />
+                    <Route path="/admin/home" element={<AdminHome />} />
+
+                    {/* Routes protégées */}
+                    <Route
+                        path="/admin"
+                        element={
+                            <RequireAuth>
+                                <AdminUpload />
+                            </RequireAuth>
+                        }
+                    />
+
+                    <Route
+                        path="/admin/dashboard"
+                        element={
+                            <RequireAuth>
+                                <AdminDashboard />
+                            </RequireAuth>
+                        }
+                    />
+                </Routes>
+            </main>
+            <Footer />
+        </Router>
+    );
 }
 
 export default App;

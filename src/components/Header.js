@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import './Header.scss';
 
 const tattooStyles = [
@@ -15,6 +15,11 @@ const Header = () => {
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const dropdownRef = useRef(null);
+    const location = useLocation();
+    const navigate = useNavigate();
+
+    const isAdminRoute = location.pathname.startsWith('/admin');
+    const isLoggedIn = Boolean(localStorage.getItem('admin_token'));
 
     useEffect(() => {
         const handleClickOutside = (e) => {
@@ -26,6 +31,11 @@ const Header = () => {
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
+    const handleLogout = () => {
+        localStorage.removeItem('admin_token');
+        navigate('/admin/login');
+    };
+
     return (
         <header className="header">
             <div className="header__container">
@@ -34,7 +44,6 @@ const Header = () => {
                     <span className="header__brand">Mystic Tattoo</span>
                 </div>
 
-                {/* Burger menu visible en mobile */}
                 <button
                     className="burger-btn"
                     onClick={() => setMobileMenuOpen(prev => !prev)}
@@ -46,10 +55,7 @@ const Header = () => {
                     <Link className="nav__btn" to="/" onClick={() => setMobileMenuOpen(false)}>Accueil</Link>
 
                     <div className="dropdown" ref={dropdownRef}>
-                        <button
-                            className="nav__btn"
-                            onClick={() => setDropdownOpen(!dropdownOpen)}
-                        >
+                        <button className="nav__btn" onClick={() => setDropdownOpen(!dropdownOpen)}>
                             Galerie ▾
                         </button>
                         {dropdownOpen && (
@@ -68,6 +74,13 @@ const Header = () => {
                     <Link className="nav__btn" to="/video" onClick={() => setMobileMenuOpen(false)}>Vidéo</Link>
                     <Link className="nav__btn" to="/reservation" onClick={() => setMobileMenuOpen(false)}>Réserver</Link>
                     <Link className="nav__btn" to="/admin/login" onClick={() => setMobileMenuOpen(false)}>Connexion</Link>
+
+                    {/* ✅ Déconnexion visible seulement sur une page /admin ET connecté */}
+                    {isAdminRoute && isLoggedIn && (
+                        <button className="nav__btn" onClick={handleLogout}>
+                            Déconnexion
+                        </button>
+                    )}
                 </nav>
             </div>
         </header>
