@@ -8,6 +8,8 @@ import Gallery from './pages/Gallery';
 import Reservation from './pages/Reservation';
 import AdminLogin from './pages/AdminLogin';
 import AdminDashboard from './pages/AdminDashboard';
+import AdminUpload from './pages/AdminUpload';
+import AdminHome from './pages/AdminHome';
 
 function App() {
   return (
@@ -20,6 +22,8 @@ function App() {
             <Route path="/reservation" element={<Reservation />} />
             <Route path="/admin/login" element={<AdminLogin />} />
             <Route path="/admin/dashboard" element={<AdminDashboard />} />
+            <Route path="/admin" element={<AdminUpload />} />
+            <Route path="/admin/home" element={<AdminHome />} />
           </Routes>
         </main>
         <Footer />

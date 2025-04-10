@@ -13,25 +13,12 @@ const tattooStyles = [
 
 const Header = () => {
     const [dropdownOpen, setDropdownOpen] = useState(false);
-    const [shouldRender, setShouldRender] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const dropdownRef = useRef(null);
-    const timeoutRef = useRef(null);
 
-    // Gestion fade out dropdown
     useEffect(() => {
-        if (dropdownOpen) {
-            setShouldRender(true);
-        } else {
-            timeoutRef.current = setTimeout(() => setShouldRender(false), 300);
-        }
-        return () => clearTimeout(timeoutRef.current);
-    }, [dropdownOpen]);
-
-    // Fermer dropdown si clic dehors
-    useEffect(() => {
-        const handleClickOutside = (event) => {
-            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        const handleClickOutside = (e) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
                 setDropdownOpen(false);
             }
         };
@@ -47,6 +34,7 @@ const Header = () => {
                     <span className="header__brand">Mystic Tattoo</span>
                 </div>
 
+                {/* Burger menu visible en mobile */}
                 <button
                     className="burger-btn"
                     onClick={() => setMobileMenuOpen(prev => !prev)}
@@ -60,24 +48,15 @@ const Header = () => {
                     <div className="dropdown" ref={dropdownRef}>
                         <button
                             className="nav__btn"
-                            onClick={() => setDropdownOpen(prev => !prev)}
-                            aria-haspopup="true"
-                            aria-expanded={dropdownOpen}
+                            onClick={() => setDropdownOpen(!dropdownOpen)}
                         >
                             Galerie ▾
                         </button>
-
-                        {shouldRender && (
-                            <ul className={`dropdown__menu ${dropdownOpen ? 'open' : 'close'}`}>
+                        {dropdownOpen && (
+                            <ul className="dropdown__menu">
                                 {tattooStyles.map((style) => (
                                     <li key={style.id}>
-                                        <Link
-                                            to={`/gallery?style=${style.id}`}
-                                            onClick={() => {
-                                                setDropdownOpen(false);
-                                                setMobileMenuOpen(false);
-                                            }}
-                                        >
+                                        <Link to={`/gallery?style=${style.id}`} onClick={() => setMobileMenuOpen(false)}>
                                             {style.name}
                                         </Link>
                                     </li>
@@ -88,6 +67,7 @@ const Header = () => {
 
                     <Link className="nav__btn" to="/video" onClick={() => setMobileMenuOpen(false)}>Vidéo</Link>
                     <Link className="nav__btn" to="/reservation" onClick={() => setMobileMenuOpen(false)}>Réserver</Link>
+                    <Link className="nav__btn" to="/admin/login" onClick={() => setMobileMenuOpen(false)}>Connexion</Link>
                 </nav>
             </div>
         </header>
