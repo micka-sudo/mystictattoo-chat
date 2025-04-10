@@ -1,37 +1,91 @@
-// src/components/Header.scss
 .header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background-color: #1a1a1a;
-  padding: 20px 40px;
-  color: #fff;
+  background-color: var(--color-dark);
+  color: var(--color-light);
+  padding: 15px 40px;
+  border-bottom: 2px solid var(--color-violet);
+  font-family: var(--font-default);
 
-  &__logo a {
-    color: #fff;
-    font-size: 1.8em;
-    font-weight: bold;
-    text-decoration: none;
+  .header__container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
   }
 
-  &__nav ul {
+  .header__left {
     display: flex;
-    list-style: none;
-    margin: 0;
-    padding: 0;
+    align-items: center;
+    gap: 10px;
 
-    li {
-      margin-left: 25px;
+    .header__logo {
+      width: 50px;
+      height: 50px;
+      object-fit: contain;
+    }
 
-      a {
-        color: #fff;
-        text-decoration: none;
-        font-size: 1em;
-        transition: color 0.3s ease;
+    .header__brand {
+      font-family: var(--font-gothic);
+      font-size: 2rem;
+      color: var(--color-violet);
+      text-shadow: 0 0 8px var(--color-violet);
+    }
+  }
 
-        &:hover,
-        &.active {
-          color: #ff4081;
+  .header__nav {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    flex-wrap: wrap;
+
+    .nav__btn {
+      background: black;
+      color: white;
+      border: 2px solid var(--color-violet);
+      border-radius: 6px;
+      padding: 8px 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-family: var(--font-default);
+      text-decoration: none;
+
+      &:hover {
+        box-shadow: 0 0 10px var(--color-violet);
+        background-color: var(--color-violet);
+        color: black;
+      }
+    }
+  }
+
+  .dropdown {
+    position: relative;
+
+    .dropdown__menu {
+      position: absolute;
+      top: 110%;
+      left: 0;
+      background: black;
+      border: 1px solid var(--color-violet);
+      border-radius: 6px;
+      padding: 10px;
+      z-index: 999;
+      box-shadow: 0 0 10px var(--color-violet);
+
+      li {
+        list-style: none;
+
+        a {
+          display: block;
+          padding: 6px 10px;
+          color: white;
+          text-decoration: none;
+          transition: 0.3s;
+
+          &:hover {
+            background: var(--color-violet);
+            color: black;
+            border-radius: 4px;
+          }
         }
       }
     }

@@ -11,17 +11,23 @@
   }
 
   &__category-btn {
-    padding: 8px 16px;
-    background: #1a1a1a;
-    color: #fff;
+    padding: 10px 20px;
+    background: #7f00ff;
+    color: white;
+    font-weight: bold;
+    font-family: var(--font-gothic); // on va définir ça ensuite
     border: none;
-    border-radius: 4px;
+    border-radius: 6px;
     cursor: pointer;
-    transition: background 0.3s ease;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 10px rgba(127, 0, 255, 0.4); /* glow subtil */
 
-    &.active,
-    &:hover {
-      background: #ff4081;
+    &:hover,
+    &.active {
+      background: #000;
+      color: #fff;
+      border: 2px solid #7f00ff;
+      box-shadow: 0 0 12px #7f00ff, 0 0 24px #7f00ff;
     }
   }
 
@@ -64,9 +70,9 @@
     animation: fadeIn 0.3s ease;
 
     img {
-      max-width: 80vw;
-      max-height: 80vh;
-      transform: scale(2);
+      max-width: 70vw;
+      max-height: 70vh;
+      transform: scale(1.5);
       transition: transform 0.3s ease;
       object-fit: contain;
       box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
