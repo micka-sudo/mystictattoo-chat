@@ -12,7 +12,7 @@
     font-size: 3rem;
     color: white;
     text-shadow: 0 0 10px var(--color-violet);
-    margin: 30px 0;
+    margin: 20px 0 30px 0;  /* Marge de 30px en haut et en bas du titre */
   }
 
   &__main {
@@ -32,6 +32,8 @@
     border-radius: 12px;
     overflow: hidden;
     margin-right: 20px;
+    margin-left: 20px;
+    margin-bottom: 100px; /* Espace de 30px entre l'image et le footer */
     opacity: 0;
     animation: fadeInZoomMove 1.5s ease-out forwards; /* Animation ici */
   }
