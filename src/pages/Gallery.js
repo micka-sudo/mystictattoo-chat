@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import SEO from '../components/SEO';
 import AnimatedSection from '../components/AnimatedSection';
+import { useLocation } from 'react-router-dom'; // Ajout de useLocation
 import './Gallery.scss';
 
 const Gallery = () => {
@@ -8,6 +9,7 @@ const Gallery = () => {
     const [activeCategory, setActiveCategory] = useState('all');
     const [selectedMedia, setSelectedMedia] = useState(null);
     const imageRef = useRef(null);
+    const location = useLocation(); // Accède à l'URL
 
     // ✅ Chargement dynamique des fichiers depuis l'API
     useEffect(() => {
@@ -16,6 +18,13 @@ const Gallery = () => {
             .then((data) => setMedia(data))
             .catch((err) => console.error('Erreur chargement galerie :', err));
     }, []);
+
+    // ✅ Charger la catégorie depuis l'URL
+    useEffect(() => {
+        const queryParams = new URLSearchParams(location.search);
+        const categoryFromUrl = queryParams.get('style') || 'all';
+        setActiveCategory(categoryFromUrl);
+    }, [location]);
 
     // ✅ Liste dynamique des catégories
     const categories = ['all', ...new Set(media.map((item) => item.category))];
