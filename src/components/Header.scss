@@ -13,7 +13,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    flex-wrap: nowrap; // ✅ tout sur une ligne
+    flex-wrap: nowrap;
     gap: 30px;
     min-height: 70px;
   }
@@ -23,6 +23,7 @@
     align-items: center;
     gap: 10px;
     height: 100%;
+    text-decoration: none;
 
     .header__logo {
       display: block;
@@ -35,7 +36,7 @@
       font-size: 2rem;
       color: var(--color-violet);
       text-shadow: 0 0 8px var(--color-violet);
-      white-space: nowrap;         // ✅ jamais sur 2 lignes
+      white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
@@ -43,7 +44,7 @@
 
   .header__nav {
     display: flex;
-    justify-content: center;       // ✅ centré
+    justify-content: center;
     align-items: center;
     gap: 15px;
     flex-wrap: wrap;
@@ -51,7 +52,7 @@
 
     .nav__btn {
       background: rgba(0, 0, 0, 0.6);
-      color: white;                // ✅ texte blanc
+      color: white;
       border: 1px solid var(--color-violet);
       border-radius: 12px;
       padding: 10px 20px;
@@ -90,21 +91,11 @@
         padding: 10px;
         z-index: 999;
         box-shadow: 0 0 10px var(--color-violet);
-        opacity: 0;
-        transform: translateY(-5px);
+        opacity: 1;
+        transform: translateY(0);
         transition: opacity 0.3s ease, transform 0.3s ease;
         pointer-events: auto;
         backdrop-filter: blur(6px);
-
-        &.open {
-          opacity: 1;
-          transform: translateY(0);
-        }
-
-        &.close {
-          opacity: 0;
-          transform: translateY(-5px);
-        }
 
         li {
           list-style: none;
@@ -187,7 +178,7 @@
     }
 
     .header__brand {
-      font-size: 1.5rem; // ✅ plus petit si espace limité
+      font-size: 1.5rem;
     }
   }
 }

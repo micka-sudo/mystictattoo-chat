@@ -5,29 +5,17 @@ const fs = require('fs');
 const router = express.Router();
 const baseDir = path.join(__dirname, '../uploads');
 
-router.get('/', (req, res) => {
-    const result = [];
+// ✅ Route /api/media/categories
+router.get('/categories', (req, res) => {
+    if (!fs.existsSync(baseDir)) return res.json([]);
 
-    if (!fs.existsSync(baseDir)) {
-        return res.json([]);
-    }
+    const categories = fs
+        .readdirSync(baseDir)
+        .filter((dir) =>
+            fs.lstatSync(path.join(baseDir, dir)).isDirectory()
+        );
 
-    const categories = fs.readdirSync(baseDir);
-
-    categories.forEach((cat) => {
-        const catPath = path.join(baseDir, cat);
-        if (fs.lstatSync(catPath).isDirectory()) {
-            const files = fs.readdirSync(catPath).map((file) => ({
-                file,
-                category: cat,
-                type: /\.(mp4|webm)$/i.test(file) ? 'video' : 'image',
-                url: `/uploads/${cat}/${file}`
-            }));
-            result.push(...files);
-        }
-    });
-
-    res.json(result);
+    res.json(categories);
 });
 
 module.exports = router;

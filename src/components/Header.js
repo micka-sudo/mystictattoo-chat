@@ -2,24 +2,24 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import './Header.scss';
 
-const tattooStyles = [
-    { id: 'oldschool', name: 'Old School' },
-    { id: 'realiste', name: 'Réaliste' },
-    { id: 'tribal', name: 'Tribal' },
-    { id: 'japonais', name: 'Japonais' },
-    { id: 'graphique', name: 'Graphique' },
-    { id: 'minimaliste', name: 'Minimaliste' },
-];
-
 const Header = () => {
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const [categories, setCategories] = useState([]);
+
     const dropdownRef = useRef(null);
     const location = useLocation();
     const navigate = useNavigate();
 
     const isAdminRoute = location.pathname.startsWith('/admin');
     const isLoggedIn = Boolean(localStorage.getItem('admin_token'));
+
+    useEffect(() => {
+        fetch('http://localhost:4000/api/media/categories')
+            .then((res) => res.json())
+            .then((data) => setCategories(data))
+            .catch((err) => console.error('Erreur chargement catégories', err));
+    }, []);
 
     useEffect(() => {
         const handleClickOutside = (e) => {
@@ -39,14 +39,14 @@ const Header = () => {
     return (
         <header className="header">
             <div className="header__container">
-                <div className="header__left">
+                <Link to="/" className="header__left" onClick={() => setMobileMenuOpen(false)}>
                     <img src="/logo.png" alt="Logo" className="header__logo" />
                     <span className="header__brand">Mystic Tattoo</span>
-                </div>
+                </Link>
 
                 <button
                     className="burger-btn"
-                    onClick={() => setMobileMenuOpen(prev => !prev)}
+                    onClick={() => setMobileMenuOpen((prev) => !prev)}
                 >
                     ☰
                 </button>
@@ -60,10 +60,16 @@ const Header = () => {
                         </button>
                         {dropdownOpen && (
                             <ul className="dropdown__menu">
-                                {tattooStyles.map((style) => (
-                                    <li key={style.id}>
-                                        <Link to={`/gallery?style=${style.id}`} onClick={() => setMobileMenuOpen(false)}>
-                                            {style.name}
+                                {categories.map((cat) => (
+                                    <li key={cat}>
+                                        <Link
+                                            to={`/gallery?style=${cat}`}
+                                            onClick={() => {
+                                                setDropdownOpen(false);
+                                                setMobileMenuOpen(false);
+                                            }}
+                                        >
+                                            {cat.charAt(0).toUpperCase() + cat.slice(1)}
                                         </Link>
                                     </li>
                                 ))}
@@ -75,7 +81,6 @@ const Header = () => {
                     <Link className="nav__btn" to="/reservation" onClick={() => setMobileMenuOpen(false)}>Réserver</Link>
                     <Link className="nav__btn" to="/admin/login" onClick={() => setMobileMenuOpen(false)}>Connexion</Link>
 
-                    {/* ✅ Déconnexion visible seulement sur une page /admin ET connecté */}
                     {isAdminRoute && isLoggedIn && (
                         <button className="nav__btn" onClick={handleLogout}>
                             Déconnexion

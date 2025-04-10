@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import imageCompression from 'browser-image-compression';
+import { Link } from 'react-router-dom';
 import './AdminUpload.scss';
 
 const categories = ['oldschool', 'realiste', 'tribal', 'japonais', 'graphique', 'minimaliste'];
@@ -11,25 +11,14 @@ const AdminUpload = () => {
     const [tags, setTags] = useState('');
     const [status, setStatus] = useState('');
 
-    const handleFileChange = async (e) => {
+    const handleFileChange = (e) => {
         const selected = e.target.files[0];
         if (!selected) return;
 
-        // Si HEIC → conversion + preview
-        if (selected.name.toLowerCase().endsWith('.heic')) {
-            const reader = new FileReader();
-            reader.readAsDataURL(selected);
-            reader.onload = async () => {
-                setPreview(reader.result);
-                setFile(selected);
-                setStatus('⚠️ HEIC détecté : conversion sera faite au backend.');
-            };
-        } else {
-            const previewURL = URL.createObjectURL(selected);
-            setPreview(previewURL);
-            setFile(selected);
-            setStatus('');
-        }
+        const previewURL = URL.createObjectURL(selected);
+        setPreview(previewURL);
+        setFile(selected);
+        setStatus('');
     };
 
     const handleSubmit = async (e) => {
@@ -52,8 +41,17 @@ const AdminUpload = () => {
                 method: 'POST',
                 body: formData,
             });
+
             const result = await res.json();
-            setStatus(`✅ Upload réussi : ${result.filename}`);
+            if (res.ok) {
+                setStatus(`✅ Upload réussi : ${result.filename}`);
+                setFile(null);
+                setPreview('');
+                setCategory('');
+                setTags('');
+            } else {
+                setStatus(`❌ Échec : ${result.error || 'Erreur inconnue'}`);
+            }
         } catch (err) {
             console.error(err);
             setStatus('❌ Erreur lors de l’upload');
@@ -86,7 +84,7 @@ const AdminUpload = () => {
             {preview && (
                 <div className="preview">
                     <h4>Aperçu :</h4>
-                    {file.type.startsWith('video') ? (
+                    {file?.type?.startsWith('video') ? (
                         <video src={preview} controls width="300" />
                     ) : (
                         <img src={preview} alt="preview" width="300" />
@@ -95,6 +93,12 @@ const AdminUpload = () => {
             )}
 
             <p className="status">{status}</p>
+
+            {/* ✅ Lien vers dashboard */}
+            <div className="admin-upload__links">
+                <p>📁 Vous voulez gérer les médias existants ?</p>
+                <Link to="/admin/dashboard" className="admin-btn">Gérer les médias</Link>
+            </div>
         </div>
     );
 };

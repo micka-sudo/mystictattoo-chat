@@ -1,82 +1,73 @@
 .footer {
-  background-color: var(--color-dark);
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: var(--color-dark);
   color: var(--color-light);
   font-family: var(--font-gothic);
   border-top: 2px solid var(--color-violet);
-  padding: 20px 40px;
-  box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.3);
-  font-size: 0.95rem;
+  padding: 10px 40px;
+  z-index: 999;
 
   .footer__container {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    flex-wrap: nowrap; // ✅ tout sur une seule ligne
-    gap: 30px;
+    flex-wrap: wrap;
+    gap: 20px;
   }
 
   .footer__address {
+    flex: 1;
+    font-size: 0.9rem;
     white-space: nowrap;
-    font-size: 1rem;
   }
 
   .footer__newsletter {
+    flex: 1;
     display: flex;
-    align-items: center;
     gap: 10px;
 
-    label {
-      display: none;
+    input {
+      flex: 1;
+      padding: 6px 12px;
+      border-radius: 6px;
+      border: 1px solid var(--color-violet);
+      background: black;
+      color: white;
     }
 
-    form {
-      display: flex;
-      gap: 10px;
-      align-items: center;
+    button {
+      padding: 6px 14px;
+      border: none;
+      border-radius: 6px;
+      background: var(--color-violet);
+      color: black;
+      font-weight: bold;
+      cursor: pointer;
 
-      input[type="email"] {
-        padding: 8px 14px;
-        border-radius: 8px;
-        border: 1px solid var(--color-violet);
-        background-color: rgba(0, 0, 0, 0.6);
-        color: white;
-        font-family: var(--font-gothic);
-        outline: none;
-        white-space: nowrap;
-      }
-
-      button {
-        padding: 8px 16px;
-        background: var(--color-violet);
-        color: black;
-        border: none;
-        border-radius: 8px;
-        font-weight: bold;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        font-family: var(--font-gothic);
-
-        &:hover {
-          box-shadow: 0 0 10px var(--color-violet);
-          transform: translateY(-1px);
-        }
+      &:hover {
+        background: white;
+        color: var(--color-violet);
       }
     }
   }
 
   .footer__links {
+    flex: 1;
     display: flex;
-    gap: 20px;
+    justify-content: flex-end;
+    gap: 15px;
 
     a {
       color: var(--color-violet);
       text-decoration: none;
       font-weight: bold;
-      transition: color 0.3s ease;
+      transition: 0.3s;
 
       &:hover {
         color: white;
-        text-shadow: 0 0 8px var(--color-violet);
       }
     }
   }
@@ -85,21 +76,20 @@
     .footer__container {
       flex-direction: column;
       align-items: flex-start;
-      gap: 15px;
     }
 
-    .footer__newsletter form {
+    .footer__links {
+      justify-content: flex-start;
+    }
+
+    .footer__newsletter {
+      width: 100%;
       flex-direction: column;
-      align-items: stretch;
 
       input,
       button {
         width: 100%;
       }
-    }
-
-    .footer__links {
-      flex-wrap: wrap;
     }
   }
 }

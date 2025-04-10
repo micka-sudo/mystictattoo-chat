@@ -9,22 +9,16 @@ const Footer = () => {
                     📍 19 Boulevard Jean Jaurès, 54000 Nancy
                 </p>
 
-                <div className="footer__newsletter">
-                    <form
-                        onSubmit={(e) => {
-                            e.preventDefault();
-                            alert("Fonctionnalité d'envoi à connecter !");
-                        }}
-                    >
-                        <input
-                            type="email"
-                            id="newsletter"
-                            placeholder="Votre email"
-                            required
-                        />
-                        <button type="submit">S'inscrire</button>
-                    </form>
-                </div>
+                <form
+                    className="footer__newsletter"
+                    onSubmit={(e) => {
+                        e.preventDefault();
+                        alert("Fonctionnalité d'envoi à connecter !");
+                    }}
+                >
+                    <input type="email" placeholder="Votre email" required />
+                    <button type="submit">S'inscrire</button>
+                </form>
 
                 <div className="footer__links">
                     <a

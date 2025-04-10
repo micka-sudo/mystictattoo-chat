@@ -3,48 +3,37 @@ import SEO from '../components/SEO';
 import AnimatedSection from '../components/AnimatedSection';
 import './Gallery.scss';
 
-const categories = [
-    { id: 'oldschool', name: 'Old School' },
-    { id: 'realiste', name: 'Réaliste' },
-    { id: 'tribal', name: 'Tribal' },
-    { id: 'japonais', name: 'Japonais' },
-    { id: 'graphique', name: 'Graphique' },
-    { id: 'minimaliste', name: 'Minimaliste' },
-];
-
-// Importe les médias (images + vidéos)
-const importMedia = (r) =>
-    r.keys().map((key) => ({
-        src: r(key),
-        isVideo: /\.(mp4|webm)$/i.test(key),
-    }));
-
-const galleryMedia = {
-    oldschool: importMedia(require.context('../assets/images/gallery/oldschool', false, /\.(png|jpe?g|jpg|svg|mp4|webm)$/)),
-    realiste: importMedia(require.context('../assets/images/gallery/realiste', false, /\.(png|jpe?g|jpg|svg|mp4|webm)$/)),
-    tribal: importMedia(require.context('../assets/images/gallery/tribal', false, /\.(png|jpe?g|jpg|svg|mp4|webm)$/)),
-    japonais: importMedia(require.context('../assets/images/gallery/japonais', false, /\.(png|jpe?g|jpg|svg|mp4|webm)$/)),
-    graphique: importMedia(require.context('../assets/images/gallery/graphique', false, /\.(png|jpe?g|jpg|svg|mp4|webm)$/)),
-    minimaliste: importMedia(require.context('../assets/images/gallery/minimaliste', false, /\.(png|jpe?g|jpg|svg|mp4|webm)$/)),
-};
-
 const Gallery = () => {
-    const [activeCategory, setActiveCategory] = useState('oldschool');
-    const [images, setImages] = useState([]);
-    const [selectedImage, setSelectedImage] = useState(null);
+    const [media, setMedia] = useState([]);
+    const [activeCategory, setActiveCategory] = useState('all');
+    const [selectedMedia, setSelectedMedia] = useState(null);
     const imageRef = useRef(null);
 
+    // ✅ Chargement dynamique des fichiers depuis l'API
     useEffect(() => {
-        setImages(galleryMedia[activeCategory]);
-    }, [activeCategory]);
+        fetch('http://localhost:4000/api/media')
+            .then((res) => res.json())
+            .then((data) => setMedia(data))
+            .catch((err) => console.error('Erreur chargement galerie :', err));
+    }, []);
 
+    // ✅ Liste dynamique des catégories
+    const categories = ['all', ...new Set(media.map((item) => item.category))];
+
+    // ✅ Filtrage selon la catégorie active
+    const filteredMedia = activeCategory === 'all'
+        ? media
+        : media.filter((item) => item.category === activeCategory);
+
+    // ✅ Blocage du scroll quand zoom
     useEffect(() => {
-        document.body.style.overflow = selectedImage ? 'hidden' : 'auto';
-    }, [selectedImage]);
+        document.body.style.overflow = selectedMedia ? 'hidden' : 'auto';
+    }, [selectedMedia]);
 
+    // ✅ Fermeture par touche Escape
     useEffect(() => {
         const handleKey = (e) => {
-            if (e.key === 'Escape') setSelectedImage(null);
+            if (e.key === 'Escape') setSelectedMedia(null);
         };
         window.addEventListener('keydown', handleKey);
         return () => window.removeEventListener('keydown', handleKey);
@@ -52,7 +41,7 @@ const Gallery = () => {
 
     const handleOverlayClick = (e) => {
         if (imageRef.current && !imageRef.current.contains(e.target)) {
-            setSelectedImage(null);
+            setSelectedMedia(null);
         }
     };
 
@@ -63,6 +52,7 @@ const Gallery = () => {
                 description="Découvrez notre galerie classée par styles de tatouage."
                 url="https://votre-domaine.com/gallery"
             />
+
             <div className="gallery">
                 <AnimatedSection>
                     <h2>Galerie</h2>
@@ -71,23 +61,35 @@ const Gallery = () => {
                     <div className="gallery__categories">
                         {categories.map((cat) => (
                             <button
-                                key={cat.id}
-                                className={`gallery__category-btn ${activeCategory === cat.id ? 'active' : ''}`}
-                                onClick={() => setActiveCategory(cat.id)}
+                                key={cat}
+                                className={`gallery__category-btn ${activeCategory === cat ? 'active' : ''}`}
+                                onClick={() => setActiveCategory(cat)}
                             >
-                                {cat.name}
+                                {cat === 'all' ? 'Toutes' : cat.charAt(0).toUpperCase() + cat.slice(1)}
                             </button>
                         ))}
                     </div>
 
                     <div className="gallery__grid">
-                        {images.map((media, idx) => (
-                            <AnimatedSection key={idx} delay={0.2 * idx}>
-                                <div className="gallery__item" onClick={() => setSelectedImage(media.src)}>
-                                    {media.isVideo ? (
-                                        <video src={media.src} muted loop autoPlay playsInline />
+                        {filteredMedia.map((item, idx) => (
+                            <AnimatedSection key={idx} delay={0.1 * idx}>
+                                <div
+                                    className="gallery__item"
+                                    onClick={() => setSelectedMedia(`http://localhost:4000${item.url}`)}
+                                >
+                                    {item.type === 'video' ? (
+                                        <video
+                                            src={`http://localhost:4000${item.url}`}
+                                            muted
+                                            loop
+                                            autoPlay
+                                            playsInline
+                                        />
                                     ) : (
-                                        <img src={media.src} alt={`${activeCategory} tattoo ${idx + 1}`} />
+                                        <img
+                                            src={`http://localhost:4000${item.url}`}
+                                            alt={item.file}
+                                        />
                                     )}
                                 </div>
                             </AnimatedSection>
@@ -95,12 +97,12 @@ const Gallery = () => {
                     </div>
                 </AnimatedSection>
 
-                {selectedImage && (
+                {selectedMedia && (
                     <div className="gallery__overlay" onClick={handleOverlayClick}>
-                        {selectedImage.endsWith('.mp4') || selectedImage.endsWith('.webm') ? (
+                        {selectedMedia.endsWith('.mp4') || selectedMedia.endsWith('.webm') ? (
                             <video
                                 ref={imageRef}
-                                src={selectedImage}
+                                src={selectedMedia}
                                 autoPlay
                                 loop
                                 muted
@@ -108,7 +110,11 @@ const Gallery = () => {
                                 style={{ maxWidth: '70vw', maxHeight: '70vh', borderRadius: '8px' }}
                             />
                         ) : (
-                            <img ref={imageRef} src={selectedImage} alt="Tatouage zoomé" />
+                            <img
+                                ref={imageRef}
+                                src={selectedMedia}
+                                alt="Tatouage zoomé"
+                            />
                         )}
                     </div>
                 )}
