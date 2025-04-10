@@ -3,7 +3,7 @@
   color: var(--color-light);
   padding: 15px 40px;
   border-bottom: 2px solid var(--color-violet);
-  font-family: var(--font-default);
+  font-family: var(--font-gothic); // Style gothique global
 
   .header__container {
     display: flex;
@@ -24,7 +24,6 @@
     }
 
     .header__brand {
-      font-family: var(--font-gothic);
       font-size: 2rem;
       color: var(--color-violet);
       text-shadow: 0 0 8px var(--color-violet);
@@ -46,7 +45,7 @@
       font-weight: bold;
       cursor: pointer;
       transition: all 0.3s ease;
-      font-family: var(--font-default);
+      font-family: var(--font-gothic); // <<<<< CORRECTION ici
       text-decoration: none;
 
       &:hover {
@@ -70,6 +69,22 @@
       padding: 10px;
       z-index: 999;
       box-shadow: 0 0 10px var(--color-violet);
+      opacity: 0;
+      transform: translateY(-5px);
+      pointer-events: none;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+
+      &.open {
+        opacity: 1;
+        transform: translateY(0);
+        pointer-events: auto;
+      }
+
+      &.close {
+        opacity: 0;
+        transform: translateY(-5px);
+
+      }
 
       li {
         list-style: none;
@@ -80,6 +95,7 @@
           color: white;
           text-decoration: none;
           transition: 0.3s;
+          font-family: var(--font-gothic); // facultatif
 
           &:hover {
             background: var(--color-violet);
