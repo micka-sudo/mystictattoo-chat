@@ -9,29 +9,37 @@
   border-top: 2px solid var(--color-violet);
   padding: 10px 40px;
   z-index: 999;
+  box-sizing: border-box;
 
   .footer__container {
+    max-width: 100%;
     display: flex;
     justify-content: space-between;
     align-items: center;
     flex-wrap: wrap;
     gap: 20px;
+    overflow: hidden;
   }
 
   .footer__address {
     flex: 1;
-    font-size: 0.9rem;
+    font-size: 1rem;
     white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .footer__newsletter {
     flex: 1;
     display: flex;
+    justify-content: flex-start;
+    align-items: center;
     gap: 10px;
 
     input {
-      flex: 1;
+      width: 50%;
       padding: 6px 12px;
+      font-size: 1rem;
       border-radius: 6px;
       border: 1px solid var(--color-violet);
       background: black;
@@ -40,12 +48,14 @@
 
     button {
       padding: 6px 14px;
+      font-size: 1rem;
       border: none;
       border-radius: 6px;
       background: var(--color-violet);
       color: black;
       font-weight: bold;
       cursor: pointer;
+      transition: 0.3s;
 
       &:hover {
         background: white;
@@ -59,12 +69,15 @@
     display: flex;
     justify-content: flex-end;
     gap: 15px;
+    flex-wrap: wrap;
 
     a {
       color: var(--color-violet);
       text-decoration: none;
       font-weight: bold;
+      font-size: 1rem;
       transition: 0.3s;
+      word-break: break-word;
 
       &:hover {
         color: white;
@@ -72,24 +85,66 @@
     }
   }
 
+  // ✅ Moyen écran : tablette / petits laptops
+  @media (max-width: 1024px) {
+    .footer__newsletter {
+      input {
+        width: 40%;
+        padding: 4px 10px;
+        font-size: 0.9rem;
+      }
+
+      button {
+        padding: 4px 10px;
+        font-size: 0.9rem;
+      }
+    }
+
+    .footer__links a {
+      font-size: 0.9rem;
+    }
+
+    .footer__address {
+      font-size: 0.9rem;
+    }
+  }
+
+  // ✅ Mobile : mise en colonne
   @media (max-width: 768px) {
     .footer__container {
       flex-direction: column;
       align-items: flex-start;
     }
 
-    .footer__links {
-      justify-content: flex-start;
-    }
-
     .footer__newsletter {
       width: 100%;
       flex-direction: column;
+      align-items: stretch;
 
-      input,
+      input {
+        width: 100%;
+        padding: 4px 10px;
+        font-size: 0.85rem;
+        margin-bottom: 8px;
+      }
+
       button {
         width: 100%;
+        padding: 4px 10px;
+        font-size: 0.85rem;
       }
+    }
+
+    .footer__links {
+      justify-content: flex-start;
+
+      a {
+        font-size: 0.85rem;
+      }
+    }
+
+    .footer__address {
+      font-size: 0.85rem;
     }
   }
 }
