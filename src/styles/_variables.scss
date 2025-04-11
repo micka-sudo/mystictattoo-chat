@@ -1,9 +1,12 @@
-// _variables.scss
-$color-background: #333333;
-$color-dark: #484748;
-$color-light: #fefefe;
-$color-accent: #875c94;
-$color-secondary: #c7b8cc;
+:root {
+  // Couleurs principales
+  --color-background: #333333;
+  --color-light: #FEFEFE;
+  --color-dark: #484748;
+  --color-accent: #875c94;
+  --color-secondary: #C7b8cc;
 
-$font-default: 'Montserrat', sans-serif;
-$font-gothic: 'UnifrakturCook', cursive;
+  // Polices
+  --font-default: 'Montserrat', sans-serif;
+  --font-gothic: 'UnifrakturCook', cursive;
+}
