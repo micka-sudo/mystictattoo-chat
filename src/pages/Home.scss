@@ -1,22 +1,96 @@
-// src/pages/Home.scss
 .home {
-  &__hero {
-    position: relative;
-    height: 80vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+  text-align: center;
+
+  &__title {
+    font-family: var(--font-gothic);
+    font-size: 3rem;
+    color: white;
+    text-shadow: 0 0 10px var(--color-violet);
+    margin: 20px 0 30px 0;  /* Marge de 30px en haut et en bas du titre */
   }
 
-  &__hero-overlay {
-    background: rgba(0, 0, 0, 0.5);
-    padding: 20px;
-    text-align: center;
-    color: #fff;
+  &__main {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: flex-start;
+    width: 100%;
+  }
+
+  &__hero {
+    width: 50%;
+    height: 50vh;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    border-radius: 12px;
+    overflow: hidden;
+    margin-right: 20px;
+    margin-left: 20px;
+    margin-bottom: 100px; /* Espace de 30px entre l'image et le footer */
+    opacity: 0;
+    animation: fadeInZoomMove 1.5s ease-out forwards; /* Animation ici */
   }
 
   &__content {
-    padding: 40px 20px;
-    text-align: center;
+    width: 50%;
+    background: #111;
+    color: var(--color-light);
+    padding: 40px;
+    font-family: var(--font-default);
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(127, 0, 255, 0.2);
+
+    h3 {
+      font-family: var(--font-gothic);
+      font-size: 1.8rem;
+      color: var(--color-violet);
+      margin-bottom: 15px;
+    }
+
+    p {
+      font-size: 1.1rem;
+      line-height: 1.6;
+    }
+  }
+
+  @keyframes fadeInZoomMove {
+    0% {
+      opacity: 0;
+      transform: scale(1.1) translateY(20px); /* Commence légèrement zoomée et en bas */
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1) translateY(0); /* Reviens à la taille normale avec translation vers le haut */
+    }
+  }
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+
+    &__hero,
+    &__content {
+      width: 100%;
+      height: 40vh;
+    }
+
+    &__content {
+      padding: 20px;
+      text-align: center;
+
+      h3 {
+        font-size: 1.4rem;
+      }
+
+      p {
+        font-size: 1rem;
+      }
+    }
   }
 }

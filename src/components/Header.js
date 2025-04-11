@@ -77,7 +77,6 @@ const Header = () => {
                         )}
                     </div>
 
-                    <Link className="nav__btn" to="/video" onClick={() => setMobileMenuOpen(false)}>Vidéo</Link>
                     <Link className="nav__btn" to="/reservation" onClick={() => setMobileMenuOpen(false)}>Réserver</Link>
                     <Link className="nav__btn" to="/admin/login" onClick={() => setMobileMenuOpen(false)}>Connexion</Link>
 
