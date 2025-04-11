@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import './Home.scss';
+import Layout from '../layouts/Layout';
+import styles from './Home.module.scss';
 
 const Home = () => {
     const [backgroundUrl, setBackgroundUrl] = useState('');
 
-    // Fonction pour récupérer une image aléatoire
     const fetchRandomImage = () => {
         fetch('http://localhost:4000/api/media/random-image')
             .then(res => res.json())
@@ -16,26 +16,30 @@ const Home = () => {
 
     useEffect(() => {
         fetchRandomImage();
-        const interval = setInterval(fetchRandomImage, 5000); // Image change toutes les 5 secondes
+        const interval = setInterval(fetchRandomImage, 5000);
         return () => clearInterval(interval);
     }, []);
 
     return (
-        <div className="home">
-            <h2 className="home__title">Bienvenue chez Mystic Tattoo</h2>
+        <Layout>
+            <div className={styles.home}>
+                <h2 className={styles.home__title}>Bienvenue chez Mystic Tattoo</h2>
 
-            <div className="home__main">
-                <div
-                    className="home__hero"
-                    style={{ backgroundImage: `url('${backgroundUrl}')` }}
-                ></div>
+                <div className={styles.home__main}>
+                    <div className={styles.home__hero}>
+                        <div
+                            className={styles.home__heroBg}
+                            style={{ backgroundImage: `url('${backgroundUrl}')` }}
+                        ></div>
+                    </div>
 
-                <section className="home__content">
-                    <h3>Actualités</h3>
-                    <p>📢 Les dernières news seront affichées ici depuis le panneau d’admin !</p>
-                </section>
+                    <section className={styles.home__content}>
+                        <h3>Actualités</h3>
+                        <p>📢 Les dernières news seront affichées ici depuis le panneau d’admin !</p>
+                    </section>
+                </div>
             </div>
-        </div>
+        </Layout>
     );
 };
 
