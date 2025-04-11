@@ -6,8 +6,8 @@ const Header = () => {
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [categories, setCategories] = useState([]);
-
     const dropdownRef = useRef(null);
+    const dropdownMenuRef = useRef(null);
     const location = useLocation();
     const navigate = useNavigate();
 
@@ -23,7 +23,10 @@ const Header = () => {
 
     useEffect(() => {
         const handleClickOutside = (e) => {
-            if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+            if (
+                dropdownRef.current &&
+                !dropdownRef.current.contains(e.target)
+            ) {
                 setDropdownOpen(false);
             }
         };
@@ -39,55 +42,53 @@ const Header = () => {
     return (
         <header className={styles.header}>
             <div className={styles.header__container}>
-                {/* LOGO + NOM */}
                 <Link to="/" className={styles.header__left} onClick={() => setMobileMenuOpen(false)}>
                     <img src="/logo.png" alt="Logo" className={styles.header__logo} />
                     <span className={styles.header__brand}>Mystic Tattoo</span>
                 </Link>
 
-                {/* BURGER uniquement mobile */}
-                <button
-                    className={styles.burgerBtn}
-                    onClick={() => setMobileMenuOpen((prev) => !prev)}
-                >
+                <button className={styles.burgerBtn} onClick={() => setMobileMenuOpen((prev) => !prev)}>
                     ☰
                 </button>
 
-                {/* NAVIGATION */}
                 <nav className={`${styles.header__nav} ${mobileMenuOpen ? styles.open : ''}`}>
-                    <Link className={styles.nav__btn} to="/" onClick={() => setMobileMenuOpen(false)}>
-                        Accueil
-                    </Link>
+                    <Link className={styles.nav__btn} to="/" onClick={() => setMobileMenuOpen(false)}>Accueil</Link>
 
                     <div className={styles.dropdown} ref={dropdownRef}>
-                        <button className={styles.nav__btn} onClick={() => setDropdownOpen(!dropdownOpen)}>
-                            Galerie ▾
+                        <button
+                            className={`${styles.nav__btn} ${styles.dropdownToggle} ${dropdownOpen ? styles.open : ''}`}
+                            onClick={() => setDropdownOpen(!dropdownOpen)}
+                        >
+                            Galerie <span className={styles.chevron}></span>
                         </button>
-                        {dropdownOpen && (
-                            <ul className={styles.dropdown__menu}>
-                                {categories.map((cat) => (
-                                    <li key={cat}>
-                                        <Link
-                                            to={`/gallery?style=${cat}`}
-                                            onClick={() => {
-                                                setDropdownOpen(false);
-                                                setMobileMenuOpen(false);
-                                            }}
-                                        >
-                                            {cat.charAt(0).toUpperCase() + cat.slice(1)}
-                                        </Link>
-                                    </li>
-                                ))}
-                            </ul>
-                        )}
+
+                        <ul
+                            ref={dropdownMenuRef}
+                            className={`${styles.dropdown__menu} ${dropdownOpen ? styles.open : ''}`}
+                            style={{
+                                maxHeight: dropdownOpen && dropdownMenuRef.current
+                                    ? `${dropdownMenuRef.current.scrollHeight}px`
+                                    : '0px'
+                            }}
+                        >
+                            {categories.map((cat) => (
+                                <li key={cat}>
+                                    <Link
+                                        to={`/gallery?style=${cat}`}
+                                        onClick={() => {
+                                            setDropdownOpen(false);
+                                            setMobileMenuOpen(false);
+                                        }}
+                                    >
+                                        {cat.charAt(0).toUpperCase() + cat.slice(1)}
+                                    </Link>
+                                </li>
+                            ))}
+                        </ul>
                     </div>
 
-                    <Link className={styles.nav__btn} to="/reservation" onClick={() => setMobileMenuOpen(false)}>
-                        Réserver
-                    </Link>
-                    <Link className={styles.nav__btn} to="/admin/login" onClick={() => setMobileMenuOpen(false)}>
-                        Connexion
-                    </Link>
+                    <Link className={styles.nav__btn} to="/reservation" onClick={() => setMobileMenuOpen(false)}>Réserver</Link>
+                    <Link className={styles.nav__btn} to="/admin/login" onClick={() => setMobileMenuOpen(false)}>Connexion</Link>
 
                     {isAdminRoute && isLoggedIn && (
                         <button className={styles.nav__btn} onClick={handleLogout}>
