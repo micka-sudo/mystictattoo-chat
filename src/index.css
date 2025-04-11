@@ -1,43 +1,37 @@
 :root {
-    /* Polices principales */
+    /* Polices */
     --font-default: 'Montserrat', sans-serif;
     --font-gothic: 'UnifrakturCook', cursive;
 
-    /* Couleurs */
-    --color-violet: rgba(137, 115, 172, 0.91);
-    --color-dark: #000;
-    --color-light: #fff;
+    /* Palette de couleurs */
+    --color-background: #333333;
+    --color-dark: #484748;
+    --color-light: #Fefefe;
+    --color-accent: #875c94;
+    --color-secondary: #C7b8cc;
 }
 
-/* Structure de base et scroll */
+/* Structure de base */
 html,
 body,
 #root {
     height: 100%;
     margin: 0;
     padding: 0;
-    background: var(--color-dark);
+    background-color: var(--color-background);
     color: var(--color-light);
     font-family: var(--font-default);
     display: flex;
     flex-direction: column;
     scroll-behavior: smooth;
-
-    /* ✅ Cacher scrollbar pour tous les navigateurs */
-    scrollbar-width: none;        /* Firefox */
-    -ms-overflow-style: none;     /* IE/Edge */
+    scrollbar-width: none;
+    -ms-overflow-style: none;
 }
 
 html::-webkit-scrollbar,
 body::-webkit-scrollbar,
 #root::-webkit-scrollbar {
-    display: none;                /* Chrome/Safari */
-}
-
-/* Liens */
-a {
-    text-decoration: none;
-    color: inherit;
+    display: none;
 }
 
 /* Titres */
@@ -57,37 +51,33 @@ p {
     margin: 0 auto 1.5em;
 }
 
+/* Liens */
+a {
+    text-decoration: none;
+    color: var(--color-accent);
+    transition: color 0.3s ease;
+}
+a:hover {
+    color: var(--color-secondary);
+}
+
 /* Boutons */
 button,
 .nav__btn {
-    transition: all 0.3s ease-in-out;
     font-family: var(--font-gothic);
-    letter-spacing: 0.5px;
+    background: rgba(72, 71, 72, 0.8);
+    border: 1px solid var(--color-accent);
+    color: var(--color-light);
+    padding: 10px 20px;
+    border-radius: 8px;
+    transition: all 0.3s ease-in-out;
     cursor: pointer;
 }
-
-/* Images */
-img {
-    display: block;
-    max-width: 100%;
-    height: auto;
-    object-fit: cover;
-}
-
-/* Vidéos */
-video {
-    display: block;
-    max-width: 100%;
-    object-fit: cover;
-}
-
-/* Listes */
-ul, ol {
-    padding-left: 1.5rem;
-}
-
-li {
-    margin-bottom: 0.5em;
+button:hover,
+.nav__btn:hover {
+    background: var(--color-accent);
+    color: var(--color-background);
+    box-shadow: 0 0 10px var(--color-accent);
 }
 
 /* Formulaires */
@@ -96,12 +86,28 @@ input, textarea, select {
     border-radius: 6px;
     padding: 8px 12px;
     font-size: 1rem;
-    border: 1px solid var(--color-violet);
-    background-color: #111;
-    color: white;
+    border: 1px solid var(--color-accent);
+    background-color: #222;
+    color: var(--color-light);
 }
 
-/* Résponsive fix typique */
+/* Media */
+img, video {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    object-fit: cover;
+}
+
+/* Listes */
+ul, ol {
+    padding-left: 1.5rem;
+}
+li {
+    margin-bottom: 0.5em;
+}
+
+/* Box sizing */
 * {
     box-sizing: border-box;
 }

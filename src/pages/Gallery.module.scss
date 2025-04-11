@@ -1,17 +1,17 @@
+@import '../styles/variables';
+
 .gallery {
   width: 100%;
   display: flex;
   flex-direction: column;
-  box-sizing: border-box;
   padding: 30px;
-  padding-bottom: 150px; // ✅ Pour éviter que le footer coupe la dernière image
+  padding-bottom: 150px;
   background-color: transparent;
+  scrollbar-width: none; // Firefox
+  -ms-overflow-style: none; // IE
 
-  // ✅ Cacher la scrollbar sur tous les navigateurs
-  scrollbar-width: none;         // Firefox
-  -ms-overflow-style: none;      // IE/Edge
   &::-webkit-scrollbar {
-    display: none;               // Chrome/Safari
+    display: none; // Chrome
   }
 
   &__header {
@@ -24,7 +24,7 @@
   &__title {
     font-size: 2.5rem;
     font-family: var(--font-gothic);
-    color: white;                 // ✅ Titre Galerie en blanc
+    color: var(--color-light);
     text-align: center;
     margin-bottom: 20px;
   }
@@ -36,10 +36,10 @@
     flex-wrap: wrap;
   }
 
-  &__category-btn {
-    background: rgba(0, 0, 0, 0.6);
-    color: white;
-    border: 1px solid var(--color-violet);
+  &__categoryBtn {
+    background: rgba(72, 71, 72, 0.6);
+    color: var(--color-light);
+    border: 1px solid var(--color-accent);
     border-radius: 12px;
     padding: 10px 20px;
     font-weight: 600;
@@ -52,15 +52,15 @@
     backdrop-filter: blur(4px);
 
     &:hover {
-      background: var(--color-violet);
-      color: black;
-      box-shadow: 0 0 12px var(--color-violet);
+      background: var(--color-accent);
+      color: var(--color-background);
+      box-shadow: 0 0 12px var(--color-accent);
       transform: translateY(-1px);
     }
 
     &.active {
-      background: var(--color-violet);
-      color: black;
+      background: var(--color-accent);
+      color: var(--color-background);
     }
   }
 
@@ -69,22 +69,18 @@
     grid-template-columns: repeat(8, 1fr);
     gap: 15px;
     margin-top: 30px;
-    justify-content: center;
-    max-width: 100%;
-    height: auto;
   }
 
   &__item {
     position: relative;
-    width: 100%;
     aspect-ratio: 1 / 1;
     overflow: hidden;
-    background-color: #000;
+    background-color: var(--color-dark);
     border: 2px solid rgba(255, 255, 255, 0.8);
     border-radius: 6px;
-    transition: border 0.3s ease;
 
-    img, video {
+    img,
+    video {
       cursor: pointer;
       position: absolute;
       top: 0;
@@ -114,7 +110,8 @@
     cursor: zoom-out;
     animation: fadeIn 0.3s ease;
 
-    img, video {
+    img,
+    video {
       max-width: 70vw;
       max-height: 70vh;
       transform: scale(1.5);

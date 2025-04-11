@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import './Header.scss';
+import styles from './Header.module.scss';
 
 const Header = () => {
     const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -37,29 +37,34 @@ const Header = () => {
     };
 
     return (
-        <header className="header">
-            <div className="header__container">
-                <Link to="/" className="header__left" onClick={() => setMobileMenuOpen(false)}>
-                    <img src="/logo.png" alt="Logo" className="header__logo" />
-                    <span className="header__brand">Mystic Tattoo</span>
+        <header className={styles.header}>
+            <div className={styles.header__container}>
+                {/* LOGO + NOM */}
+                <Link to="/" className={styles.header__left} onClick={() => setMobileMenuOpen(false)}>
+                    <img src="/logo.png" alt="Logo" className={styles.header__logo} />
+                    <span className={styles.header__brand}>Mystic Tattoo</span>
                 </Link>
 
+                {/* BURGER uniquement mobile */}
                 <button
-                    className="burger-btn"
+                    className={styles.burgerBtn}
                     onClick={() => setMobileMenuOpen((prev) => !prev)}
                 >
                     ☰
                 </button>
 
-                <nav className={`header__nav ${mobileMenuOpen ? 'open' : ''}`}>
-                    <Link className="nav__btn" to="/" onClick={() => setMobileMenuOpen(false)}>Accueil</Link>
+                {/* NAVIGATION */}
+                <nav className={`${styles.header__nav} ${mobileMenuOpen ? styles.open : ''}`}>
+                    <Link className={styles.nav__btn} to="/" onClick={() => setMobileMenuOpen(false)}>
+                        Accueil
+                    </Link>
 
-                    <div className="dropdown" ref={dropdownRef}>
-                        <button className="nav__btn" onClick={() => setDropdownOpen(!dropdownOpen)}>
+                    <div className={styles.dropdown} ref={dropdownRef}>
+                        <button className={styles.nav__btn} onClick={() => setDropdownOpen(!dropdownOpen)}>
                             Galerie ▾
                         </button>
                         {dropdownOpen && (
-                            <ul className="dropdown__menu">
+                            <ul className={styles.dropdown__menu}>
                                 {categories.map((cat) => (
                                     <li key={cat}>
                                         <Link
@@ -77,11 +82,15 @@ const Header = () => {
                         )}
                     </div>
 
-                    <Link className="nav__btn" to="/reservation" onClick={() => setMobileMenuOpen(false)}>Réserver</Link>
-                    <Link className="nav__btn" to="/admin/login" onClick={() => setMobileMenuOpen(false)}>Connexion</Link>
+                    <Link className={styles.nav__btn} to="/reservation" onClick={() => setMobileMenuOpen(false)}>
+                        Réserver
+                    </Link>
+                    <Link className={styles.nav__btn} to="/admin/login" onClick={() => setMobileMenuOpen(false)}>
+                        Connexion
+                    </Link>
 
                     {isAdminRoute && isLoggedIn && (
-                        <button className="nav__btn" onClick={handleLogout}>
+                        <button className={styles.nav__btn} onClick={handleLogout}>
                             Déconnexion
                         </button>
                     )}
