@@ -11,8 +11,7 @@ const Header = () => {
     const location = useLocation();
     const navigate = useNavigate();
 
-    const isAdminRoute = location.pathname.startsWith('/admin');
-    const isLoggedIn = Boolean(localStorage.getItem('admin_token'));
+    const isAdminLoggedIn = Boolean(localStorage.getItem('admin_token'));
 
     useEffect(() => {
         fetch('http://localhost:4000/api/media/categories')
@@ -88,12 +87,22 @@ const Header = () => {
                     </div>
 
                     <Link className={styles.nav__btn} to="/reservation" onClick={() => setMobileMenuOpen(false)}>Réserver</Link>
-                    <Link className={styles.nav__btn} to="/admin/login" onClick={() => setMobileMenuOpen(false)}>Connexion</Link>
 
-                    {isAdminRoute && isLoggedIn && (
-                        <button className={styles.nav__btn} onClick={handleLogout}>
-                            Déconnexion
-                        </button>
+                    {!isAdminLoggedIn && (
+                        <Link className={styles.nav__btn} to="/admin/login" onClick={() => setMobileMenuOpen(false)}>
+                            Connexion
+                        </Link>
+                    )}
+
+                    {isAdminLoggedIn && (
+                        <>
+                            <Link className={styles.nav__btn} to="/admin/home" onClick={() => setMobileMenuOpen(false)}>
+                                🛠 Administration
+                            </Link>
+                            <button className={styles.nav__btn} onClick={handleLogout}>
+                                Déconnexion
+                            </button>
+                        </>
                     )}
                 </nav>
             </div>

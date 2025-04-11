@@ -30,6 +30,7 @@
   &__hero {
     flex: 1;
     height: 50vh;
+    min-height: 300px;
     border-radius: 12px;
     overflow: hidden;
     position: relative;
@@ -44,6 +45,7 @@
       background-position: center;
       background-repeat: no-repeat;
       animation: kenBurnsZoom 10s ease-in-out infinite;
+      border-radius: 12px;
     }
   }
 
@@ -54,8 +56,7 @@
     padding: 40px;
     font-family: var(--font-default);
     border-radius: 10px;
-    box-shadow: 0 0 10px rgba(127, 0, 255, 0.2);
-    text-align: left;
+    box-shadow: 0 0 10px rgba(135, 92, 148, 0.3); // couleur accent + intensité
 
     h3 {
       font-family: var(--font-gothic);
@@ -88,12 +89,13 @@
       gap: 30px;
     }
 
-    &__hero,
-    &__content {
+    &__hero {
       width: 100%;
+      height: 250px; // 🔧 fixe une hauteur minimale pour l'image
     }
 
     &__content {
+      width: 100%;
       padding: 20px;
       text-align: center;
 
