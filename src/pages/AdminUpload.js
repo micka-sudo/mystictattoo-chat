@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ChevronDown, ChevronRight } from 'lucide-react';
+import { ChevronDown, ChevronRight, Trash2 } from 'lucide-react';
 import Layout from '../layouts/Layout';
 import styles from './AdminUpload.module.scss';
 
@@ -136,15 +136,17 @@ const AdminUpload = () => {
 
     const deleteSelectedMedia = async () => {
         if (!window.confirm('Supprimer les fichiers sélectionnés ?')) return;
+        const deletedFiles = [];
         for (const file of selectedMedia) {
             const item = media.find(m => m.file === file);
-            await fetch('http://localhost:4000/api/media', {
+            const res = await fetch('http://localhost:4000/api/media', {
                 method: 'DELETE',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ file: item.file, category: item.category })
             });
+            if (res.ok) deletedFiles.push(file);
         }
-        setMedia(prev => prev.filter(m => !selectedMedia.includes(m.file)));
+        setMedia(prev => prev.filter(m => !deletedFiles.includes(m.file)));
         setSelectedMedia([]);
     };
 
@@ -205,9 +207,11 @@ const AdminUpload = () => {
                 <h2>🖼 Médias <button onClick={toggleAllCategories}>Afficher/Masquer tout</button></h2>
                 {categories.map((cat) => (
                     <div key={cat} className={styles.mediaCategory}>
-                        <div className={styles.categoryHeader} onClick={() => setVisibleCategories(prev => ({ ...prev, [cat]: !prev[cat] }))}>
-                            {visibleCategories[cat] ? <ChevronDown size={18} /> : <ChevronRight size={18} />}
-                            <h3>{cat}</h3>
+                        <div className={styles.categoryHeader}>
+                            <div onClick={() => setVisibleCategories(prev => ({ ...prev, [cat]: !prev[cat] }))}>
+                                {visibleCategories[cat] ? <ChevronDown size={18} /> : <ChevronRight size={18} />}
+                                <h3>{cat}</h3>
+                            </div>
                             <div>
                                 <label>
                                     <input
@@ -220,6 +224,17 @@ const AdminUpload = () => {
                                         onClick={(e) => e.stopPropagation()}
                                     /> Sélectionner tout
                                 </label>
+                                <button
+                                    className={styles.trashBtn}
+                                    title={`Supprimer tous les médias de ${cat}`}
+                                    onClick={() => {
+                                        const filesToDelete = mediaByCategory[cat].map(m => m.file);
+                                        setSelectedMedia(filesToDelete);
+                                        deleteSelectedMedia();
+                                    }}
+                                >
+                                    <Trash2 size={16} />
+                                </button>
                             </div>
                         </div>
                         <div className={styles.categoryContent} style={{
