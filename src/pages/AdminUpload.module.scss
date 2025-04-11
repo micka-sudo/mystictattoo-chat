@@ -1,0 +1,89 @@
+@import '../styles/variables';
+
+.adminUpload {
+  padding: 30px;
+  max-width: 600px;
+  margin: auto;
+  font-family: var(--font-gothic);
+  color: var(--color-light);
+
+  h2 {
+    color: var(--color-accent);
+    margin-bottom: 20px;
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+
+    input,
+    select {
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid var(--color-accent);
+      background: #111;
+      color: var(--color-light);
+    }
+
+    button {
+      padding: 10px;
+      background-color: var(--color-accent);
+      color: black;
+      font-weight: bold;
+      border-radius: 6px;
+      cursor: pointer;
+      border: none;
+      transition: all 0.3s ease;
+
+      &:hover {
+        background-color: black;
+        color: white;
+        border: 1px solid var(--color-accent);
+      }
+    }
+  }
+
+  .preview {
+    margin-top: 20px;
+    border-top: 1px solid var(--color-accent);
+    padding-top: 10px;
+
+    img,
+    video {
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+    }
+  }
+
+  .status {
+    margin-top: 15px;
+    font-weight: bold;
+  }
+
+  &__links {
+    margin-top: 30px;
+    text-align: center;
+  }
+}
+
+.adminBtn {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 10px 20px;
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  border: 1px solid var(--color-accent);
+  border-radius: 12px;
+  font-family: var(--font-gothic);
+  font-weight: bold;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(4px);
+
+  &:hover {
+    background: var(--color-accent);
+    color: black;
+    box-shadow: 0 0 12px var(--color-accent);
+  }
+}

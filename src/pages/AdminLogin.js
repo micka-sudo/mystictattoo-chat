@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './AdminLogin.scss';
+import Layout from '../layouts/Layout';
+import styles from './AdminLogin.module.scss';
 
 const AdminLogin = () => {
     const [password, setPassword] = useState('');
@@ -20,7 +21,6 @@ const AdminLogin = () => {
             const data = await res.json();
 
             if (res.ok) {
-                // ✅ Stocke le token et redirige
                 localStorage.setItem('admin_token', data.token);
                 setStatus('✅ Connexion réussie');
                 navigate('/admin');
@@ -34,19 +34,21 @@ const AdminLogin = () => {
     };
 
     return (
-        <div className="admin-login">
-            <h2>Connexion Admin</h2>
-            <form onSubmit={handleLogin}>
-                <input
-                    type="password"
-                    placeholder="Mot de passe admin"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                />
-                <button type="submit">Se connecter</button>
-            </form>
-            {status && <p className="status">{status}</p>}
-        </div>
+        <Layout>
+            <div className={styles.adminLogin}>
+                <h2>Connexion Admin</h2>
+                <form onSubmit={handleLogin}>
+                    <input
+                        type="password"
+                        placeholder="Mot de passe admin"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                    />
+                    <button type="submit">Se connecter</button>
+                </form>
+                {status && <p className={styles.status}>{status}</p>}
+            </div>
+        </Layout>
     );
 };
 

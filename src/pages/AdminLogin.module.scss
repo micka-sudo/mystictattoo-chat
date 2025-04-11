@@ -1,12 +1,19 @@
-.admin-login {
+@import '../styles/variables';
+
+.adminLogin {
   max-width: 400px;
   margin: 50px auto;
   font-family: var(--font-gothic);
   padding: 30px;
+  background: #111;
+  border-radius: 12px;
+  box-shadow: 0 0 12px rgba(127, 0, 255, 0.2);
+  color: var(--color-light);
 
   h2 {
-    color: var(--color-violet);
+    color: var(--color-accent);
     margin-bottom: 20px;
+    text-align: center;
   }
 
   form {
@@ -17,20 +24,25 @@
     input {
       padding: 10px;
       border-radius: 8px;
-      border: 1px solid var(--color-violet);
+      border: 1px solid var(--color-accent);
+      background-color: black;
+      color: white;
     }
 
     button {
       padding: 10px;
-      background: var(--color-violet);
+      background: var(--color-accent);
       color: black;
       font-weight: bold;
       border-radius: 8px;
       cursor: pointer;
+      border: none;
+      transition: background 0.3s ease;
 
       &:hover {
         background: black;
         color: white;
+        border: 1px solid var(--color-accent);
       }
     }
   }
@@ -38,5 +50,6 @@
   .status {
     margin-top: 10px;
     font-weight: bold;
+    text-align: center;
   }
 }
