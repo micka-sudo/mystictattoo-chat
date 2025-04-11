@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
@@ -6,6 +7,7 @@ const fs = require('fs');
 const uploadRoute = require('./routes/upload');
 const authRoute = require('./routes/auth');
 const mediaRoute = require('./routes/media');
+const newsRouter = require('./routes/news');
 
 const app = express();
 const PORT = 4000;
@@ -24,6 +26,7 @@ app.use('/uploads', express.static(uploadsPath));
 app.use('/api/upload', uploadRoute);
 app.use('/api/login', authRoute);
 app.use('/api/media', mediaRoute);
+app.use('/api/news', newsRouter);
 
 app.get('/', (req, res) => {
     res.send('🚀 Backend Mystic Tattoo en ligne');

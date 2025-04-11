@@ -8,7 +8,7 @@
   color: var(--color-light);
 
   h2 {
-    color: var(--color-accent);
+    color: var(--color-light);
     margin-bottom: 20px;
   }
 
@@ -18,12 +18,19 @@
     gap: 15px;
 
     input,
-    select {
+    select,
+    textarea {
       padding: 10px;
       border-radius: 6px;
       border: 1px solid var(--color-accent);
       background: #111;
       color: var(--color-light);
+      font-family: var(--font-gothic);
+    }
+
+    textarea {
+      min-height: 80px;
+      resize: vertical;
     }
 
     button {
@@ -52,6 +59,7 @@
     img,
     video {
       border-radius: 8px;
+      max-width: 100%;
       box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
     }
   }
@@ -59,6 +67,76 @@
   .status {
     margin-top: 15px;
     font-weight: bold;
+  }
+
+  .newsSection {
+    margin-top: 40px;
+    border-top: 1px solid var(--color-accent);
+    padding-top: 20px;
+
+    h2 {
+      color: var(--color-light);
+      margin-bottom: 15px;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+
+      .newsItem {
+        background: #111;
+        padding: 15px;
+        border: 1px solid var(--color-accent);
+        border-radius: 10px;
+        margin-bottom: 15px;
+        color: var(--color-light);
+        font-family: var(--font-gothic);
+
+        strong {
+          display: block;
+          font-size: 1.2rem;
+          margin-bottom: 10px;
+          color: var(--color-accent);
+        }
+
+        img {
+          max-width: 100%;
+          border-radius: 8px;
+          margin: 10px 0;
+          box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+        }
+
+        p {
+          margin: 10px 0;
+          font-size: 0.95rem;
+          line-height: 1.4;
+        }
+
+        button {
+          margin-right: 10px;
+          padding: 6px 12px;
+          font-size: 0.9rem;
+          background: transparent;
+          color: var(--color-accent);
+          border: 1px solid var(--color-accent);
+          border-radius: 6px;
+          cursor: pointer;
+          transition: all 0.2s ease;
+
+          &:hover {
+            background: var(--color-accent);
+            color: black;
+          }
+        }
+      }
+    }
   }
 
   &__links {
