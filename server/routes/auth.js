@@ -1,21 +1,32 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
+require('dotenv').config(); // 🔌 Charge les variables .env
 
 const router = express.Router();
-const SECRET_KEY = 'tonSecretUltraFort'; // 🔐 à sécuriser dans un .env
 
-const ADMIN_PASSWORD = 'admin123'; // 🛠️ à sécuriser aussi (exemple temporaire)
+const SECRET_KEY = process.env.SECRET_KEY;
+const ADMIN_HASH = process.env.ADMIN_HASH;
 
 // ✅ Route POST /api/login
-router.post('/', (req, res) => {
+router.post('/', async (req, res) => {
     const { password } = req.body;
 
-    if (password !== ADMIN_PASSWORD) {
-        return res.status(401).json({ error: 'Mot de passe incorrect' });
-    }
+    try {
+        // 🔐 Compare le mot de passe entré avec le hash
+        const isMatch = await bcrypt.compare(password, ADMIN_HASH);
 
-    const token = jwt.sign({ role: 'admin' }, SECRET_KEY, { expiresIn: '2h' });
-    res.json({ token });
+        if (!isMatch) {
+            return res.status(401).json({ error: 'Mot de passe incorrect' });
+        }
+
+        // ✅ Génère le token JWT
+        const token = jwt.sign({ role: 'admin' }, SECRET_KEY, { expiresIn: '2h' });
+        res.json({ token });
+    } catch (error) {
+        console.error('Erreur lors de la vérification du mot de passe', error);
+        res.status(500).json({ error: 'Erreur serveur' });
+    }
 });
 
 module.exports = router;
