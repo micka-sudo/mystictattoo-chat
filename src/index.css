@@ -1,13 +1,18 @@
 :root {
+    /* Polices principales */
     --font-default: 'Montserrat', sans-serif;
     --font-gothic: 'UnifrakturCook', cursive;
 
+    /* Couleurs */
     --color-violet: rgba(137, 115, 172, 0.91);
     --color-dark: #000;
     --color-light: #fff;
 }
 
-html, body, #root {
+/* Structure de base et scroll */
+html,
+body,
+#root {
     height: 100%;
     margin: 0;
     padding: 0;
@@ -17,21 +22,34 @@ html, body, #root {
     display: flex;
     flex-direction: column;
     scroll-behavior: smooth;
+
+    /* ✅ Cacher scrollbar pour tous les navigateurs */
+    scrollbar-width: none;        /* Firefox */
+    -ms-overflow-style: none;     /* IE/Edge */
 }
 
+html::-webkit-scrollbar,
+body::-webkit-scrollbar,
+#root::-webkit-scrollbar {
+    display: none;                /* Chrome/Safari */
+}
+
+/* Liens */
 a {
     text-decoration: none;
     color: inherit;
 }
 
+/* Titres */
 h1, h2, h3 {
     font-family: var(--font-gothic);
     letter-spacing: 1px;
     text-transform: uppercase;
-    color: white;
+    color: var(--color-light);
     margin: 0.5em 0;
 }
 
+/* Paragraphes */
 p {
     line-height: 1.6;
     font-size: 1.05rem;
@@ -39,6 +57,51 @@ p {
     margin: 0 auto 1.5em;
 }
 
-button, .nav__btn {
+/* Boutons */
+button,
+.nav__btn {
     transition: all 0.3s ease-in-out;
+    font-family: var(--font-gothic);
+    letter-spacing: 0.5px;
+    cursor: pointer;
+}
+
+/* Images */
+img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    object-fit: cover;
+}
+
+/* Vidéos */
+video {
+    display: block;
+    max-width: 100%;
+    object-fit: cover;
+}
+
+/* Listes */
+ul, ol {
+    padding-left: 1.5rem;
+}
+
+li {
+    margin-bottom: 0.5em;
+}
+
+/* Formulaires */
+input, textarea, select {
+    font-family: var(--font-default);
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-size: 1rem;
+    border: 1px solid var(--color-violet);
+    background-color: #111;
+    color: white;
+}
+
+/* Résponsive fix typique */
+* {
+    box-sizing: border-box;
 }
