@@ -54,6 +54,7 @@ jobs:
           username: ${{ secrets.DEPLOY_USER }}
           key: ${{ secrets.DEPLOY_SSH_KEY }}
           script: |
+            echo "🧹 Suppression des anciens fichiers sur le NAS dans ${{ env.DEPLOY_PATH }}"
             rm -rf ${{ env.DEPLOY_PATH }}/*
 
       - name: Déployer via SCP
