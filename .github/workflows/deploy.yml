@@ -21,6 +21,21 @@ jobs:
       - name: Build du projet
         run: npm run build
 
+      - name: Vérifier que le build est valide
+        run: |
+          if [ ! -d "build" ]; then
+            echo "❌ Le dossier 'build/' n'existe pas. Échec du build."
+            exit 1
+          fi
+
+          FILES=$(find build -type f \( -name "*.html" -o -name "*.js" -o -name "*.css" \))
+          if [ -z "$FILES" ]; then
+            echo "❌ Aucun fichier HTML/JS/CSS trouvé dans build/. Échec du build."
+            exit 1
+          fi
+
+          echo "✅ Build valide. Fichiers trouvés dans le dossier build/"
+
       - name: Choisir le dossier de destination
         id: set-path
         run: |
@@ -32,7 +47,6 @@ jobs:
             echo "DEPLOY_PATH=/volume1/web/mystictattoo-dev" >> $GITHUB_ENV
           fi
 
-      # Nettoyage du dossier distant avant envoi (⚠️ optionnel mais utile pour éviter les doublons)
       - name: Nettoyer le dossier cible sur le NAS
         uses: appleboy/ssh-action@master
         with:
@@ -48,6 +62,6 @@ jobs:
           host: ${{ secrets.DEPLOY_HOST }}
           username: ${{ secrets.DEPLOY_USER }}
           key: ${{ secrets.DEPLOY_SSH_KEY }}
-          source: "build/*"                # ← change "dist/*" si ton build génère un dossier build/
+          source: "build/*"
           target: ${{ env.DEPLOY_PATH }}
-          debug: true                      # ← active le debug pour avoir les logs détaillés
+          debug: true
