@@ -57,6 +57,7 @@ jobs:
           host: ${{ secrets.DEPLOY_HOST }}
           username: ${{ secrets.DEPLOY_USER }}
           key: ${{ secrets.DEPLOY_SSH_KEY }}
+          script_stop: true
           script: |
             echo "🧨 Suppression de ${{ env.DEPLOY_PATH }}/*"
             rm -rf ${{ env.DEPLOY_PATH }}/*
@@ -88,4 +89,3 @@ jobs:
           echo "- Branche : \`${{ github.ref_name }}\`" >> $GITHUB_STEP_SUMMARY
           echo "- URL : ${{ env.DEPLOY_URL }}" >> $GITHUB_STEP_SUMMARY
           echo "- Date : $(date)" >> $GITHUB_STEP_SUMMARY
-# redeploiement manuel - 2025-04-15
