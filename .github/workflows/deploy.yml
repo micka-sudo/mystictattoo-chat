@@ -88,3 +88,4 @@ jobs:
           echo "- Branche : \`${{ github.ref_name }}\`" >> $GITHUB_STEP_SUMMARY
           echo "- URL : ${{ env.DEPLOY_URL }}" >> $GITHUB_STEP_SUMMARY
           echo "- Date : $(date)" >> $GITHUB_STEP_SUMMARY
+# redeploiement manuel - 2025-04-15
