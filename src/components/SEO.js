@@ -1,10 +1,11 @@
 // src/components/SEO.js
 import React from 'react';
-import { Helmet } from 'react-helmet';
+import { Helmet, HelmetProvider } from 'react-helmet-async';
+
 
 const SEO = ({ title, description, url, image }) => {
     return (
-        <Helmet>
+        <HelmetProvider>
             <title>{ title }</title>
             <meta name="description" content={ description } />
             <link rel="canonical" href={ url } />
@@ -16,7 +17,7 @@ const SEO = ({ title, description, url, image }) => {
             {/* Twitter Card */}
             <meta name="twitter:title" content={ title } />
             <meta name="twitter:description" content={ description } />
-        </Helmet>
+        </HelmetProvider>
     );
 };
 

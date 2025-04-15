@@ -1,0 +1,148 @@
+@import '../styles/variables';
+
+.header {
+  background-color: var(--color-header);
+  color: var(--color-light);
+  padding: 15px 40px;
+  border-bottom: 2px solid var(--color-accent);
+  font-family: var(--font-gothic);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  transition: background 0.3s ease;
+
+  &__container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: nowrap;
+    gap: 20px;
+  }
+
+  &__left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+  }
+
+  &__logo {
+    height: 80px;
+    object-fit: contain;
+  }
+
+  &__brand {
+    font-size: 1.6rem;
+    color: var(--color-light);
+    text-shadow: 0 0 8px var(--color-accent);
+  }
+
+  &__nav {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+
+    .nav__btn {
+      padding: 8px 16px;
+      border: 1px solid transparent;
+      background: var(--color-background);
+      color: var(--color-light);
+      font-family: var(--font-gothic);
+      font-size: 1rem;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: 0.3s ease;
+
+      &:hover {
+        border-color: var(--color-accent);
+        box-shadow: 0 0 8px var(--color-accent);
+      }
+    }
+
+    .dropdown {
+      position: relative;
+
+      &__menu {
+        position: absolute;
+        top: 120%;
+        left: 0;
+        background: var(--color-background);
+        border: 1px solid var(--color-accent);
+        border-radius: 10px;
+        box-shadow: 0 0 10px var(--color-accent);
+        padding: 10px;
+        overflow: hidden;
+        max-height: 0;
+        opacity: 0;
+        transition: all 0.4s ease;
+
+        &.open {
+          max-height: 300px;
+          opacity: 1;
+        }
+
+        li {
+          list-style: none;
+
+          a {
+            display: block;
+            padding: 8px 12px;
+            font-family: var(--font-gothic);
+            color: var(--color-light);
+            text-decoration: none;
+            border-radius: 8px;
+            transition: 0.2s;
+
+            &:hover {
+              background-color: var(--color-accent);
+              color: var(--color-background);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .burgerBtn {
+    display: none;
+    font-size: 2rem;
+    color: var(--color-accent);
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+
+  @media (max-width: 768px) {
+    .burgerBtn {
+      display: block;
+    }
+
+    &__nav {
+      display: none;
+      flex-direction: column;
+      align-items: stretch;
+      width: 100%;
+      margin-top: 15px;
+
+      &.open {
+        display: flex;
+      }
+
+      .nav__btn {
+        width: 100%;
+        text-align: center;
+      }
+
+      .dropdown__menu {
+        position: relative;
+        background: var(--color-background);
+        border-radius: 8px;
+      }
+    }
+
+    &__brand {
+      font-size: 1.3rem;
+    }
+  }
+}
