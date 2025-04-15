@@ -1,4 +1,4 @@
-name: Déploiement continu NAS
+name: 🚀 Déploiement continu NAS
 
 on:
   push:
@@ -12,52 +12,56 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout du code
+      - name: 🔄 Checkout du code
         uses: actions/checkout@v3
 
-      - name: Installer les dépendances
+      - name: 📦 Installer les dépendances
         run: npm install
 
-      - name: Build du projet
+      - name: 🛠️ Build du projet React
         run: npm run build
 
-      - name: Vérifier que le build est valide
+      - name: ✅ Vérification du build
         run: |
+          echo "🧐 Vérification du dossier build/"
           if [ ! -d "build" ]; then
-            echo "❌ Le dossier 'build/' n'existe pas. Échec du build."
+            echo "❌ Dossier build/ introuvable. Le build a échoué."
             exit 1
           fi
 
-          FILES=$(find build -type f \( -name "*.html" -o -name "*.js" -o -name "*.css" \))
-          if [ -z "$FILES" ]; then
-            echo "❌ Aucun fichier HTML/JS/CSS trouvé dans build/. Échec du build."
+          FILE_COUNT=$(find build -type f \( -name "*.html" -o -name "*.js" -o -name "*.css" \) | wc -l)
+          if [ "$FILE_COUNT" -eq "0" ]; then
+            echo "❌ Aucun fichier HTML/CSS/JS dans build/. Le build est vide."
             exit 1
           fi
 
-          echo "✅ Build valide. Fichiers trouvés dans le dossier build/"
+          echo "✅ Build valide : $FILE_COUNT fichiers trouvés dans build/"
 
-      - name: Choisir le dossier de destination
+      - name: 📁 Déterminer le chemin de déploiement NAS
         id: set-path
         run: |
           if [[ "${{ github.ref }}" == "refs/heads/master" ]]; then
             echo "DEPLOY_PATH=/volume1/web/mystictattoo" >> $GITHUB_ENV
+            echo "DEPLOY_URL=http://10.10.10.205/mystictattoo/" >> $GITHUB_ENV
           elif [[ "${{ github.ref }}" == "refs/heads/staging" ]]; then
             echo "DEPLOY_PATH=/volume1/web/mystictattoo-test" >> $GITHUB_ENV
+            echo "DEPLOY_URL=http://10.10.10.205/mystictattoo-test/" >> $GITHUB_ENV
           else
             echo "DEPLOY_PATH=/volume1/web/mystictattoo-dev" >> $GITHUB_ENV
+            echo "DEPLOY_URL=http://10.10.10.205/mystictattoo-dev/" >> $GITHUB_ENV
           fi
 
-      - name: Nettoyer le dossier cible sur le NAS
-          uses: appleboy/ssh-action@master
-          with:
-            host: ${{ secrets.DEPLOY_HOST }}
-            username: ${{ secrets.DEPLOY_USER }}
-            key: ${{ secrets.DEPLOY_SSH_KEY }}
-            script: |
-              echo "🧹 Suppression des anciens fichiers sur le NAS dans ${{ env.DEPLOY_PATH }}"
-              rm -rf ${{ env.DEPLOY_PATH }}/*
+      - name: 🧹 Nettoyer le dossier distant
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          script: |
+            echo "🧨 Suppression de ${{ env.DEPLOY_PATH }}/*"
+            rm -rf ${{ env.DEPLOY_PATH }}/*
 
-      - name: Déployer via SCP
+      - name: 📤 Déploiement via SCP vers NAS
         uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.DEPLOY_HOST }}
@@ -66,3 +70,21 @@ jobs:
           source: "build/*"
           target: ${{ env.DEPLOY_PATH }}
           debug: true
+
+      - name: 🌐 Vérification HTTP du site déployé
+        run: |
+          echo "🔎 Test HTTP de ${{ env.DEPLOY_URL }}"
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" "${{ env.DEPLOY_URL }}")
+          if [ "$STATUS" -ne 200 ]; then
+            echo "❌ Le site n'a pas répondu avec un code 200 ($STATUS)"
+            exit 1
+          else
+            echo "✅ Site actif : HTTP $STATUS"
+          fi
+
+      - name: 📝 Résumé du déploiement
+        run: |
+          echo "### ✅ Déploiement réussi" >> $GITHUB_STEP_SUMMARY
+          echo "- Branche : \`${{ github.ref_name }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- URL : ${{ env.DEPLOY_URL }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Date : $(date)" >> $GITHUB_STEP_SUMMARY
