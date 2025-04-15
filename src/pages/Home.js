@@ -1,32 +1,33 @@
 import React, { useEffect, useState } from 'react';
 import Layout from '../layouts/Layout';
 import styles from './Home.module.scss';
+import api from '../lib/api';
 
 const Home = () => {
     const [backgroundUrl, setBackgroundUrl] = useState('');
     const [news, setNews] = useState([]);
 
-    // ✅ Image dynamique toutes les 5s
-    const fetchRandomImage = () => {
-        fetch('http://localhost:4000/api/media/random-image')
-            .then(res => res.json())
-            .then(data => {
-                setBackgroundUrl(`http://localhost:4000${data.url}`);
-            })
-            .catch(err => console.error('Erreur chargement image d’accueil', err));
+    // ✅ Récupérer une image aléatoire toutes les 5 secondes
+    const fetchRandomImage = async () => {
+        try {
+            const res = await api.get('/media/random-image');
+            setBackgroundUrl(`${process.env.REACT_APP_API_URL.replace('/api', '')}${res.data.url}`);
+        } catch (err) {
+            console.error('Erreur chargement image d’accueil', err);
+        }
     };
 
+    // 🔁 Lancer l'image aléatoire
     useEffect(() => {
         fetchRandomImage();
         const interval = setInterval(fetchRandomImage, 5000);
         return () => clearInterval(interval);
     }, []);
 
-    // ✅ Charger actualités depuis API
+    // ✅ Charger actualités
     useEffect(() => {
-        fetch('http://localhost:4000/api/news')
-            .then(res => res.json())
-            .then(setNews)
+        api.get('/news')
+            .then(res => setNews(res.data))
             .catch(err => console.error('Erreur chargement actualités', err));
     }, []);
 
@@ -54,7 +55,7 @@ const Home = () => {
                                         <strong>{item.title}</strong>
                                         {item.image && (
                                             <img
-                                                src={`http://localhost:4000${item.image}`}
+                                                src={`${process.env.REACT_APP_API_URL.replace('/api', '')}${item.image}`}
                                                 alt={item.title}
                                             />
                                         )}

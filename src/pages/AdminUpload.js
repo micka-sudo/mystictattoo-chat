@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { ChevronDown, ChevronRight, Trash2 } from 'lucide-react';
 import Layout from '../layouts/Layout';
 import styles from './AdminUpload.module.scss';
+import api from '../lib/api';
 
 const categories = ['oldschool', 'realiste', 'tribal', 'japonais', 'graphique', 'minimaliste'];
 
@@ -16,22 +17,14 @@ const AdminUpload = () => {
     const [media, setMedia] = useState([]);
     const [news, setNews] = useState([]);
     const [newItem, setNewItem] = useState({ title: '', content: '' });
-    const [editId, setEditId] = useState(null);
-    const [editItem, setEditItem] = useState({ title: '', content: '' });
-
     const [imageFile, setImageFile] = useState(null);
     const [imagePreview, setImagePreview] = useState('');
     const [selectedMedia, setSelectedMedia] = useState([]);
     const [visibleCategories, setVisibleCategories] = useState(() => Object.fromEntries(categories.map(c => [c, false])));
 
     useEffect(() => {
-        fetch('http://localhost:4000/api/media')
-            .then((res) => res.json())
-            .then((data) => setMedia(data));
-
-        fetch('http://localhost:4000/api/news')
-            .then(res => res.json())
-            .then(setNews);
+        api.get('/media').then(res => setMedia(res.data));
+        api.get('/news').then(res => setNews(res.data));
     }, []);
 
     const handleFileChange = (e) => {
@@ -44,10 +37,7 @@ const AdminUpload = () => {
 
     const handleUpload = async (e) => {
         e.preventDefault();
-        if (!file || !category) {
-            alert('Fichier et catégorie requis.');
-            return;
-        }
+        if (!file || !category) return alert('Fichier et catégorie requis.');
 
         const formData = new FormData();
         formData.append('file', file);
@@ -57,22 +47,13 @@ const AdminUpload = () => {
         setStatus('⏳ Upload en cours...');
 
         try {
-            const res = await fetch('http://localhost:4000/api/upload', {
-                method: 'POST',
-                body: formData,
-            });
-
-            const result = await res.json();
-            if (res.ok) {
-                setStatus(`✅ Upload réussi : ${result.filename}`);
-                setFile(null);
-                setPreview('');
-                setCategory('');
-                setTags('');
-                setMedia([...media, result]);
-            } else {
-                setStatus(`❌ Échec : ${result.error || 'Erreur inconnue'}`);
-            }
+            const res = await api.post('/upload', formData);
+            setStatus(`✅ Upload réussi : ${res.data.filename}`);
+            setFile(null);
+            setPreview('');
+            setCategory('');
+            setTags('');
+            setMedia([...media, res.data]);
         } catch (err) {
             console.error(err);
             setStatus('❌ Erreur lors de l’upload');
@@ -82,37 +63,39 @@ const AdminUpload = () => {
     const handleNewsSubmit = async (e) => {
         e.preventDefault();
         let imageUrl = '';
+
         if (imageFile) {
             const formData = new FormData();
             formData.append('file', imageFile);
             formData.append('category', 'actus');
             formData.append('tags', '');
 
-            const res = await fetch('http://localhost:4000/api/upload', {
-                method: 'POST',
-                body: formData,
+            const res = await api.post('/upload', formData);
+            imageUrl = `/uploads/${res.data.filename}`;
+        }
+
+        const res = await api.post('/news', { ...newItem, image: imageUrl });
+        setNews([...news, res.data]);
+        setNewItem({ title: '', content: '' });
+        setImageFile(null);
+        setImagePreview('');
+    };
+
+    const deleteSelectedMedia = async () => {
+        if (!window.confirm('Supprimer les fichiers sélectionnés ?')) return;
+
+        const deletedFiles = [];
+
+        for (const file of selectedMedia) {
+            const item = media.find(m => m.file === file);
+            const res = await api.delete('/media', {
+                data: { file: item.file, category: item.category }
             });
-            const result = await res.json();
-            if (res.ok) {
-                imageUrl = `/uploads/${result.filename}`;
-            } else {
-                return alert('Erreur upload image actu');
-            }
+            if (res.status === 200) deletedFiles.push(file);
         }
 
-        const res = await fetch('http://localhost:4000/api/news', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ ...newItem, image: imageUrl })
-        });
-
-        if (res.ok) {
-            const added = await res.json();
-            setNews([...news, added]);
-            setNewItem({ title: '', content: '' });
-            setImageFile(null);
-            setImagePreview('');
-        }
+        setMedia(prev => prev.filter(m => !deletedFiles.includes(m.file)));
+        setSelectedMedia([]);
     };
 
     const mediaByCategory = categories.reduce((acc, cat) => {
@@ -131,23 +114,9 @@ const AdminUpload = () => {
     };
 
     const toggleMediaSelection = (file) => {
-        setSelectedMedia(prev => prev.includes(file) ? prev.filter(f => f !== file) : [...prev, file]);
-    };
-
-    const deleteSelectedMedia = async () => {
-        if (!window.confirm('Supprimer les fichiers sélectionnés ?')) return;
-        const deletedFiles = [];
-        for (const file of selectedMedia) {
-            const item = media.find(m => m.file === file);
-            const res = await fetch('http://localhost:4000/api/media', {
-                method: 'DELETE',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ file: item.file, category: item.category })
-            });
-            if (res.ok) deletedFiles.push(file);
-        }
-        setMedia(prev => prev.filter(m => !deletedFiles.includes(m.file)));
-        setSelectedMedia([]);
+        setSelectedMedia(prev => prev.includes(file)
+            ? prev.filter(f => f !== file)
+            : [...prev, file]);
     };
 
     const toggleAllCategories = () => {
@@ -197,7 +166,7 @@ const AdminUpload = () => {
                         {news.map(item => (
                             <li key={item.id} className={styles.newsItem}>
                                 <strong>{item.title}</strong>
-                                {item.image && <img src={`http://localhost:4000${item.image}`} alt={item.title} />}
+                                {item.image && <img src={`${process.env.REACT_APP_API_URL.replace('/api', '')}${item.image}`} alt={item.title} />}
                                 <p>{item.content}</p>
                             </li>
                         ))}
@@ -224,15 +193,11 @@ const AdminUpload = () => {
                                         onClick={(e) => e.stopPropagation()}
                                     /> Sélectionner tout
                                 </label>
-                                <button
-                                    className={styles.trashBtn}
-                                    title={`Supprimer tous les médias de ${cat}`}
-                                    onClick={() => {
-                                        const filesToDelete = mediaByCategory[cat].map(m => m.file);
-                                        setSelectedMedia(filesToDelete);
-                                        deleteSelectedMedia();
-                                    }}
-                                >
+                                <button className={styles.trashBtn} onClick={() => {
+                                    const filesToDelete = mediaByCategory[cat].map(m => m.file);
+                                    setSelectedMedia(filesToDelete);
+                                    deleteSelectedMedia();
+                                }}>
                                     <Trash2 size={16} />
                                 </button>
                             </div>
@@ -251,9 +216,9 @@ const AdminUpload = () => {
                                             onChange={() => toggleMediaSelection(item.file)}
                                         />
                                         {item.type === 'image' ? (
-                                            <img src={`http://localhost:4000${item.url}`} alt={item.file} />
+                                            <img src={`${process.env.REACT_APP_API_URL.replace('/api', '')}${item.url}`} alt={item.file} />
                                         ) : (
-                                            <video src={`http://localhost:4000${item.url}`} controls />
+                                            <video src={`${process.env.REACT_APP_API_URL.replace('/api', '')}${item.url}`} controls />
                                         )}
                                     </div>
                                 ))}

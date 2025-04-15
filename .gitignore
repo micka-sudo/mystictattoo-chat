@@ -14,6 +14,7 @@ Thumbs.db
 
 # 👉 Environnement
 .env
+.env.local
 
 # 👉 Uploads (backend)
 server/uploads/
