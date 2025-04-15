@@ -1,0 +1,48 @@
+.adminReservations {
+  padding: 2rem;
+
+  h2 {
+    margin-bottom: 1.5rem;
+  }
+
+  .list {
+    list-style: none;
+    padding: 0;
+  }
+
+  .item {
+    padding: 1rem;
+    border: 1px solid #ccc;
+    margin-bottom: 1rem;
+    border-radius: 6px;
+    background: #fefefe;
+
+    em {
+      font-style: italic;
+      color: #875c94;
+    }
+
+    .actions {
+      margin-top: 0.5rem;
+      display: flex;
+      gap: 1rem;
+
+      button {
+        background: #333;
+        color: white;
+        padding: 0.4rem 1rem;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+
+        &:first-child {
+          background-color: #2ecc71;
+        }
+
+        &:last-child {
+          background-color: #e74c3c;
+        }
+      }
+    }
+  }
+}

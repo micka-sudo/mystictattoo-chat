@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import styles from './Header.module.scss';
+import api from '../lib/api';
 
 const Header = () => {
     const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -13,19 +14,23 @@ const Header = () => {
 
     const isAdminLoggedIn = Boolean(localStorage.getItem('admin_token'));
 
+    // ✅ Charger les styles de galerie depuis API
     useEffect(() => {
-        fetch('http://localhost:4000/api/media/categories')
-            .then((res) => res.json())
-            .then((data) => setCategories(data))
-            .catch((err) => console.error('Erreur chargement catégories', err));
+        const fetchCategories = async () => {
+            try {
+                const res = await api.get('/media/categories');
+                setCategories(res.data);
+            } catch (err) {
+                console.error('Erreur chargement catégories', err);
+            }
+        };
+        fetchCategories();
     }, []);
 
+    // 🔁 Fermer dropdown si on clique à l’extérieur
     useEffect(() => {
         const handleClickOutside = (e) => {
-            if (
-                dropdownRef.current &&
-                !dropdownRef.current.contains(e.target)
-            ) {
+            if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
                 setDropdownOpen(false);
             }
         };
@@ -46,7 +51,7 @@ const Header = () => {
                     <span className={styles.header__brand}>Mystic Tattoo</span>
                 </Link>
 
-                <button className={styles.burgerBtn} onClick={() => setMobileMenuOpen((prev) => !prev)}>
+                <button className={styles.burgerBtn} onClick={() => setMobileMenuOpen(prev => !prev)}>
                     ☰
                 </button>
 

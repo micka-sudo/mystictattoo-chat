@@ -1,65 +1,82 @@
-// src/pages/Reservation.js
 import React, { useState } from 'react';
-import axios from 'axios';
+import Layout from '../layouts/Layout';
+import styles from './Reservation.module.scss';
+import api from '../lib/api';
 
-function Reservation() {
-    const [formData, setFormData] = useState({
-        nom: '',
+const Reservation = () => {
+    const [form, setForm] = useState({
+        name: '',
         email: '',
         date: '',
         message: ''
     });
 
-    const [responseMessage, setResponseMessage] = useState('');
+    const [status, setStatus] = useState('');
 
     const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
+        setForm({ ...form, [e.target.name]: e.target.value });
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setStatus('⏳ Envoi de la demande...');
 
         try {
-            // Remplacez l'URL par celle de votre backend
-            const res = await axios.post('http://localhost:5000/api/booking', formData);
-            setResponseMessage('Réservation envoyée avec succès !');
-            setFormData({
-                nom: '',
-                email: '',
-                date: '',
-                message: ''
-            });
-        } catch (error) {
-            setResponseMessage('Erreur lors de l’envoi de la réservation.');
-            console.error(error);
+            const res = await api.post('/reservations', form);
+            if (res.status === 201) {
+                setStatus('✅ Réservation envoyée avec succès !');
+                setForm({ name: '', email: '', date: '', message: '' });
+            } else {
+                setStatus('❌ Une erreur est survenue.');
+            }
+        } catch (err) {
+            console.error(err);
+            setStatus('❌ Erreur serveur lors de la réservation');
         }
     };
 
     return (
-        <div>
-            <h2>Réservation</h2>
-            <form onSubmit={handleSubmit}>
-                <div>
-                    <label>Nom :</label>
-                    <input type="text" name="nom" value={formData.nom} onChange={handleChange} required />
-                </div>
-                <div>
-                    <label>Email :</label>
-                    <input type="email" name="email" value={formData.email} onChange={handleChange} required />
-                </div>
-                <div>
-                    <label>Date souhaitée :</label>
-                    <input type="date" name="date" value={formData.date} onChange={handleChange} required />
-                </div>
-                <div>
-                    <label>Message :</label>
-                    <textarea name="message" value={formData.message} onChange={handleChange} />
-                </div>
-                <button type="submit">Envoyer</button>
-            </form>
-            {responseMessage && <p>{responseMessage}</p>}
-        </div>
+        <Layout>
+            <div className={styles.reservation}>
+                <h2>📅 Réserver un créneau</h2>
+                <form onSubmit={handleSubmit} className={styles.form}>
+                    <input
+                        type="text"
+                        name="name"
+                        placeholder="Votre nom"
+                        value={form.name}
+                        onChange={handleChange}
+                        required
+                    />
+                    <input
+                        type="email"
+                        name="email"
+                        placeholder="Votre email"
+                        value={form.email}
+                        onChange={handleChange}
+                        required
+                    />
+                    <input
+                        type="date"
+                        name="date"
+                        value={form.date}
+                        onChange={handleChange}
+                        required
+                    />
+                    <textarea
+                        name="message"
+                        placeholder="Votre message (optionnel)"
+                        value={form.message}
+                        onChange={handleChange}
+                        rows={4}
+                    />
+                    <button type="submit">Envoyer la demande</button>
+                </form>
+
+                {status && <p className={styles.status}>{status}</p>}
+            </div>
+        </Layout>
     );
-}
+};
 
 export default Reservation;
