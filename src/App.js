@@ -8,12 +8,14 @@ import AdminLogin from './pages/AdminLogin';
 import AdminDashboard from './pages/AdminDashboard';
 import AdminUpload from './pages/AdminUpload';
 import AdminHome from './pages/AdminHome';
+import AdminReservations from './pages/AdminReservations'; // ✅ AJOUT
 import RequireAuth from './components/RequireAuth';
 
 function App() {
     return (
         <Router>
             <Routes>
+                {/* Public */}
                 <Route path="/" element={<Home />} />
                 <Route path="/gallery" element={<Gallery />} />
                 <Route path="/reservation" element={<Reservation />} />
@@ -36,6 +38,14 @@ function App() {
                     element={
                         <RequireAuth>
                             <AdminDashboard />
+                        </RequireAuth>
+                    }
+                />
+                <Route
+                    path="/admin/reservations" // ✅ NOUVELLE ROUTE
+                    element={
+                        <RequireAuth>
+                            <AdminReservations />
                         </RequireAuth>
                     }
                 />

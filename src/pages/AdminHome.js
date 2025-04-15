@@ -1,23 +1,30 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import Layout from '../layouts/Layout'; // ✅ Layout global
-import styles from './AdminHome.module.scss'; // ✅ SCSS module
+import Layout from '../layouts/Layout';
+import styles from './AdminHome.module.scss';
+import api from '../lib/api'; // Appels backend centralisés via axios
 
 const AdminHome = () => {
     const [news, setNews] = useState([]);
 
     useEffect(() => {
-        fetch('http://localhost:4000/api/news')
-            .then(res => res.json())
-            .then(setNews)
-            .catch(err => console.error('Erreur chargement actus admin', err));
+        const fetchNews = async () => {
+            try {
+                const res = await api.get('/news');
+                setNews(res.data);
+            } catch (error) {
+                console.error('Erreur chargement actus admin', error);
+            }
+        };
+
+        fetchNews();
     }, []);
 
     return (
         <Layout>
             <div className={styles.adminHome}>
                 <h2>Espace Administrateur</h2>
-                <p>Bienvenue dans l'interface d'administration de Mystic Tattoo.</p>
+                <p>Bienvenue dans l&apos;interface d&apos;administration de Mystic Tattoo.</p>
 
                 <div className={styles.adminHome__links}>
                     <Link to="/admin/login" className={styles.adminBtn}>Connexion</Link>
@@ -34,7 +41,7 @@ const AdminHome = () => {
                                 <strong>{item.title}</strong>
                                 {item.image && (
                                     <img
-                                        src={`http://localhost:4000${item.image}`}
+                                        src={`${process.env.REACT_APP_API_URL.replace('/api', '')}${item.image}`}
                                         alt="illustration actu"
                                         width="150"
                                     />

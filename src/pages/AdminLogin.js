@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from '../layouts/Layout';
 import styles from './AdminLogin.module.scss';
+import api from '../lib/api';
 
 const AdminLogin = () => {
     const [password, setPassword] = useState('');
@@ -10,26 +11,21 @@ const AdminLogin = () => {
 
     const handleLogin = async (e) => {
         e.preventDefault();
+        setStatus('⏳ Connexion en cours...');
 
         try {
-            const res = await fetch('http://localhost:4000/api/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ password }),
-            });
+            const res = await api.post('/login', { password });
 
-            const data = await res.json();
-
-            if (res.ok) {
-                localStorage.setItem('admin_token', data.token);
+            if (res.status === 200 && res.data.token) {
+                localStorage.setItem('admin_token', res.data.token);
                 setStatus('✅ Connexion réussie');
                 navigate('/admin');
             } else {
                 setStatus('❌ Mot de passe incorrect');
             }
         } catch (err) {
-            setStatus('❌ Erreur de connexion');
-            console.error(err);
+            setStatus('❌ Erreur serveur');
+            console.error('Erreur de connexion :', err);
         }
     };
 
@@ -43,6 +39,7 @@ const AdminLogin = () => {
                         placeholder="Mot de passe admin"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
+                        required
                     />
                     <button type="submit">Se connecter</button>
                 </form>
