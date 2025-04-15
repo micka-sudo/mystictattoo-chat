@@ -1,0 +1,42 @@
+name: Déploiement continu NAS
+
+on:
+  push:
+    branches:
+      - master
+      - staging
+      - releasecss002
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout du code
+        uses: actions/checkout@v3
+
+      - name: Installer les dépendances
+        run: npm install
+
+      - name: Build du projet
+        run: npm run build
+
+      - name: Choisir le dossier de destination
+        id: set-path
+        run: |
+          if [[ "${{ github.ref }}" == "refs/heads/master" ]]; then
+            echo "DEPLOY_PATH=/volume1/web/mystictattoo" >> $GITHUB_ENV
+          elif [[ "${{ github.ref }}" == "refs/heads/staging" ]]; then
+            echo "DEPLOY_PATH=/volume1/web/mystictattoo-test" >> $GITHUB_ENV
+          else
+            echo "DEPLOY_PATH=/volume1/web/mystictattoo-dev" >> $GITHUB_ENV
+          fi
+
+      - name: Déployer via SCP
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          source: "dist/*"
+          target: ${{ env.DEPLOY_PATH }}
