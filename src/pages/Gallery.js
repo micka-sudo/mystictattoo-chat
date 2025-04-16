@@ -4,78 +4,67 @@ import Layout from "../layouts/Layout";
 import styles from "./Gallery.module.scss";
 
 const Gallery = () => {
-    const [media, setMedia] = useState([]);
-    const [filter, setFilter] = useState("all");
+    const [mediaByCategory, setMediaByCategory] = useState({});
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const fetchMedia = async () => {
+        const fetchAll = async () => {
             try {
-                const res = await api.get("/media");
-                setMedia(res.data);
+                setLoading(true);
+                const res = await api.get("/media/categories");
+                const categories = res.data;
+
+                const allMedia = {};
+                for (const cat of categories) {
+                    const r = await api.get(`/media?style=${cat}`);
+                    allMedia[cat] = r.data;
+                }
+
+                setMediaByCategory(allMedia);
             } catch (err) {
-                console.error("Erreur chargement médias", err);
+                console.error("Erreur chargement galerie", err);
+            } finally {
+                setLoading(false);
             }
         };
 
-        fetchMedia();
+        fetchAll();
     }, []);
 
-    const categories = Array.from(
-        new Set(media.map((m) => m.category || "inconnu"))
-    );
-
-    const filteredMedia =
-        filter === "all"
-            ? media
-            : media.filter((item) => item.category === filter);
+    const baseUrl = process.env.REACT_APP_API_URL.replace("/api", "");
 
     return (
         <Layout>
             <div className={styles.gallery}>
                 <h2>🎨 Galerie</h2>
 
-                <div className={styles.filters}>
-                    <button
-                        onClick={() => setFilter("all")}
-                        className={filter === "all" ? styles.active : ""}
-                    >
-                        Tous
-                    </button>
-                    {categories.map((cat) => (
-                        <button
-                            key={cat}
-                            onClick={() => setFilter(cat)}
-                            className={filter === cat ? styles.active : ""}
-                        >
-                            {cat}
-                        </button>
-                    ))}
-                </div>
-
-                <div className={styles.grid}>
-                    {filteredMedia.map((item, idx) => (
-                        <div key={idx} className={styles.mediaItem}>
-                            {item.type === "image" ? (
-                                <img
-                                    src={`${process.env.REACT_APP_API_URL.replace(
-                                        "/api",
-                                        ""
-                                    )}${item.url}`}
-                                    alt={item.file}
-                                    loading="lazy"
-                                />
-                            ) : (
-                                <video
-                                    src={`${process.env.REACT_APP_API_URL.replace(
-                                        "/api",
-                                        ""
-                                    )}${item.url}`}
-                                    controls
-                                />
-                            )}
-                        </div>
-                    ))}
-                </div>
+                {loading ? (
+                    <p>Chargement...</p>
+                ) : (
+                    Object.entries(mediaByCategory).map(([category, items]) => (
+                        <section key={category} className={styles.categorySection}>
+                            <h3 className={styles.categoryTitle}>📁 {category}</h3>
+                            <div className={styles.grid}>
+                                {items.map((item, idx) => (
+                                    <div key={idx} className={styles.mediaItem}>
+                                        {item.type === "image" ? (
+                                            <img
+                                                src={`${baseUrl}${item.url}`}
+                                                alt={item.file}
+                                                loading="lazy"
+                                            />
+                                        ) : (
+                                            <video
+                                                src={`${baseUrl}${item.url}`}
+                                                controls
+                                            />
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
+                        </section>
+                    ))
+                )}
             </div>
         </Layout>
     );
