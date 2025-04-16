@@ -15,9 +15,15 @@ const Footer = () => {
     return (
         <footer className={`${styles.footer} ${scrolled ? styles.footerScrolled : ''}`}>
             <div className={styles.footer__container}>
-                {/* 📍 Adresse */}
+                {/* 📍 Adresse avec lien Google Maps */}
                 <p className={styles.footer__address}>
-                    📍 19 Boulevard Jean Jaurès, 54000 Nancy
+                    <a
+                        href="https://www.google.com/maps?q=19+Boulevard+Jean+Jaurès,+54000+Nancy"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        📍 19 Boulevard Jean Jaurès, 54000 Nancy
+                    </a>
                 </p>
 
                 {/* 📧 Newsletter */}
