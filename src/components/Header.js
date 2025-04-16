@@ -1,32 +1,18 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import styles from './Header.module.scss';
-import api from '../lib/api';
+import useCategories from '../hooks/useCategories';
 
 const Header = () => {
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-    const [categories, setCategories] = useState([]);
     const dropdownRef = useRef(null);
     const dropdownMenuRef = useRef(null);
     const location = useLocation();
     const navigate = useNavigate();
 
+    const { categories = [] } = useCategories(); // ✅ destructure correctement
     const isAdminLoggedIn = Boolean(localStorage.getItem('admin_token'));
-
-    // ✅ Charger les catégories de médias (sans "actus")
-    useEffect(() => {
-        const fetchCategories = async () => {
-            try {
-                const res = await api.get('/media/categories');
-                const filtered = res.data.filter(cat => cat !== 'actus'); // 🔥 exclude
-                setCategories(filtered);
-            } catch (err) {
-                console.error('Erreur chargement catégories', err);
-            }
-        };
-        fetchCategories();
-    }, []);
 
     // 🔁 Fermer dropdown si on clique à l’extérieur
     useEffect(() => {
@@ -102,7 +88,7 @@ const Header = () => {
 
                     {isAdminLoggedIn && (
                         <>
-                            <Link className={styles.nav__btn} to="/admin/home" onClick={() => setMobileMenuOpen(false)}>
+                            <Link className={styles.nav__btn} to="/admin" onClick={() => setMobileMenuOpen(false)}>
                                 🛠 Administration
                             </Link>
                             <button className={styles.nav__btn} onClick={handleLogout}>
