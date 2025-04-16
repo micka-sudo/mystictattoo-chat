@@ -29,7 +29,7 @@
   }
 
   &__logo {
-    height: 60px;
+    height: 80px;
     object-fit: contain;
   }
 
@@ -37,6 +37,7 @@
     font-size: 1.4rem;
     color: var(--color-light);
     text-shadow: 0 0 6px var(--color-accent);
+    font-size: 2rem;
   }
 
   &__nav {
