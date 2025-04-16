@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { ChevronDown, ChevronRight, Trash2 } from 'lucide-react';
 import Layout from '../layouts/Layout';
 import styles from './AdminUpload.module.scss';
-import api from '../lib/api';
+import api, { apiBase } from '../lib/api';
 
 const categories = ['oldschool', 'realiste', 'tribal', 'japonais', 'graphique', 'minimaliste'];
 
@@ -20,7 +20,9 @@ const AdminUpload = () => {
     const [imageFile, setImageFile] = useState(null);
     const [imagePreview, setImagePreview] = useState('');
     const [selectedMedia, setSelectedMedia] = useState([]);
-    const [visibleCategories, setVisibleCategories] = useState(() => Object.fromEntries(categories.map(c => [c, false])));
+    const [visibleCategories, setVisibleCategories] = useState(() =>
+        Object.fromEntries(categories.map(c => [c, false]))
+    );
 
     useEffect(() => {
         api.get('/media').then(res => setMedia(res.data));
@@ -114,9 +116,9 @@ const AdminUpload = () => {
     };
 
     const toggleMediaSelection = (file) => {
-        setSelectedMedia(prev => prev.includes(file)
-            ? prev.filter(f => f !== file)
-            : [...prev, file]);
+        setSelectedMedia(prev =>
+            prev.includes(file) ? prev.filter(f => f !== file) : [...prev, file]
+        );
     };
 
     const toggleAllCategories = () => {
@@ -149,8 +151,18 @@ const AdminUpload = () => {
                 <div className={styles.newsSection}>
                     <h2>📰 Actualités</h2>
                     <form onSubmit={handleNewsSubmit}>
-                        <input placeholder="Titre" value={newItem.title} onChange={(e) => setNewItem({ ...newItem, title: e.target.value })} required />
-                        <textarea placeholder="Contenu" value={newItem.content} onChange={(e) => setNewItem({ ...newItem, content: e.target.value })} required />
+                        <input
+                            placeholder="Titre"
+                            value={newItem.title}
+                            onChange={(e) => setNewItem({ ...newItem, title: e.target.value })}
+                            required
+                        />
+                        <textarea
+                            placeholder="Contenu"
+                            value={newItem.content}
+                            onChange={(e) => setNewItem({ ...newItem, content: e.target.value })}
+                            required
+                        />
                         <input type="file" accept="image/*" onChange={(e) => {
                             const file = e.target.files[0];
                             if (file) {
@@ -166,7 +178,7 @@ const AdminUpload = () => {
                         {news.map(item => (
                             <li key={item.id} className={styles.newsItem}>
                                 <strong>{item.title}</strong>
-                                {item.image && <img src={`${process.env.REACT_APP_API_URL.replace('/api', '')}${item.image}`} alt={item.title} />}
+                                {item.image && <img src={`${apiBase}${item.image}`} alt={item.title} />}
                                 <p>{item.content}</p>
                             </li>
                         ))}
@@ -216,9 +228,9 @@ const AdminUpload = () => {
                                             onChange={() => toggleMediaSelection(item.file)}
                                         />
                                         {item.type === 'image' ? (
-                                            <img src={`${process.env.REACT_APP_API_URL.replace('/api', '')}${item.url}`} alt={item.file} />
+                                            <img src={`${apiBase}${item.url}`} alt={item.file} />
                                         ) : (
-                                            <video src={`${process.env.REACT_APP_API_URL.replace('/api', '')}${item.url}`} controls />
+                                            <video src={`${apiBase}${item.url}`} controls />
                                         )}
                                     </div>
                                 ))}
@@ -229,7 +241,9 @@ const AdminUpload = () => {
 
                 {selectedMedia.length > 0 && (
                     <div style={{ textAlign: 'center', marginTop: '20px' }}>
-                        <button onClick={deleteSelectedMedia} className={styles.deleteButton}>🗑 Supprimer les fichiers sélectionnés</button>
+                        <button onClick={deleteSelectedMedia} className={styles.deleteButton}>
+                            🗑 Supprimer les fichiers sélectionnés
+                        </button>
                     </div>
                 )}
 

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import api from "../lib/api";
+import api, { apiBase } from "../lib/api";
 import Layout from "../layouts/Layout";
 import styles from "./Gallery.module.scss";
 
@@ -14,7 +14,6 @@ const Gallery = () => {
     const [loading, setLoading] = useState(true);
 
     const [lightboxIndex, setLightboxIndex] = useState(null);
-    const baseUrl = process.env.REACT_APP_API_URL.replace("/api", "");
     const galleryItems = style ? media : Object.values(mediaByCategory).flat();
 
     useEffect(() => {
@@ -51,21 +50,27 @@ const Gallery = () => {
 
     const openLightbox = (index) => setLightboxIndex(index);
     const closeLightbox = () => setLightboxIndex(null);
-    const prev = () => setLightboxIndex(prev => prev === 0 ? galleryItems.length - 1 : prev - 1);
-    const next = () => setLightboxIndex(prev => prev === galleryItems.length - 1 ? 0 : prev + 1);
+    const prev = () =>
+        setLightboxIndex((prev) =>
+            prev === 0 ? galleryItems.length - 1 : prev - 1
+        );
+    const next = () =>
+        setLightboxIndex((prev) =>
+            prev === galleryItems.length - 1 ? 0 : prev + 1
+        );
 
     const renderItem = (item, index) => (
         <div key={index} className={styles["gallery__item"]}>
             {item.type === "image" ? (
                 <img
-                    src={`${baseUrl}${item.url}`}
+                    src={`${apiBase}${item.url}`}
                     alt={item.file}
                     loading="lazy"
                     onClick={() => openLightbox(index)}
                 />
             ) : (
                 <video
-                    src={`${baseUrl}${item.url}`}
+                    src={`${apiBase}${item.url}`}
                     controls
                     onClick={() => openLightbox(index)}
                 />
@@ -127,20 +132,33 @@ const Gallery = () => {
                 {lightboxIndex !== null && (
                     <div className={styles["gallery__overlay"]} onClick={closeLightbox}>
                         <button
-                            onClick={(e) => { e.stopPropagation(); prev(); }}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                prev();
+                            }}
                             className={styles.leftArrow}
                         >
                             &#10094;
                         </button>
                         <div onClick={(e) => e.stopPropagation()}>
                             {galleryItems[lightboxIndex].type === "image" ? (
-                                <img src={`${baseUrl}${galleryItems[lightboxIndex].url}`} alt="lightbox" />
+                                <img
+                                    src={`${apiBase}${galleryItems[lightboxIndex].url}`}
+                                    alt="lightbox"
+                                />
                             ) : (
-                                <video src={`${baseUrl}${galleryItems[lightboxIndex].url}`} autoPlay controls />
+                                <video
+                                    src={`${apiBase}${galleryItems[lightboxIndex].url}`}
+                                    autoPlay
+                                    controls
+                                />
                             )}
                         </div>
                         <button
-                            onClick={(e) => { e.stopPropagation(); next(); }}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                next();
+                            }}
                             className={styles.rightArrow}
                         >
                             &#10095;

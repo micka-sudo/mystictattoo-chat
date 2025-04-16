@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Layout from '../layouts/Layout';
 import styles from './AdminDashboard.module.scss';
-import api from '../lib/api';
+import api, { apiBase } from '../lib/api';
 
 const AdminDashboard = () => {
     const [media, setMedia] = useState([]);
@@ -104,9 +104,9 @@ const AdminDashboard = () => {
                     {filteredMedia.map((item, idx) => (
                         <div key={idx} className={styles.mediaItem}>
                             {item.type === 'image' ? (
-                                <img src={`${process.env.REACT_APP_API_URL.replace('/api', '')}${item.url}`} alt={item.file} />
+                                <img src={`${apiBase}${item.url}`} alt={item.file} />
                             ) : (
-                                <video src={`${process.env.REACT_APP_API_URL.replace('/api', '')}${item.url}`} controls />
+                                <video src={`${apiBase}${item.url}`} controls />
                             )}
 
                             <div className={styles.mediaInfo}>
@@ -117,9 +117,9 @@ const AdminDashboard = () => {
                             <div className={styles.tagList}>
                                 {(tags[item.file] || []).map((tag, i) => (
                                     <span key={i} className={styles.tag}>
-                    {tag}
+                                        {tag}
                                         <button onClick={() => removeTag(item.file, tag)}>×</button>
-                  </span>
+                                    </span>
                                 ))}
                             </div>
 

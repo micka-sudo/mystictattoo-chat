@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Layout from '../layouts/Layout';
 import styles from './AdminHome.module.scss';
-import api from '../lib/api'; // Appels backend centralisés via axios
+import api, { apiBase } from '../lib/api'; // Appels backend centralisés via axios
 
 const AdminHome = () => {
     const [news, setNews] = useState([]);
@@ -41,7 +41,7 @@ const AdminHome = () => {
                                 <strong>{item.title}</strong>
                                 {item.image && (
                                     <img
-                                        src={`${process.env.REACT_APP_API_URL.replace('/api', '')}${item.image}`}
+                                        src={`${apiBase}${item.image}`}
                                         alt="illustration actu"
                                         width="150"
                                     />
