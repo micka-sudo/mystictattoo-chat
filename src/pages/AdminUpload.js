@@ -148,7 +148,7 @@ const AdminUpload = () => {
     return (
         <Layout>
             <div className={styles.adminUpload}>
-                <h2>📤 Ajouter un média</h2>
+                <h2>Ajouter un média</h2>
                 <button className={styles.adminBtn} onClick={() => setShowMediaForm(!showMediaForm)}>
                     {showMediaForm ? 'Fermer' : 'Ajouter un média'}
                 </button>
@@ -179,7 +179,7 @@ const AdminUpload = () => {
                 {preview && <div className={styles.preview}><img src={preview} alt="preview" /></div>}
                 <p className={styles.status}>{status}</p>
 
-                <h2>📰 Ajouter une actualité</h2>
+                <h2>Ajouter une actualité</h2>
                 <button className={styles.adminBtn} onClick={() => setShowNewsForm(!showNewsForm)}>
                     {showNewsForm ? 'Fermer' : 'Ajouter une actu'}
                 </button>
@@ -203,7 +203,7 @@ const AdminUpload = () => {
                     </form>
                 )}
 
-                <h2>🖼 Médias enregistrés</h2>
+                <h2>Médias enregistrés</h2>
                 {categories.map((cat) => (
                     <div key={cat} className={styles.mediaCategory}>
                         <h3 onClick={() => toggleCategory(cat)} style={{ cursor: 'pointer' }}>
