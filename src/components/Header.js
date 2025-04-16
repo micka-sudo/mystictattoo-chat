@@ -14,12 +14,13 @@ const Header = () => {
 
     const isAdminLoggedIn = Boolean(localStorage.getItem('admin_token'));
 
-    // ✅ Charger les styles de galerie depuis API
+    // ✅ Charger les catégories de médias (sans "actus")
     useEffect(() => {
         const fetchCategories = async () => {
             try {
                 const res = await api.get('/media/categories');
-                setCategories(res.data);
+                const filtered = res.data.filter(cat => cat !== 'actus'); // 🔥 exclude
+                setCategories(filtered);
             } catch (err) {
                 console.error('Erreur chargement catégories', err);
             }

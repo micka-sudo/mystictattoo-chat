@@ -23,7 +23,7 @@ const AdminReservations = () => {
         try {
             const res = await api.put(`/reservations/${id}`, { status });
             if (res.status === 200) {
-                fetchData(); // Recharge les données
+                fetchData(); // Recharge les données après mise à jour
             }
         } catch (err) {
             console.error('Erreur mise à jour statut', err);

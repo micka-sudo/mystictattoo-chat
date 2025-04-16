@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import api from "../lib/api";
+import api, { apiBase } from "../lib/api";
 import Layout from "../layouts/Layout";
 import styles from "./Gallery.module.scss";
 
@@ -12,17 +12,21 @@ const Gallery = () => {
     const [mediaByCategory, setMediaByCategory] = useState({});
     const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(true);
-
     const [lightboxIndex, setLightboxIndex] = useState(null);
-    const baseUrl = process.env.REACT_APP_API_URL.replace("/api", "");
+
     const galleryItems = style ? media : Object.values(mediaByCategory).flat();
 
+    // 🔁 Charger les catégories en excluant "actus"
     useEffect(() => {
         api.get("/media/categories")
-            .then((res) => setCategories(res.data))
+            .then((res) => {
+                const filtered = res.data.filter(cat => cat !== 'actus');
+                setCategories(filtered);
+            })
             .catch((err) => console.error("Erreur chargement catégories", err));
     }, []);
 
+    // 🔁 Charger les médias par style ou par catégorie
     useEffect(() => {
         const fetchMedia = async () => {
             try {
@@ -33,8 +37,8 @@ const Gallery = () => {
                 } else {
                     const allMedia = {};
                     const res = await api.get("/media/categories");
-                    const categories = res.data;
-                    for (const cat of categories) {
+                    const filteredCategories = res.data.filter(cat => cat !== 'actus');
+                    for (const cat of filteredCategories) {
                         const r = await api.get(`/media?style=${cat}`);
                         allMedia[cat] = r.data;
                     }
@@ -51,21 +55,21 @@ const Gallery = () => {
 
     const openLightbox = (index) => setLightboxIndex(index);
     const closeLightbox = () => setLightboxIndex(null);
-    const prev = () => setLightboxIndex(prev => prev === 0 ? galleryItems.length - 1 : prev - 1);
-    const next = () => setLightboxIndex(prev => prev === galleryItems.length - 1 ? 0 : prev + 1);
+    const prev = () => setLightboxIndex((prev) => (prev === 0 ? galleryItems.length - 1 : prev - 1));
+    const next = () => setLightboxIndex((prev) => (prev === galleryItems.length - 1 ? 0 : prev + 1));
 
     const renderItem = (item, index) => (
         <div key={index} className={styles["gallery__item"]}>
             {item.type === "image" ? (
                 <img
-                    src={`${baseUrl}${item.url}`}
+                    src={`${apiBase}${item.url}`}
                     alt={item.file}
                     loading="lazy"
                     onClick={() => openLightbox(index)}
                 />
             ) : (
                 <video
-                    src={`${baseUrl}${item.url}`}
+                    src={`${apiBase}${item.url}`}
                     controls
                     onClick={() => openLightbox(index)}
                 />
@@ -88,18 +92,15 @@ const Gallery = () => {
                         >
                             🎨 Tous
                         </button>
-                        {categories.map((cat) => {
-                            const label = cat.charAt(0).toUpperCase() + cat.slice(1);
-                            return (
-                                <button
-                                    key={cat}
-                                    className={`${styles["gallery__categoryBtn"]} ${style === cat ? styles.active : ""}`}
-                                    onClick={() => setSearchParams({ style: cat })}
-                                >
-                                    {label}
-                                </button>
-                            );
-                        })}
+                        {categories.map((cat) => (
+                            <button
+                                key={cat}
+                                className={`${styles["gallery__categoryBtn"]} ${style === cat ? styles.active : ""}`}
+                                onClick={() => setSearchParams({ style: cat })}
+                            >
+                                {cat.charAt(0).toUpperCase() + cat.slice(1)}
+                            </button>
+                        ))}
                     </div>
                 </div>
 
@@ -134,9 +135,9 @@ const Gallery = () => {
                         </button>
                         <div onClick={(e) => e.stopPropagation()}>
                             {galleryItems[lightboxIndex].type === "image" ? (
-                                <img src={`${baseUrl}${galleryItems[lightboxIndex].url}`} alt="lightbox" />
+                                <img src={`${apiBase}${galleryItems[lightboxIndex].url}`} alt="lightbox" />
                             ) : (
-                                <video src={`${baseUrl}${galleryItems[lightboxIndex].url}`} autoPlay controls />
+                                <video src={`${apiBase}${galleryItems[lightboxIndex].url}`} autoPlay controls />
                             )}
                         </div>
                         <button

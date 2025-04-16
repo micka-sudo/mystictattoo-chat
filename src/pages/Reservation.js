@@ -8,6 +8,7 @@ const Reservation = () => {
         name: '',
         email: '',
         date: '',
+        time: '', // 🆕 ajout du champ heure
         message: ''
     });
 
@@ -25,7 +26,7 @@ const Reservation = () => {
             const res = await api.post('/reservations', form);
             if (res.status === 201) {
                 setStatus('✅ Réservation envoyée avec succès !');
-                setForm({ name: '', email: '', date: '', message: '' });
+                setForm({ name: '', email: '', date: '', time: '', message: '' });
             } else {
                 setStatus('❌ Une erreur est survenue.');
             }
@@ -60,6 +61,13 @@ const Reservation = () => {
                         type="date"
                         name="date"
                         value={form.date}
+                        onChange={handleChange}
+                        required
+                    />
+                    <input
+                        type="time"
+                        name="time"
+                        value={form.time}
                         onChange={handleChange}
                         required
                     />
