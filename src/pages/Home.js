@@ -1,30 +1,27 @@
 import React, { useEffect, useState } from 'react';
 import Layout from '../layouts/Layout';
 import styles from './Home.module.scss';
-import api from '../lib/api';
+import api, { apiBase } from "../lib/api";
 
 const Home = () => {
     const [backgroundUrl, setBackgroundUrl] = useState('');
     const [news, setNews] = useState([]);
 
-    // ✅ Récupérer une image aléatoire toutes les 5 secondes
     const fetchRandomImage = async () => {
         try {
             const res = await api.get('/media/random-image');
-            setBackgroundUrl(`${process.env.REACT_APP_API_URL.replace('/api', '')}${res.data.url}`);
+            setBackgroundUrl(`${apiBase}${res.data.url}`);
         } catch (err) {
             console.error('Erreur chargement image d’accueil', err);
         }
     };
 
-    // 🔁 Lancer l'image aléatoire
     useEffect(() => {
         fetchRandomImage();
         const interval = setInterval(fetchRandomImage, 5000);
         return () => clearInterval(interval);
     }, []);
 
-    // ✅ Charger actualités
     useEffect(() => {
         api.get('/news')
             .then(res => setNews(res.data))
@@ -55,7 +52,7 @@ const Home = () => {
                                         <strong>{item.title}</strong>
                                         {item.image && (
                                             <img
-                                                src={`${process.env.REACT_APP_API_URL.replace('/api', '')}${item.image}`}
+                                                src={`${apiBase}${item.image}`}
                                                 alt={item.title}
                                             />
                                         )}
