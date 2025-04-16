@@ -34,11 +34,19 @@ const Footer = () => {
 
                 {/* 🔗 Réseaux sociaux */}
                 <div className={styles.footer__links}>
-                    <a href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer">
-                        <img src="/instagram.ico" alt="Instagram" />
+                    <a
+                        href="https://www.instagram.com/directory.nancy.tattoo.artists/p/CvKA3RAri-q/?locale=ne_NP"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        <img src="/icons/instagram.png" alt="Instagram" width="28" height="28" />
                     </a>
-                    <a href="https://www.facebook.com/" target="_blank" rel="noopener noreferrer">
-                        <img src="/facebook.ico" alt="Facebook" />
+                    <a
+                        href="https://www.facebook.com/p/Mystic-Tattoo-Nancy-100057617876652/?locale=fr_FR"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        <img src="/icons/facebook.png" alt="Facebook" width="28" height="28" />
                     </a>
                 </div>
             </div>

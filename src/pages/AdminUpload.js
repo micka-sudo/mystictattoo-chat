@@ -16,7 +16,7 @@ const AdminUpload = () => {
 
     const [media, setMedia] = useState([]);
     const [news, setNews] = useState([]);
-    const [newItem, setNewItem] = useState({ title: '', content: '' });
+    const [newItem, setNewItem] = useState({ title: '', content: '', image: '' });
     const [imageFile, setImageFile] = useState(null);
     const [imagePreview, setImagePreview] = useState('');
     const [selectedMedia, setSelectedMedia] = useState([]);
@@ -67,20 +67,33 @@ const AdminUpload = () => {
         let imageUrl = '';
 
         if (imageFile) {
-            const formData = new FormData();
-            formData.append('file', imageFile);
-            formData.append('category', 'actus');
-            formData.append('tags', '');
+            try {
+                const formData = new FormData();
+                formData.append('file', imageFile);
+                formData.append('category', 'actus');
+                formData.append('tags', '');
 
-            const res = await api.post('/upload', formData);
-            imageUrl = `/uploads/${res.data.filename}`;
+                const uploadRes = await api.post('/upload', formData);
+                imageUrl = `/uploads/${uploadRes.data.filename}`;
+            } catch (uploadErr) {
+                console.error('Erreur upload image actu', uploadErr);
+                return;
+            }
         }
 
-        const res = await api.post('/news', { ...newItem, image: imageUrl });
-        setNews([...news, res.data]);
-        setNewItem({ title: '', content: '' });
-        setImageFile(null);
-        setImagePreview('');
+        try {
+            const res = await api.post('/news', {
+                title: newItem.title,
+                content: newItem.content,
+                image: imageUrl
+            });
+            setNews([...news, res.data]);
+            setNewItem({ title: '', content: '', image: '' });
+            setImageFile(null);
+            setImagePreview('');
+        } catch (err) {
+            console.error('Erreur création actu', err);
+        }
     };
 
     const deleteSelectedMedia = async () => {
@@ -163,13 +176,17 @@ const AdminUpload = () => {
                             onChange={(e) => setNewItem({ ...newItem, content: e.target.value })}
                             required
                         />
-                        <input type="file" accept="image/*" onChange={(e) => {
-                            const file = e.target.files[0];
-                            if (file) {
-                                setImageFile(file);
-                                setImagePreview(URL.createObjectURL(file));
-                            }
-                        }} />
+                        <input
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => {
+                                const file = e.target.files[0];
+                                if (file) {
+                                    setImageFile(file);
+                                    setImagePreview(URL.createObjectURL(file));
+                                }
+                            }}
+                        />
                         {imagePreview && <div className={styles.preview}><img src={imagePreview} alt="preview actu" /></div>}
                         <button type="submit">➕ Ajouter</button>
                     </form>
@@ -178,7 +195,13 @@ const AdminUpload = () => {
                         {news.map(item => (
                             <li key={item.id} className={styles.newsItem}>
                                 <strong>{item.title}</strong>
-                                {item.image && <img src={`${apiBase}${item.image}`} alt={item.title} />}
+                                {item.image && (
+                                    <img
+                                        src={`${apiBase}${item.image}`}
+                                        alt={item.title}
+                                        style={{ maxWidth: '200px', marginTop: '10px' }}
+                                    />
+                                )}
                                 <p>{item.content}</p>
                             </li>
                         ))}
