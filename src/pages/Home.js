@@ -42,7 +42,7 @@ const Home = () => {
                     </div>
 
                     <section className={styles.home__content}>
-                        <h3>📰 Actualités</h3>
+                        <h3>Actualités</h3>
                         {news.length === 0 ? (
                             <p>Aucune actualité pour le moment.</p>
                         ) : (
