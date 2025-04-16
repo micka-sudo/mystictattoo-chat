@@ -14,11 +14,10 @@ const Gallery = () => {
     const [loading, setLoading] = useState(true);
     const [lightboxIndex, setLightboxIndex] = useState(null);
 
-    const { categories = [], refreshCategories } = useCategories(); // ← Hook partagé
+    const { categories = [], refreshCategories } = useCategories();
 
     const galleryItems = style ? media : Object.values(mediaByCategory).flat();
 
-    // 🔁 Charger les médias pour chaque catégorie
     useEffect(() => {
         const fetchMedia = async () => {
             setLoading(true);
@@ -65,7 +64,10 @@ const Gallery = () => {
             ) : (
                 <video
                     src={`${apiBase}${item.url}`}
-                    controls
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
                     onClick={() => openLightbox(index)}
                 />
             )}
@@ -85,7 +87,7 @@ const Gallery = () => {
                             className={`${styles.gallery__categoryBtn} ${!style ? styles.active : ""}`}
                             onClick={() => setSearchParams({})}
                         >
-                            🎨 Tous
+                            Tous
                         </button>
                         {categories.map((cat) => (
                             <button
@@ -127,7 +129,11 @@ const Gallery = () => {
                             {galleryItems[lightboxIndex].type === "image" ? (
                                 <img src={`${apiBase}${galleryItems[lightboxIndex].url}`} alt="lightbox" />
                             ) : (
-                                <video src={`${apiBase}${galleryItems[lightboxIndex].url}`} autoPlay controls />
+                                <video
+                                    src={`${apiBase}${galleryItems[lightboxIndex].url}`}
+                                    autoPlay
+                                    controls
+                                />
                             )}
                         </div>
                         <button onClick={(e) => { e.stopPropagation(); next(); }} className={styles.rightArrow}>

@@ -11,10 +11,10 @@ const Header = () => {
     const location = useLocation();
     const navigate = useNavigate();
 
-    const { categories = [] } = useCategories(); // ✅ destructure correctement
+    const { categories = [] } = useCategories();
     const isAdminLoggedIn = Boolean(localStorage.getItem('admin_token'));
 
-    // 🔁 Fermer dropdown si on clique à l’extérieur
+    // Ferme le dropdown lorsqu'on clique en dehors
     useEffect(() => {
         const handleClickOutside = (e) => {
             if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
@@ -38,12 +38,25 @@ const Header = () => {
                     <span className={styles.header__brand}>Mystic Tattoo</span>
                 </Link>
 
-                <button className={styles.burgerBtn} onClick={() => setMobileMenuOpen(prev => !prev)}>
+                <button
+                    className={styles.burgerBtn}
+                    onClick={() => setMobileMenuOpen(prev => !prev)}
+                >
                     ☰
                 </button>
 
-                <nav className={`${styles.header__nav} ${mobileMenuOpen ? styles.open : ''}`}>
-                    <Link className={styles.nav__btn} to="/" onClick={() => setMobileMenuOpen(false)}>Accueil</Link>
+                {/* Ajout d'un onMouseLeave pour fermer le menu en vue tablette */}
+                <nav
+                    className={`${styles.header__nav} ${mobileMenuOpen ? styles.open : ''}`}
+                    onMouseLeave={() => setMobileMenuOpen(false)}
+                >
+                    <Link
+                        className={styles.nav__btn}
+                        to="/"
+                        onClick={() => setMobileMenuOpen(false)}
+                    >
+                        Accueil
+                    </Link>
 
                     <div className={styles.dropdown} ref={dropdownRef}>
                         <button
@@ -78,20 +91,37 @@ const Header = () => {
                         </ul>
                     </div>
 
-                    <Link className={styles.nav__btn} to="/reservation" onClick={() => setMobileMenuOpen(false)}>Réserver</Link>
+                    <Link
+                        className={styles.nav__btn}
+                        to="/reservation"
+                        onClick={() => setMobileMenuOpen(false)}
+                    >
+                        Réserver
+                    </Link>
 
                     {!isAdminLoggedIn && (
-                        <Link className={styles.nav__btn} to="/admin/login" onClick={() => setMobileMenuOpen(false)}>
+                        <Link
+                            className={styles.nav__btn}
+                            to="/admin/login"
+                            onClick={() => setMobileMenuOpen(false)}
+                        >
                             Connexion
                         </Link>
                     )}
 
                     {isAdminLoggedIn && (
                         <>
-                            <Link className={styles.nav__btn} to="/admin" onClick={() => setMobileMenuOpen(false)}>
+                            <Link
+                                className={styles.nav__btn}
+                                to="/admin"
+                                onClick={() => setMobileMenuOpen(false)}
+                            >
                                 🛠 Administration
                             </Link>
-                            <button className={styles.nav__btn} onClick={handleLogout}>
+                            <button
+                                className={styles.nav__btn}
+                                onClick={handleLogout}
+                            >
                                 Déconnexion
                             </button>
                         </>
