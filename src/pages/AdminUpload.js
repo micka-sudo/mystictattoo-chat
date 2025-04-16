@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
 import Layout from '../layouts/Layout';
 import styles from './AdminUpload.module.scss';
 import api, { apiBase } from '../lib/api';
@@ -12,7 +11,6 @@ const AdminUpload = () => {
     const [tags, setTags] = useState('');
     const [status, setStatus] = useState('');
     const [categories, setCategories] = useState([]);
-
     const [media, setMedia] = useState([]);
     const [news, setNews] = useState([]);
     const [newItem, setNewItem] = useState({ title: '', content: '', image: '' });
@@ -22,6 +20,7 @@ const AdminUpload = () => {
     const [showMediaForm, setShowMediaForm] = useState(false);
     const [showNewsForm, setShowNewsForm] = useState(false);
     const [expandedCategory, setExpandedCategory] = useState('');
+    const [categoryToDelete, setCategoryToDelete] = useState(null); // 🔐 gestion modale
 
     const fetchData = async () => {
         const [mediaRes, newsRes, catRes] = await Promise.all([
@@ -34,9 +33,7 @@ const AdminUpload = () => {
         setCategories(catRes.data.filter(c => c !== 'actus'));
     };
 
-    useEffect(() => {
-        fetchData();
-    }, []);
+    useEffect(() => { fetchData(); }, []);
 
     const handleFileChange = (e) => {
         const selected = e.target.files[0];
@@ -54,9 +51,8 @@ const AdminUpload = () => {
         if (newCategory && !categories.includes(newCategory)) {
             try {
                 await api.post('/media/category', { name: newCategory });
-                await fetchData(); // refresh
+                await fetchData();
             } catch (err) {
-                console.error('Erreur création catégorie', err);
                 setStatus('❌ Erreur création catégorie');
                 return;
             }
@@ -79,7 +75,6 @@ const AdminUpload = () => {
             setTags('');
             setShowMediaForm(false);
         } catch (err) {
-            console.error(err);
             setStatus('❌ Erreur lors de l’upload');
         }
     };
@@ -87,7 +82,6 @@ const AdminUpload = () => {
     const handleNewsSubmit = async (e) => {
         e.preventDefault();
         let imageUrl = '';
-
         if (imageFile) {
             const formData = new FormData();
             formData.append('file', imageFile);
@@ -111,7 +105,6 @@ const AdminUpload = () => {
 
     const deleteSelectedMedia = async () => {
         if (!window.confirm('Supprimer les fichiers sélectionnés ?')) return;
-
         const deletedFiles = [];
         for (const file of selectedMedia) {
             const item = media.find(m => m.file === file);
@@ -120,18 +113,18 @@ const AdminUpload = () => {
             });
             if (res.status === 200) deletedFiles.push(file);
         }
-
         setMedia(prev => prev.filter(m => !deletedFiles.includes(m.file)));
         setSelectedMedia([]);
         await fetchData();
     };
 
-    const deleteCategory = async (cat) => {
-        if (!window.confirm(`Supprimer la catégorie "${cat}" ?`)) return;
+    const confirmDeleteCategory = async () => {
+        if (!categoryToDelete) return;
         try {
-            await api.delete('/media/category', { data: { name: cat } });
+            await api.delete('/media/category', { data: { name: categoryToDelete } });
             await fetchData();
-            if (expandedCategory === cat) setExpandedCategory('');
+            if (expandedCategory === categoryToDelete) setExpandedCategory('');
+            setCategoryToDelete(null);
         } catch (err) {
             alert('Erreur : cette catégorie n’est pas vide ou suppression impossible');
         }
@@ -192,16 +185,8 @@ const AdminUpload = () => {
                 </button>
                 {showNewsForm && (
                     <form onSubmit={handleNewsSubmit}>
-                        <input
-                            placeholder="Titre"
-                            value={newItem.title}
-                            onChange={(e) => setNewItem({ ...newItem, title: e.target.value })}
-                        />
-                        <textarea
-                            placeholder="Contenu"
-                            value={newItem.content}
-                            onChange={(e) => setNewItem({ ...newItem, content: e.target.value })}
-                        />
+                        <input placeholder="Titre" value={newItem.title} onChange={(e) => setNewItem({ ...newItem, title: e.target.value })} />
+                        <textarea placeholder="Contenu" value={newItem.content} onChange={(e) => setNewItem({ ...newItem, content: e.target.value })} />
                         <input
                             type="file"
                             accept="image/*"
@@ -224,9 +209,6 @@ const AdminUpload = () => {
                         <h3 onClick={() => toggleCategory(cat)} style={{ cursor: 'pointer' }}>
                             {cat.charAt(0).toUpperCase() + cat.slice(1)} {expandedCategory === cat ? '🔽' : '▶'}
                         </h3>
-                        <button className={styles.adminBtn} onClick={() => deleteCategory(cat)}>
-                            Supprimer la catégorie
-                        </button>
                         {expandedCategory === cat && (
                             <div className={styles.mediaGrid}>
                                 {mediaByCategory[cat].map((item, idx) => (
@@ -243,6 +225,9 @@ const AdminUpload = () => {
                                         )}
                                     </div>
                                 ))}
+                                <button className={styles.adminBtn} onClick={() => setCategoryToDelete(cat)}>
+                                    🗑 Supprimer la catégorie
+                                </button>
                             </div>
                         )}
                     </div>
@@ -256,9 +241,18 @@ const AdminUpload = () => {
                     </div>
                 )}
 
-                <div className={styles.adminUpload__links}>
-                    <Link to="/admin/home" className={styles.adminBtn}>🏠 Accueil Admin</Link>
-                </div>
+                {/* 🔐 Modale de confirmation suppression catégorie */}
+                {categoryToDelete && (
+                    <div className={styles.modalOverlay}>
+                        <div className={styles.modal}>
+                            <p>❌ Supprimer la catégorie <strong>{categoryToDelete}</strong> ?</p>
+                            <div className={styles.modalActions}>
+                                <button className={styles.adminBtn} onClick={confirmDeleteCategory}>Oui, supprimer</button>
+                                <button className={styles.adminBtn} onClick={() => setCategoryToDelete(null)}>Annuler</button>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
         </Layout>
     );
