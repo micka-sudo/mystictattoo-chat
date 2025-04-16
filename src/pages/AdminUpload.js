@@ -1,18 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ChevronDown, ChevronRight, Trash2 } from 'lucide-react';
 import Layout from '../layouts/Layout';
 import styles from './AdminUpload.module.scss';
 import api, { apiBase } from '../lib/api';
-
-const categories = ['oldschool', 'realiste', 'tribal', 'japonais', 'graphique', 'minimaliste'];
 
 const AdminUpload = () => {
     const [file, setFile] = useState(null);
     const [preview, setPreview] = useState('');
     const [category, setCategory] = useState('');
+    const [newCategory, setNewCategory] = useState('');
     const [tags, setTags] = useState('');
     const [status, setStatus] = useState('');
+    const [categories, setCategories] = useState([]);
 
     const [media, setMedia] = useState([]);
     const [news, setNews] = useState([]);
@@ -20,13 +19,23 @@ const AdminUpload = () => {
     const [imageFile, setImageFile] = useState(null);
     const [imagePreview, setImagePreview] = useState('');
     const [selectedMedia, setSelectedMedia] = useState([]);
-    const [visibleCategories, setVisibleCategories] = useState(() =>
-        Object.fromEntries(categories.map(c => [c, false]))
-    );
+    const [showMediaForm, setShowMediaForm] = useState(false);
+    const [showNewsForm, setShowNewsForm] = useState(false);
+    const [expandedCategory, setExpandedCategory] = useState('');
+
+    const fetchData = async () => {
+        const [mediaRes, newsRes, catRes] = await Promise.all([
+            api.get('/media'),
+            api.get('/news'),
+            api.get('/media/categories')
+        ]);
+        setMedia(mediaRes.data);
+        setNews(newsRes.data);
+        setCategories(catRes.data.filter(c => c !== 'actus'));
+    };
 
     useEffect(() => {
-        api.get('/media').then(res => setMedia(res.data));
-        api.get('/news').then(res => setNews(res.data));
+        fetchData();
     }, []);
 
     const handleFileChange = (e) => {
@@ -39,23 +48,36 @@ const AdminUpload = () => {
 
     const handleUpload = async (e) => {
         e.preventDefault();
-        if (!file || !category) return alert('Fichier et catégorie requis.');
+        const finalCategory = newCategory || category;
+        if (!file || !finalCategory) return alert('Fichier et catégorie requis.');
+
+        if (newCategory && !categories.includes(newCategory)) {
+            try {
+                await api.post('/media/category', { name: newCategory });
+                await fetchData(); // refresh
+            } catch (err) {
+                console.error('Erreur création catégorie', err);
+                setStatus('❌ Erreur création catégorie');
+                return;
+            }
+        }
 
         const formData = new FormData();
         formData.append('file', file);
-        formData.append('category', category);
+        formData.append('category', finalCategory);
         formData.append('tags', tags);
 
         setStatus('⏳ Upload en cours...');
-
         try {
             const res = await api.post('/upload', formData);
+            setMedia(prev => [...prev, res.data]);
             setStatus(`✅ Upload réussi : ${res.data.filename}`);
             setFile(null);
             setPreview('');
             setCategory('');
+            setNewCategory('');
             setTags('');
-            setMedia([...media, res.data]);
+            setShowMediaForm(false);
         } catch (err) {
             console.error(err);
             setStatus('❌ Erreur lors de l’upload');
@@ -67,40 +89,30 @@ const AdminUpload = () => {
         let imageUrl = '';
 
         if (imageFile) {
-            try {
-                const formData = new FormData();
-                formData.append('file', imageFile);
-                formData.append('category', 'actus');
-                formData.append('tags', '');
-
-                const uploadRes = await api.post('/upload', formData);
-                imageUrl = `/uploads/${uploadRes.data.filename}`;
-            } catch (uploadErr) {
-                console.error('Erreur upload image actu', uploadErr);
-                return;
-            }
+            const formData = new FormData();
+            formData.append('file', imageFile);
+            formData.append('category', 'actus');
+            const resUpload = await api.post('/upload', formData);
+            imageUrl = `/uploads/${resUpload.data.filename}`;
         }
 
-        try {
-            const res = await api.post('/news', {
-                title: newItem.title,
-                content: newItem.content,
-                image: imageUrl
-            });
-            setNews([...news, res.data]);
-            setNewItem({ title: '', content: '', image: '' });
-            setImageFile(null);
-            setImagePreview('');
-        } catch (err) {
-            console.error('Erreur création actu', err);
-        }
+        const res = await api.post('/news', {
+            title: newItem.title,
+            content: newItem.content,
+            image: imageUrl
+        });
+
+        setNews([...news, res.data]);
+        setNewItem({ title: '', content: '', image: '' });
+        setImageFile(null);
+        setImagePreview('');
+        setShowNewsForm(false);
     };
 
     const deleteSelectedMedia = async () => {
         if (!window.confirm('Supprimer les fichiers sélectionnés ?')) return;
 
         const deletedFiles = [];
-
         for (const file of selectedMedia) {
             const item = media.find(m => m.file === file);
             const res = await api.delete('/media', {
@@ -111,20 +123,17 @@ const AdminUpload = () => {
 
         setMedia(prev => prev.filter(m => !deletedFiles.includes(m.file)));
         setSelectedMedia([]);
+        await fetchData();
     };
 
-    const mediaByCategory = categories.reduce((acc, cat) => {
-        acc[cat] = media.filter(m => m.category === cat);
-        return acc;
-    }, {});
-
-    const toggleSelectAll = (cat) => {
-        const allIds = mediaByCategory[cat].map(m => m.file);
-        const isAllSelected = allIds.every(id => selectedMedia.includes(id));
-        if (isAllSelected) {
-            setSelectedMedia(prev => prev.filter(id => !allIds.includes(id)));
-        } else {
-            setSelectedMedia(prev => [...new Set([...prev, ...allIds])]);
+    const deleteCategory = async (cat) => {
+        if (!window.confirm(`Supprimer la catégorie "${cat}" ?`)) return;
+        try {
+            await api.delete('/media/category', { data: { name: cat } });
+            await fetchData();
+            if (expandedCategory === cat) setExpandedCategory('');
+        } catch (err) {
+            alert('Erreur : cette catégorie n’est pas vide ou suppression impossible');
         }
     };
 
@@ -134,47 +143,64 @@ const AdminUpload = () => {
         );
     };
 
-    const toggleAllCategories = () => {
-        const allVisible = Object.values(visibleCategories).every(Boolean);
-        const newState = Object.fromEntries(categories.map(c => [c, !allVisible]));
-        setVisibleCategories(newState);
+    const mediaByCategory = categories.reduce((acc, cat) => {
+        acc[cat] = media.filter(m => m.category === cat);
+        return acc;
+    }, {});
+
+    const toggleCategory = (cat) => {
+        setExpandedCategory(prev => (prev === cat ? '' : cat));
     };
 
     return (
         <Layout>
             <div className={styles.adminUpload}>
                 <h2>📤 Ajouter un média</h2>
-                <form onSubmit={handleUpload}>
-                    <input type="file" accept="image/*,video/*" onChange={handleFileChange} />
-                    <select value={category} onChange={(e) => setCategory(e.target.value)} required>
-                        <option value="">-- Choisir une catégorie --</option>
-                        {categories.map((cat) => <option key={cat} value={cat}>{cat}</option>)}
-                    </select>
-                    <input
-                        type="text"
-                        placeholder="Tags (séparés par des virgules)"
-                        value={tags}
-                        onChange={(e) => setTags(e.target.value)}
-                    />
-                    <button type="submit">Envoyer</button>
-                </form>
+                <button className={styles.adminBtn} onClick={() => setShowMediaForm(!showMediaForm)}>
+                    {showMediaForm ? 'Fermer' : 'Ajouter un média'}
+                </button>
+                {showMediaForm && (
+                    <form onSubmit={handleUpload}>
+                        <input type="file" accept="image/*,video/*" onChange={handleFileChange} required />
+                        <select value={category} onChange={(e) => setCategory(e.target.value)}>
+                            <option value="">-- Choisir une catégorie --</option>
+                            {categories.map((cat) => (
+                                <option key={cat} value={cat}>{cat}</option>
+                            ))}
+                        </select>
+                        <input
+                            type="text"
+                            placeholder="Ou créer une nouvelle catégorie"
+                            value={newCategory}
+                            onChange={(e) => setNewCategory(e.target.value)}
+                        />
+                        <input
+                            type="text"
+                            placeholder="Tags (séparés par des virgules)"
+                            value={tags}
+                            onChange={(e) => setTags(e.target.value)}
+                        />
+                        <button type="submit" className={styles.adminBtn}>Envoyer</button>
+                    </form>
+                )}
                 {preview && <div className={styles.preview}><img src={preview} alt="preview" /></div>}
                 <p className={styles.status}>{status}</p>
 
-                <div className={styles.newsSection}>
-                    <h2>📰 Actualités</h2>
+                <h2>📰 Ajouter une actualité</h2>
+                <button className={styles.adminBtn} onClick={() => setShowNewsForm(!showNewsForm)}>
+                    {showNewsForm ? 'Fermer' : 'Ajouter une actu'}
+                </button>
+                {showNewsForm && (
                     <form onSubmit={handleNewsSubmit}>
                         <input
                             placeholder="Titre"
                             value={newItem.title}
                             onChange={(e) => setNewItem({ ...newItem, title: e.target.value })}
-                            required
                         />
                         <textarea
                             placeholder="Contenu"
                             value={newItem.content}
                             onChange={(e) => setNewItem({ ...newItem, content: e.target.value })}
-                            required
                         />
                         <input
                             type="file"
@@ -188,60 +214,20 @@ const AdminUpload = () => {
                             }}
                         />
                         {imagePreview && <div className={styles.preview}><img src={imagePreview} alt="preview actu" /></div>}
-                        <button type="submit">➕ Ajouter</button>
+                        <button type="submit" className={styles.adminBtn}>➕ Ajouter</button>
                     </form>
+                )}
 
-                    <ul>
-                        {news.map(item => (
-                            <li key={item.id} className={styles.newsItem}>
-                                <strong>{item.title}</strong>
-                                {item.image && (
-                                    <img
-                                        src={`${apiBase}${item.image}`}
-                                        alt={item.title}
-                                        style={{ maxWidth: '200px', marginTop: '10px' }}
-                                    />
-                                )}
-                                <p>{item.content}</p>
-                            </li>
-                        ))}
-                    </ul>
-                </div>
-
-                <h2>🖼 Médias <button onClick={toggleAllCategories}>Afficher/Masquer tout</button></h2>
+                <h2>🖼 Médias enregistrés</h2>
                 {categories.map((cat) => (
                     <div key={cat} className={styles.mediaCategory}>
-                        <div className={styles.categoryHeader}>
-                            <div onClick={() => setVisibleCategories(prev => ({ ...prev, [cat]: !prev[cat] }))}>
-                                {visibleCategories[cat] ? <ChevronDown size={18} /> : <ChevronRight size={18} />}
-                                <h3>{cat}</h3>
-                            </div>
-                            <div>
-                                <label>
-                                    <input
-                                        type="checkbox"
-                                        checked={mediaByCategory[cat].every(m => selectedMedia.includes(m.file))}
-                                        onChange={(e) => {
-                                            e.stopPropagation();
-                                            toggleSelectAll(cat);
-                                        }}
-                                        onClick={(e) => e.stopPropagation()}
-                                    /> Sélectionner tout
-                                </label>
-                                <button className={styles.trashBtn} onClick={() => {
-                                    const filesToDelete = mediaByCategory[cat].map(m => m.file);
-                                    setSelectedMedia(filesToDelete);
-                                    deleteSelectedMedia();
-                                }}>
-                                    <Trash2 size={16} />
-                                </button>
-                            </div>
-                        </div>
-                        <div className={styles.categoryContent} style={{
-                            maxHeight: visibleCategories[cat] ? '1000px' : '0px',
-                            overflow: 'hidden',
-                            transition: 'max-height 0.5s ease-in-out'
-                        }}>
+                        <h3 onClick={() => toggleCategory(cat)} style={{ cursor: 'pointer' }}>
+                            {cat.charAt(0).toUpperCase() + cat.slice(1)} {expandedCategory === cat ? '🔽' : '▶'}
+                        </h3>
+                        <button className={styles.adminBtn} onClick={() => deleteCategory(cat)}>
+                            Supprimer la catégorie
+                        </button>
+                        {expandedCategory === cat && (
                             <div className={styles.mediaGrid}>
                                 {mediaByCategory[cat].map((item, idx) => (
                                     <div key={idx} className={styles.mediaItem}>
@@ -258,13 +244,13 @@ const AdminUpload = () => {
                                     </div>
                                 ))}
                             </div>
-                        </div>
+                        )}
                     </div>
                 ))}
 
                 {selectedMedia.length > 0 && (
                     <div style={{ textAlign: 'center', marginTop: '20px' }}>
-                        <button onClick={deleteSelectedMedia} className={styles.deleteButton}>
+                        <button className={styles.adminBtn} onClick={deleteSelectedMedia}>
                             🗑 Supprimer les fichiers sélectionnés
                         </button>
                     </div>
