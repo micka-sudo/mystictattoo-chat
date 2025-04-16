@@ -68,7 +68,11 @@ http://localhost:3000
 ### Construire l'application pour la production
 
 ```bash
-npm run build
+Commande | Description
+npm run dev | Démarre le frontend localement
+npm run build | Build optimisé pour la prod
+npm run preview | Lance un aperçu local du build
+npm run lint | Linter ESLint + Prettier
 ```
 
 ---
@@ -120,7 +124,13 @@ mystictattoo-react/
 - Déploiement continu automatisé
 
 ---
-
+🎨 Palette de couleurs
+Nom | Couleur
+Dark | #484748
+Violet | #875c94
+Light | #FEFEFE
+Gris doux | #C7b8cc
+Noir | #333333
 ## 📝 Auteur
 
 - **Votre Nom / Pseudo GitHub :** [micka-sudo](https://github.com/micka-sudo)
@@ -130,4 +140,3 @@ mystictattoo-react/
 ## 📄 Licence
 
 Ce projet est sous licence **Gruy**.
-
