@@ -3,7 +3,7 @@
 .header {
   background-color: var(--color-header);
   color: var(--color-light);
-  padding: 15px 40px;
+  padding: 10px 20px;
   border-bottom: 2px solid var(--color-accent);
   font-family: var(--font-gothic);
   position: sticky;
@@ -11,52 +11,53 @@
   z-index: 1000;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
   transition: background 0.3s ease;
+  backdrop-filter: blur(8px);
 
   &__container {
     display: flex;
     justify-content: space-between;
     align-items: center;
     flex-wrap: nowrap;
-    gap: 20px;
+    gap: 10px;
   }
 
   &__left {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
     text-decoration: none;
   }
 
   &__logo {
-    height: 80px;
+    height: 60px;
     object-fit: contain;
   }
 
   &__brand {
-    font-size: 1.6rem;
+    font-size: 1.4rem;
     color: var(--color-light);
-    text-shadow: 0 0 8px var(--color-accent);
+    text-shadow: 0 0 6px var(--color-accent);
   }
 
   &__nav {
     display: flex;
     align-items: center;
-    gap: 15px;
+    gap: 12px;
 
     .nav__btn {
-      padding: 8px 16px;
+      padding: 6px 12px;
       border: 1px solid transparent;
       background: var(--color-background);
       color: var(--color-light);
       font-family: var(--font-gothic);
-      font-size: 1rem;
-      border-radius: 10px;
+      font-size: 0.95rem;
+      border-radius: 8px;
       cursor: pointer;
       transition: 0.3s ease;
 
       &:hover {
         border-color: var(--color-accent);
-        box-shadow: 0 0 8px var(--color-accent);
+        box-shadow: 0 0 6px var(--color-accent);
       }
     }
 
@@ -65,7 +66,7 @@
 
       &__menu {
         position: absolute;
-        top: 120%;
+        top: 100%;
         left: 0;
         background: var(--color-background);
         border: 1px solid var(--color-accent);
@@ -75,10 +76,10 @@
         overflow: hidden;
         max-height: 0;
         opacity: 0;
-        transition: all 0.4s ease;
+        transition: all 0.3s ease;
 
         &.open {
-          max-height: 300px;
+          max-height: 400px;
           opacity: 1;
         }
 
@@ -87,11 +88,11 @@
 
           a {
             display: block;
-            padding: 8px 12px;
+            padding: 6px 10px;
             font-family: var(--font-gothic);
             color: var(--color-light);
             text-decoration: none;
-            border-radius: 8px;
+            border-radius: 6px;
             transition: 0.2s;
 
             &:hover {
@@ -106,11 +107,30 @@
 
   .burgerBtn {
     display: none;
-    font-size: 2rem;
+    font-size: 1.8rem;
     color: var(--color-accent);
     background: none;
     border: none;
     cursor: pointer;
+  }
+
+  @media (max-width: 1024px) {
+    &__brand {
+      font-size: 1.2rem;
+    }
+
+    &__logo {
+      height: 50px;
+    }
+
+    &__nav {
+      gap: 10px;
+
+      .nav__btn {
+        padding: 5px 10px;
+        font-size: 0.9rem;
+      }
+    }
   }
 
   @media (max-width: 768px) {
@@ -120,9 +140,9 @@
 
     &__nav {
       display: none;
-      flex-direction: column;
-      align-items: stretch;
-      width: 25%;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
       margin-top: 15px;
 
       &.open {
@@ -130,19 +150,32 @@
       }
 
       .nav__btn {
-        width: 25%;
-        text-align: center;
+        width: auto;
+        padding: 6px 12px;
+        font-size: 0.9rem;
+        white-space: nowrap;
       }
 
-      .dropdown__menu {
+      .dropdown {
         position: relative;
-        background: var(--color-background);
-        border-radius: 8px;
+
+        &__menu {
+          position: absolute;
+          top: 100%;
+          left: 0;
+          min-width: 140px;
+          background: var(--color-background);
+          border: 1px solid var(--color-accent);
+          border-radius: 8px;
+          padding: 8px;
+          box-shadow: 0 0 10px var(--color-accent);
+        }
       }
     }
 
     &__brand {
-      font-size: 1.3rem;
+      font-size: 1rem;
     }
   }
+
 }

@@ -5,21 +5,34 @@
   bottom: 0;
   left: 0;
   width: 100%;
-  background-color: rgba(72, 71, 72, 0.85); // #484748 avec transparence
+  background-color: transparent; // plus transparent
   color: var(--color-light);
   font-family: var(--font-gothic);
   border-top: 2px solid var(--color-accent);
-  padding: 12px 30px;
+  padding: 10px 20px;
   z-index: 999;
-  backdrop-filter: blur(6px);
+  backdrop-filter: blur(8px);
+
   transition: background 0.3s ease;
 
   &__container {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     gap: 20px;
+
+    @media (max-width: 768px) {
+      flex-wrap: nowrap;
+      flex-direction: row;
+      flex-shrink: 1;
+      gap: 10px;
+    }
+
+    @media (max-width: 500px) {
+      flex-direction: column;
+      align-items: flex-start;
+    }
   }
 
   &__address {
@@ -27,6 +40,10 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+
+    @media (max-width: 768px) {
+      font-size: 0.85rem;
+    }
   }
 
   &__newsletter {
@@ -36,7 +53,7 @@
 
     input {
       padding: 6px 12px;
-      font-size: 0.95rem;
+      font-size: 0.9rem;
       border-radius: 6px;
       border: 1px solid var(--color-accent);
       background: var(--color-background);
@@ -58,11 +75,22 @@
         box-shadow: 0 0 6px var(--color-accent);
       }
     }
+
+    @media (max-width: 768px) {
+      flex-wrap: wrap;
+      gap: 5px;
+
+      input,
+      button {
+        width: auto;
+        font-size: 0.85rem;
+      }
+    }
   }
 
   &__links {
     display: flex;
-    gap: 15px;
+    gap: 12px;
 
     a {
       display: flex;
@@ -79,29 +107,9 @@
         }
       }
     }
-  }
 
-  @media (max-width: 768px) {
-    &__container {
-      flex-direction: initial;
-      align-items: flex-start;
-    }
-
-    &__newsletter {
-      flex-direction: column;
-      align-items: stretch;
-      width: 50%;
-
-      input, button {
-        width: 50%;
-      }
-    }
-
-    &__links {
-      justify-content: flex-start;
-      flex-direction: column;
-      align-items: flex-end;
-
+    @media (max-width: 768px) {
+      gap: 8px;
     }
   }
 }
