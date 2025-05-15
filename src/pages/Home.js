@@ -2,11 +2,12 @@ import React, { useEffect, useState } from 'react';
 import Layout from '../layouts/Layout';
 import styles from './Home.module.scss';
 import api, { apiBase } from "../lib/api";
+import SEO from '../components/SEO'; // ← IMPORT SEO
 
 const Home = () => {
     const [backgroundUrl, setBackgroundUrl] = useState('');
     const [news, setNews] = useState([]);
-    const [showNews, setShowNews] = useState(true); // ← toggle d'affichage
+    const [showNews, setShowNews] = useState(true);
 
     const fetchRandomImage = async () => {
         try {
@@ -46,6 +47,12 @@ const Home = () => {
 
     return (
         <Layout>
+            <SEO
+                title="Mystic Tattoo - Salon de tatouage à Nancy 54000"
+                description="Bienvenue chez Mystic Tattoo, votre salon de tatouage à Nancy. Artistes passionnés, prise de rendez-vous en ligne, galerie d’inspirations. Découvrez notre univers."
+                url="https://www.mystic-tattoo.fr"
+                image={backgroundUrl || 'https://www.mystic-tattoo.fr/default-cover.jpg'}
+            />
             <div className={styles.home}>
                 <h2 className={styles.home__title}>Bienvenue chez Mystic Tattoo</h2>
 

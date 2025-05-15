@@ -4,6 +4,7 @@ import api, { apiBase } from "../lib/api";
 import Layout from "../layouts/Layout";
 import styles from "./Gallery.module.scss";
 import useCategories from "../hooks/useCategories";
+import SEO from "../components/SEO"; // ← ajout du composant SEO
 
 const Gallery = () => {
     const [searchParams, setSearchParams] = useSearchParams();
@@ -18,6 +19,17 @@ const Gallery = () => {
 
     // Tous les médias plats pour lightbox
     const galleryItems = style ? media : Object.values(mediaByCategory).flat();
+
+    // SEO dynamique
+    const styleTitle = style ? `${style.charAt(0).toUpperCase() + style.slice(1)}` : "Tous les styles";
+    const pageTitle = `Galerie de tatouages ${style ? `- ${styleTitle} - ` : ""}Mystic Tattoo Nancy`;
+    const pageDescription = style
+        ? `Découvrez nos tatouages de style ${styleTitle} réalisés à Nancy par Mystic Tattoo.`
+        : `Explorez tous les styles de tatouage proposés par Mystic Tattoo à Nancy. Galerie complète.`;
+    const canonicalUrl = style
+        ? `https://www.mystic-tattoo.fr/galerie?style=${style}`
+        : `https://www.mystic-tattoo.fr/galerie`;
+    const firstImageUrl = galleryItems[0]?.url ? `${apiBase}${galleryItems[0].url}` : null;
 
     useEffect(() => {
         const fetchMedia = async () => {
@@ -77,6 +89,12 @@ const Gallery = () => {
 
     return (
         <Layout>
+            <SEO
+                title={pageTitle}
+                description={pageDescription}
+                url={canonicalUrl}
+                image={firstImageUrl}
+            />
             <div className={styles.gallery}>
                 <div className={styles.gallery__header}>
                     <h2 className={styles.gallery__title}>
