@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useParams, useLocation, useNavigate } from "react-router-dom";
 import api, { apiBase } from "../lib/api";
 import Layout from "../layouts/Layout";
 import styles from "./Gallery.module.scss";
 import useCategories from "../hooks/useCategories";
-import SEO from "../components/SEO"; // ← ajout du composant SEO
+import SEO from "../components/SEO";
 
 const Gallery = () => {
-    const [searchParams, setSearchParams] = useSearchParams();
-    const style = searchParams.get("style");
+    const { style } = useParams(); // ← route dynamique
+    const location = useLocation();
+    const navigate = useNavigate();
 
     const [media, setMedia] = useState([]);
     const [mediaByCategory, setMediaByCategory] = useState({});
@@ -17,19 +18,26 @@ const Gallery = () => {
 
     const { categories = [] } = useCategories();
 
-    // Tous les médias plats pour lightbox
     const galleryItems = style ? media : Object.values(mediaByCategory).flat();
 
-    // SEO dynamique
     const styleTitle = style ? `${style.charAt(0).toUpperCase() + style.slice(1)}` : "Tous les styles";
     const pageTitle = `Galerie de tatouages ${style ? `- ${styleTitle} - ` : ""}Mystic Tattoo Nancy`;
     const pageDescription = style
         ? `Découvrez nos tatouages de style ${styleTitle} réalisés à Nancy par Mystic Tattoo.`
         : `Explorez tous les styles de tatouage proposés par Mystic Tattoo à Nancy. Galerie complète.`;
     const canonicalUrl = style
-        ? `https://www.mystic-tattoo.fr/galerie?style=${style}`
-        : `https://www.mystic-tattoo.fr/galerie`;
+        ? `https://www.mystic-tattoo.fr/gallery/${style}`
+        : `https://www.mystic-tattoo.fr/gallery`;
     const firstImageUrl = galleryItems[0]?.url ? `${apiBase}${galleryItems[0].url}` : null;
+
+    // ✅ Redirige les anciennes URLs /gallery?style=japonais
+    useEffect(() => {
+        const query = new URLSearchParams(location.search);
+        const oldStyle = query.get("style");
+        if (oldStyle) {
+            navigate(`/gallery/${oldStyle}`, { replace: true });
+        }
+    }, [location.search, navigate]);
 
     useEffect(() => {
         const fetchMedia = async () => {
@@ -104,7 +112,7 @@ const Gallery = () => {
                     <div className={styles.gallery__categories}>
                         <button
                             className={`${styles.gallery__categoryBtn} ${!style ? styles.active : ""}`}
-                            onClick={() => setSearchParams({})}
+                            onClick={() => navigate("/gallery")}
                         >
                             Tous
                         </button>
@@ -117,7 +125,7 @@ const Gallery = () => {
                                 <button
                                     key={cat}
                                     className={`${styles.gallery__categoryBtn} ${style === cat ? styles.active : ""}`}
-                                    onClick={() => setSearchParams({ style: cat })}
+                                    onClick={() => navigate(`/gallery/${cat}`)}
                                 >
                                     {cat.charAt(0).toUpperCase() + cat.slice(1)}
                                 </button>

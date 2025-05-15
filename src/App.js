@@ -8,7 +8,7 @@ import AdminLogin from './pages/AdminLogin';
 import AdminDashboard from './pages/AdminDashboard';
 import AdminUpload from './pages/AdminUpload';
 import AdminHome from './pages/AdminHome';
-import AdminReservations from './pages/AdminReservations'; // ✅ AJOUT
+import AdminReservations from './pages/AdminReservations';
 import RequireAuth from './components/RequireAuth';
 
 function App() {
@@ -18,6 +18,8 @@ function App() {
                 {/* Public */}
                 <Route path="/" element={<Home />} />
                 <Route path="/gallery" element={<Gallery />} />
+                <Route path="/gallery/:style" element={<Gallery />} /> {/* ✅ SEO-friendly */}
+
                 <Route path="/reservation" element={<Reservation />} />
 
                 {/* Admin public */}
@@ -42,7 +44,7 @@ function App() {
                     }
                 />
                 <Route
-                    path="/admin/reservations" // ✅ NOUVELLE ROUTE
+                    path="/admin/reservations"
                     element={
                         <RequireAuth>
                             <AdminReservations />
