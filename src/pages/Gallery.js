@@ -3,7 +3,7 @@ import { useSearchParams } from "react-router-dom";
 import api, { apiBase } from "../lib/api";
 import Layout from "../layouts/Layout";
 import styles from "./Gallery.module.scss";
-import useCategories from "../hooks/useCategories"; // ← Hook personnalisé
+import useCategories from "../hooks/useCategories";
 
 const Gallery = () => {
     const [searchParams, setSearchParams] = useSearchParams();
@@ -14,8 +14,9 @@ const Gallery = () => {
     const [loading, setLoading] = useState(true);
     const [lightboxIndex, setLightboxIndex] = useState(null);
 
-    const { categories = [], refreshCategories } = useCategories();
+    const { categories = [] } = useCategories();
 
+    // Tous les médias plats pour lightbox
     const galleryItems = style ? media : Object.values(mediaByCategory).flat();
 
     useEffect(() => {
@@ -89,15 +90,21 @@ const Gallery = () => {
                         >
                             Tous
                         </button>
-                        {categories.map((cat) => (
-                            <button
-                                key={cat}
-                                className={`${styles.gallery__categoryBtn} ${style === cat ? styles.active : ""}`}
-                                onClick={() => setSearchParams({ style: cat })}
-                            >
-                                {cat.charAt(0).toUpperCase() + cat.slice(1)}
-                            </button>
-                        ))}
+
+                        {categories.map((cat) => {
+                            const hasMedia = mediaByCategory[cat]?.length > 0;
+                            if (!style && !hasMedia) return null;
+
+                            return (
+                                <button
+                                    key={cat}
+                                    className={`${styles.gallery__categoryBtn} ${style === cat ? styles.active : ""}`}
+                                    onClick={() => setSearchParams({ style: cat })}
+                                >
+                                    {cat.charAt(0).toUpperCase() + cat.slice(1)}
+                                </button>
+                            );
+                        })}
                     </div>
                 </div>
 
@@ -105,19 +112,27 @@ const Gallery = () => {
                     <p>Chargement...</p>
                 ) : style ? (
                     <div className={styles.gallery__grid}>
-                        {media.map((item, idx) => renderItem(item, idx))}
+                        {media.length > 0 ? (
+                            media.map((item, idx) => renderItem(item, idx))
+                        ) : (
+                            <p>Aucun média trouvé dans cette catégorie.</p>
+                        )}
                     </div>
                 ) : (
-                    Object.entries(mediaByCategory).map(([cat, items]) => (
-                        <section key={cat}>
-                            <h3 className={styles.gallery__title}>
-                                {cat.charAt(0).toUpperCase() + cat.slice(1)}
-                            </h3>
-                            <div className={styles.gallery__grid}>
-                                {items.map((item, idx) => renderItem(item, galleryItems.indexOf(item)))}
-                            </div>
-                        </section>
-                    ))
+                    Object.entries(mediaByCategory).map(([cat, items]) => {
+                        if (!items || items.length === 0) return null;
+
+                        return (
+                            <section key={cat}>
+                                <h3 className={styles.gallery__title}>
+                                    {cat.charAt(0).toUpperCase() + cat.slice(1)}
+                                </h3>
+                                <div className={styles.gallery__grid}>
+                                    {items.map((item, idx) => renderItem(item, galleryItems.indexOf(item)))}
+                                </div>
+                            </section>
+                        );
+                    })
                 )}
 
                 {lightboxIndex !== null && (

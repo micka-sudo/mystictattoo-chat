@@ -4,17 +4,30 @@ import styles from './Header.module.scss';
 import useCategories from '../hooks/useCategories';
 
 const Header = () => {
+    // État pour gérer l'ouverture du dropdown "Galerie"
     const [dropdownOpen, setDropdownOpen] = useState(false);
+
+    // État pour le menu mobile (affichage burger menu)
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+    // Références pour détecter les clics en dehors du dropdown
     const dropdownRef = useRef(null);
     const dropdownMenuRef = useRef(null);
+
     const location = useLocation();
     const navigate = useNavigate();
 
+    // Récupération des styles de tatouage (catégories)
     const { categories = [] } = useCategories();
+
+    // Vérifie si un token admin est présent en localStorage
     const isAdminLoggedIn = Boolean(localStorage.getItem('admin_token'));
 
-    // Ferme le dropdown lorsqu'on clique en dehors
+    // Variables pour contrôler l'affichage conditionnel
+    const showReservation = false;
+    const showLogin = false;
+
+    // Ferme le menu déroulant si on clique en dehors
     useEffect(() => {
         const handleClickOutside = (e) => {
             if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
@@ -25,6 +38,7 @@ const Header = () => {
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
+    // Déconnexion administrateur
     const handleLogout = () => {
         localStorage.removeItem('admin_token');
         navigate('/admin/login');
@@ -45,7 +59,7 @@ const Header = () => {
                     ☰
                 </button>
 
-                {/* Ajout d'un onMouseLeave pour fermer le menu en vue tablette */}
+                {/* Menu de navigation principal */}
                 <nav
                     className={`${styles.header__nav} ${mobileMenuOpen ? styles.open : ''}`}
                     onMouseLeave={() => setMobileMenuOpen(false)}
@@ -91,15 +105,19 @@ const Header = () => {
                         </ul>
                     </div>
 
-                    <Link
-                        className={styles.nav__btn}
-                        to="/reservation"
-                        onClick={() => setMobileMenuOpen(false)}
-                    >
-                        Réserver
-                    </Link>
+                    {/* Réserver : activable avec showReservation */}
+                    {showReservation && (
+                        <Link
+                            className={styles.nav__btn}
+                            to="/reservation"
+                            onClick={() => setMobileMenuOpen(false)}
+                        >
+                            Réserver
+                        </Link>
+                    )}
 
-                    {!isAdminLoggedIn && (
+                    {/* Connexion : visible uniquement si admin non connecté et showLogin à true */}
+                    {showLogin && !isAdminLoggedIn && (
                         <Link
                             className={styles.nav__btn}
                             to="/admin/login"
@@ -109,6 +127,7 @@ const Header = () => {
                         </Link>
                     )}
 
+                    {/* Zone admin : visible uniquement si connecté */}
                     {isAdminLoggedIn && (
                         <>
                             <Link

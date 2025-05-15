@@ -4,6 +4,10 @@ import styles from './Footer.module.scss';
 const Footer = () => {
     const [scrolled, setScrolled] = useState(false);
 
+    // 👉 Variable de configuration : afficher ou non la newsletter
+    const showNewsletter = false;
+
+    // Active un effet pour ajouter une classe lors du scroll (design sticky)
     useEffect(() => {
         const handleScroll = () => {
             setScrolled(window.scrollY > 30);
@@ -15,6 +19,7 @@ const Footer = () => {
     return (
         <footer className={`${styles.footer} ${scrolled ? styles.footerScrolled : ''}`}>
             <div className={styles.footer__container}>
+
                 {/* 📍 Adresse avec lien Google Maps */}
                 <p className={styles.footer__address}>
                     <a
@@ -26,17 +31,19 @@ const Footer = () => {
                     </a>
                 </p>
 
-                {/* 📧 Newsletter */}
-                <form
-                    className={styles.footer__newsletter}
-                    onSubmit={(e) => {
-                        e.preventDefault();
-                        alert("Fonctionnalité d'envoi à connecter !");
-                    }}
-                >
-                    <input type="email" placeholder="Votre email" required />
-                    <button type="submit">S'inscrire</button>
-                </form>
+                {/* 📧 Newsletter (affichée uniquement si showNewsletter est true) */}
+                {showNewsletter && (
+                    <form
+                        className={styles.footer__newsletter}
+                        onSubmit={(e) => {
+                            e.preventDefault();
+                            alert("Fonctionnalité d'envoi à connecter !");
+                        }}
+                    >
+                        <input type="email" placeholder="Votre email" required />
+                        <button type="submit">S'inscrire</button>
+                    </form>
+                )}
 
                 {/* 🔗 Réseaux sociaux */}
                 <div className={styles.footer__links}>
