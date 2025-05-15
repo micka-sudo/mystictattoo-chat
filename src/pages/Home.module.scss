@@ -27,6 +27,13 @@
     padding: 0 20px;
   }
 
+  &__singleColumn {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding: 0 20px;
+  }
+
   &__hero {
     flex: 1;
     height: 50vh;
@@ -49,6 +56,25 @@
     }
   }
 
+  &__heroFull {
+    width: 100%;
+    max-width: 1200px;
+    height: 60vh;
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+
+    .home__heroBg {
+      width: 100%;
+      height: 100%;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      animation: kenBurnsZoom 10s ease-in-out infinite;
+      border-radius: 12px;
+    }
+  }
+
   &__content {
     flex: 1;
     background: #111;
@@ -56,7 +82,7 @@
     padding: 40px;
     font-family: var(--font-default);
     border-radius: 10px;
-    box-shadow: 0 0 10px rgba(135, 92, 148, 0.3); // couleur accent + intensité
+    box-shadow: 0 0 10px rgba(135, 92, 148, 0.3);
 
     h3 {
       font-family: var(--font-gothic);
@@ -84,14 +110,20 @@
   }
 
   @media (max-width: 768px) {
-    &__main {
+    &__main,
+    &__singleColumn {
       flex-direction: column;
       gap: 30px;
     }
 
-    &__hero {
+    &__hero,
+    &__heroFull {
       width: 100%;
-      height: 250px; // 🔧 fixe une hauteur minimale pour l'image
+      height: 250px;
+
+      .home__heroBg {
+        height: 100%;
+      }
     }
 
     &__content {

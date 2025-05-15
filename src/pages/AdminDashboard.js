@@ -12,17 +12,18 @@ const AdminDashboard = () => {
     const [editId, setEditId] = useState(null);
     const [editItem, setEditItem] = useState({ title: '', content: '' });
 
+    const [showNewsOnHome, setShowNewsOnHome] = useState(true); // 👈 toggle actualité accueil
+
+    // Charger les médias
     useEffect(() => {
         const fetchMedia = async () => {
             try {
                 const res = await api.get('/media');
                 setMedia(res.data);
-                setTags(
-                    res.data.reduce((acc, item) => {
-                        acc[item.file] = item.tags || [];
-                        return acc;
-                    }, {})
-                );
+                setTags(res.data.reduce((acc, item) => {
+                    acc[item.file] = item.tags || [];
+                    return acc;
+                }, {}));
             } catch (err) {
                 console.error('Erreur chargement médias', err);
             }
@@ -30,6 +31,7 @@ const AdminDashboard = () => {
         fetchMedia();
     }, []);
 
+    // Charger les actualités
     useEffect(() => {
         const fetchNews = async () => {
             try {
@@ -42,32 +44,47 @@ const AdminDashboard = () => {
         fetchNews();
     }, []);
 
-    const filteredMedia = filter === 'all'
-        ? media
-        : media.filter((m) => m.category === filter);
+    // Charger config accueil (showNews)
+    useEffect(() => {
+        const fetchConfig = async () => {
+            try {
+                const res = await api.get('/config/home');
+                setShowNewsOnHome(res.data.showNewsOnHome);
+            } catch (err) {
+                console.error('Erreur chargement config accueil', err);
+            }
+        };
+        fetchConfig();
+    }, []);
 
+    const updateConfig = async (value) => {
+        try {
+            setShowNewsOnHome(value);
+            await api.put('/config/home', { showNewsOnHome: value });
+        } catch (err) {
+            console.error('Erreur mise à jour config', err);
+        }
+    };
+
+    const filteredMedia = filter === 'all' ? media : media.filter((m) => m.category === filter);
     const categories = Array.from(new Set(media.map((m) => m.category)));
 
     const handleDelete = async (item) => {
         if (!window.confirm(`Supprimer ${item.file} ?`)) return;
-
         try {
             const res = await api.delete('/media', {
                 data: { file: item.file, category: item.category }
             });
-
             if (res.status === 200) {
                 setMedia(media.filter((m) => m.file !== item.file));
-                setTags((prev) => {
+                setTags(prev => {
                     const updated = { ...prev };
                     delete updated[item.file];
                     return updated;
                 });
-            } else {
-                alert('Erreur lors de la suppression du fichier');
             }
         } catch (err) {
-            console.error('Erreur serveur :', err);
+            console.error('Erreur suppression fichier', err);
         }
     };
 
@@ -108,12 +125,10 @@ const AdminDashboard = () => {
                             ) : (
                                 <video src={`${apiBase}${item.url}`} controls />
                             )}
-
                             <div className={styles.mediaInfo}>
                                 <p>{item.file}</p>
                                 <span className={styles.badge}>{item.category}</span>
                             </div>
-
                             <div className={styles.tagList}>
                                 {(tags[item.file] || []).map((tag, i) => (
                                     <span key={i} className={styles.tag}>
@@ -122,7 +137,6 @@ const AdminDashboard = () => {
                                     </span>
                                 ))}
                             </div>
-
                             <form
                                 onSubmit={(e) => {
                                     e.preventDefault();
@@ -134,7 +148,6 @@ const AdminDashboard = () => {
                                 <input name={`tag-${idx}`} placeholder="Ajouter un tag" />
                                 <button type="submit">+ Ajouter</button>
                             </form>
-
                             <button className={styles.deleteBtn} onClick={() => handleDelete(item)}>
                                 🗑 Supprimer
                             </button>
@@ -144,6 +157,16 @@ const AdminDashboard = () => {
 
                 <div className={styles.newsSection}>
                     <h2>Actualités</h2>
+
+                    {/* ✅ Toggle affichage sur la page d’accueil */}
+                    <label className={styles.newsToggle}>
+                        <input
+                            type="checkbox"
+                            checked={showNewsOnHome}
+                            onChange={(e) => updateConfig(e.target.checked)}
+                        />
+                        Afficher les actualités sur la page d’accueil
+                    </label>
 
                     <form onSubmit={async (e) => {
                         e.preventDefault();
