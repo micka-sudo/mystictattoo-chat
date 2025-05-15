@@ -6,6 +6,7 @@ import api, { apiBase } from "../lib/api";
 const Home = () => {
     const [backgroundUrl, setBackgroundUrl] = useState('');
     const [news, setNews] = useState([]);
+    const [showNews, setShowNews] = useState(true); // ← toggle d'affichage
 
     const fetchRandomImage = async () => {
         try {
@@ -16,16 +17,31 @@ const Home = () => {
         }
     };
 
-    useEffect(() => {
-        fetchRandomImage();
-        const interval = setInterval(fetchRandomImage, 5000);
-        return () => clearInterval(interval);
-    }, []);
+    const fetchConfig = async () => {
+        try {
+            const res = await api.get('/config/home');
+            setShowNews(res.data.showNewsOnHome);
+        } catch (err) {
+            console.error('Erreur chargement config accueil', err);
+        }
+    };
+
+    const fetchNews = async () => {
+        try {
+            const res = await api.get('/news');
+            setNews(res.data);
+        } catch (err) {
+            console.error('Erreur chargement actualités', err);
+        }
+    };
 
     useEffect(() => {
-        api.get('/news')
-            .then(res => setNews(res.data))
-            .catch(err => console.error('Erreur chargement actualités', err));
+        fetchRandomImage();
+        fetchConfig();
+        fetchNews();
+
+        const interval = setInterval(fetchRandomImage, 5000);
+        return () => clearInterval(interval);
     }, []);
 
     return (
@@ -33,35 +49,37 @@ const Home = () => {
             <div className={styles.home}>
                 <h2 className={styles.home__title}>Bienvenue chez Mystic Tattoo</h2>
 
-                <div className={styles.home__main}>
-                    <div className={styles.home__hero}>
+                <div className={showNews ? styles.home__main : styles.home__singleColumn}>
+                    <div className={showNews ? styles.home__hero : styles.home__heroFull}>
                         <div
                             className={styles.home__heroBg}
                             style={{ backgroundImage: `url('${backgroundUrl}')` }}
                         ></div>
                     </div>
 
-                    <section className={styles.home__content}>
-                        <h3>Actualités</h3>
-                        {news.length === 0 ? (
-                            <p>Aucune actualité pour le moment.</p>
-                        ) : (
-                            <ul className={styles.home__newsList}>
-                                {news.slice(-3).reverse().map(item => (
-                                    <li key={item.id} className={styles.home__newsItem}>
-                                        <strong>{item.title}</strong>
-                                        {item.image && (
-                                            <img
-                                                src={`${apiBase}${item.image}`}
-                                                alt={item.title}
-                                            />
-                                        )}
-                                        <p>{item.content.slice(0, 100)}...</p>
-                                    </li>
-                                ))}
-                            </ul>
-                        )}
-                    </section>
+                    {showNews && (
+                        <section className={styles.home__content}>
+                            <h3>Actualités</h3>
+                            {news.length === 0 ? (
+                                <p>Aucune actualité pour le moment.</p>
+                            ) : (
+                                <ul className={styles.home__newsList}>
+                                    {news.slice(-3).reverse().map(item => (
+                                        <li key={item.id} className={styles.home__newsItem}>
+                                            <strong>{item.title}</strong>
+                                            {item.image && (
+                                                <img
+                                                    src={`${apiBase}${item.image}`}
+                                                    alt={item.title}
+                                                />
+                                            )}
+                                            <p>{item.content.slice(0, 100)}...</p>
+                                        </li>
+                                    ))}
+                                </ul>
+                            )}
+                        </section>
+                    )}
                 </div>
             </div>
         </Layout>
