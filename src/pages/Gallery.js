@@ -6,8 +6,44 @@ import styles from "./Gallery.module.scss";
 import useCategories from "../hooks/useCategories";
 import SEO from "../components/SEO";
 
+// 🟡 Mots-clés SEO principaux
+const SEO_KEYWORDS_BASE =
+    "tatoueur Nancy, salon de tatouage Nancy, tatouage Nancy, tatouage artistique Nancy, Mystic Tattoo, tattoo Nancy, meilleur tatoueur Nancy, galerie tatouage Nancy, tatouage personnalisé Nancy";
+
+// 🔵 Mots-clés SEO par style
+const styleKeywords = {
+    japonais: "tatouage japonais Nancy, tatoueur japonais Nancy, style japonais",
+    realiste: "tatouage réaliste Nancy, tatoueur réaliste Nancy, style réaliste",
+    oldschool: "tatouage oldschool Nancy, tatoueur oldschool Nancy, style oldschool",
+    minimaliste: "tatouage minimaliste Nancy, tatoueur minimaliste Nancy, style minimaliste",
+    graphique: "tatouage graphique Nancy, tatoueur graphique Nancy, style graphique",
+    // Ajoute ici tous tes styles spécifiques
+};
+
+// 🔴 Données structurées Schema.org (spécifique à la page galerie)
+const SCHEMA_ORG = {
+    "@context": "https://schema.org",
+    "@type": "TattooParlor",
+    "name": "Mystic Tattoo",
+    "image": "https://www.mystic-tattoo.fr/logo.png",
+    "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "23 Rue des Arts",
+        "addressLocality": "Nancy",
+        "postalCode": "54000",
+        "addressCountry": "FR"
+    },
+    "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": 48.6921,
+        "longitude": 6.1844
+    },
+    "telephone": "+33612345678",
+    "url": "https://www.mystic-tattoo.fr/gallery"
+};
+
 const Gallery = () => {
-    const { style } = useParams(); // ← route dynamique
+    const { style } = useParams();
     const location = useLocation();
     const navigate = useNavigate();
 
@@ -20,17 +56,25 @@ const Gallery = () => {
 
     const galleryItems = style ? media : Object.values(mediaByCategory).flat();
 
+    // 🏷️ Titre SEO-friendly
     const styleTitle = style ? `${style.charAt(0).toUpperCase() + style.slice(1)}` : "Tous les styles";
-    const pageTitle = `Galerie de tatouages ${style ? `- ${styleTitle} - ` : ""}Mystic Tattoo Nancy`;
+    const pageTitle = style
+        ? `Tatouage ${styleTitle} Nancy - Galerie Mystic Tattoo`
+        : `Galerie de tatouages - Mystic Tattoo Nancy`;
     const pageDescription = style
-        ? `Découvrez nos tatouages de style ${styleTitle} réalisés à Nancy par Mystic Tattoo.`
-        : `Explorez tous les styles de tatouage proposés par Mystic Tattoo à Nancy. Galerie complète.`;
+        ? `Découvrez nos tatouages de style ${styleTitle} réalisés à Nancy par Mystic Tattoo. Tatoueur spécialisé en ${styleTitle}, prise de rendez-vous en ligne, galerie, inspiration.`
+        : `Explorez tous les styles de tatouage proposés par Mystic Tattoo à Nancy : japonais, réaliste, graphique, oldschool, minimaliste... Réservez votre séance.`;
     const canonicalUrl = style
         ? `https://www.mystic-tattoo.fr/gallery/${style}`
         : `https://www.mystic-tattoo.fr/gallery`;
     const firstImageUrl = galleryItems[0]?.url ? `${apiBase}${galleryItems[0].url}` : null;
 
-    // ✅ Redirige les anciennes URLs /gallery?style=japonais
+    // 🏷️ Keywords dynamiques
+    const keywords = style
+        ? `${SEO_KEYWORDS_BASE}, ${styleKeywords[style] || styleTitle + " Nancy, tatouage " + styleTitle.toLowerCase() + " Nancy"}`
+        : SEO_KEYWORDS_BASE;
+
+    // Redirection des anciennes URLs (ex: /gallery?style=japonais)
     useEffect(() => {
         const query = new URLSearchParams(location.search);
         const oldStyle = query.get("style");
@@ -73,12 +117,13 @@ const Gallery = () => {
     const prev = () => setLightboxIndex((prev) => (prev === 0 ? galleryItems.length - 1 : prev - 1));
     const next = () => setLightboxIndex((prev) => (prev === galleryItems.length - 1 ? 0 : prev + 1));
 
+    // 🟢 Alt SEO-friendly
     const renderItem = (item, index) => (
         <div key={index} className={styles.gallery__item}>
             {item.type === "image" ? (
                 <img
                     src={`${apiBase}${item.url}`}
-                    alt={item.file}
+                    alt={`Tatouage ${styleTitle} à Nancy - Mystic Tattoo`}
                     loading="lazy"
                     onClick={() => openLightbox(index)}
                 />
@@ -97,18 +142,26 @@ const Gallery = () => {
 
     return (
         <Layout>
+            {/* SEO principal + open graph */}
             <SEO
                 title={pageTitle}
                 description={pageDescription}
                 url={canonicalUrl}
                 image={firstImageUrl}
+                keywords={keywords}
             />
+
+            {/* Données structurées Schema.org pour Google */}
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(SCHEMA_ORG) }}
+            />
+
             <div className={styles.gallery}>
                 <div className={styles.gallery__header}>
-                    <h2 className={styles.gallery__title}>
+                    <h1 className={styles.gallery__title}>
                         Galerie {style && `- ${style.charAt(0).toUpperCase() + style.slice(1)}`}
-                    </h2>
-
+                    </h1>
                     <div className={styles.gallery__categories}>
                         <button
                             className={`${styles.gallery__categoryBtn} ${!style ? styles.active : ""}`}
@@ -116,7 +169,6 @@ const Gallery = () => {
                         >
                             Tous
                         </button>
-
                         {categories.map((cat) => {
                             const hasMedia = mediaByCategory[cat]?.length > 0;
                             if (!style && !hasMedia) return null;
@@ -147,14 +199,15 @@ const Gallery = () => {
                 ) : (
                     Object.entries(mediaByCategory).map(([cat, items]) => {
                         if (!items || items.length === 0) return null;
-
                         return (
                             <section key={cat}>
-                                <h3 className={styles.gallery__title}>
+                                <h2 className={styles.gallery__title}>
                                     {cat.charAt(0).toUpperCase() + cat.slice(1)}
-                                </h3>
+                                </h2>
                                 <div className={styles.gallery__grid}>
-                                    {items.map((item, idx) => renderItem(item, galleryItems.indexOf(item)))}
+                                    {items.map((item, idx) =>
+                                        renderItem(item, galleryItems.indexOf(item))
+                                    )}
                                 </div>
                             </section>
                         );
@@ -163,12 +216,21 @@ const Gallery = () => {
 
                 {lightboxIndex !== null && (
                     <div className={styles.gallery__overlay} onClick={closeLightbox}>
-                        <button onClick={(e) => { e.stopPropagation(); prev(); }} className={styles.leftArrow}>
+                        <button
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                prev();
+                            }}
+                            className={styles.leftArrow}
+                        >
                             &#10094;
                         </button>
                         <div onClick={(e) => e.stopPropagation()}>
                             {galleryItems[lightboxIndex].type === "image" ? (
-                                <img src={`${apiBase}${galleryItems[lightboxIndex].url}`} alt="lightbox" />
+                                <img
+                                    src={`${apiBase}${galleryItems[lightboxIndex].url}`}
+                                    alt={`Tatouage ${styleTitle} à Nancy - Mystic Tattoo`}
+                                />
                             ) : (
                                 <video
                                     src={`${apiBase}${galleryItems[lightboxIndex].url}`}
@@ -177,7 +239,13 @@ const Gallery = () => {
                                 />
                             )}
                         </div>
-                        <button onClick={(e) => { e.stopPropagation(); next(); }} className={styles.rightArrow}>
+                        <button
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                next();
+                            }}
+                            className={styles.rightArrow}
+                        >
                             &#10095;
                         </button>
                     </div>
