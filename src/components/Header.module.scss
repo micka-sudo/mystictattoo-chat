@@ -31,6 +31,17 @@
     /* reste à gauche naturellement dans flex */
   }
 
+  // Bloc droite : nom + logo
+  &__right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    height: 100%;
+    margin-left: auto;
+    /* pour bien coller à droite */
+  }
+
   &__logo {
     height: 40px;
     object-fit: contain;
@@ -41,6 +52,13 @@
     color: var(--color-light);
     text-shadow: 0 0 6px var(--color-accent);
     margin-left: 12px;
+    margin-right: 0;
+  }
+
+  // Pour le brand dans le bloc droite, on inverse la marge
+  &__right .header__brand {
+    margin-left: 0;
+    margin-right: 12px;
   }
 
   // NAV CENTRÉ ABSOLUMENT dans le header
@@ -117,7 +135,8 @@
 
   // Burger menu à droite (toujours à droite avec margin-left:auto)
   .burgerBtn {
-    margin-left: auto;
+    position: absolute;
+    right: 20px;
     z-index: 3;
     font-size: 1.8rem;
     color: var(--color-accent);
@@ -157,6 +176,10 @@
     &__left {
       flex: 1;
       justify-content: flex-start;
+    }
+
+    &__right {
+      display: none; // On masque le bloc droite sur mobile pour ne pas surcharger le header
     }
 
     &__nav {
