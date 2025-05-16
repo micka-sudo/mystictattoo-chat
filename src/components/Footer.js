@@ -30,6 +30,10 @@ const Footer = () => {
                         📍 19 Boulevard Jean Jaurès, 54000 Nancy
                     </a>
                 </p>
+                {/* 📞 Numéro de téléphone (cliquable) */}
+                <p className={styles.footer__address}>
+                    <a href="tel:0688862646">📞 06.88.86.26.46</a>
+                </p>
 
                 {/* 📧 Newsletter (affichée uniquement si showNewsletter est true) */}
                 {showNewsletter && (
