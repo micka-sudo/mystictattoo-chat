@@ -15,18 +15,20 @@
 
   &__container {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    flex-wrap: nowrap;
-    gap: 10px;
+    position: relative;
+    width: 100%;
+    min-height: 60px;
   }
 
+  // Bloc gauche : logo + nom
   &__left {
     display: flex;
     align-items: center;
     gap: 8px;
-    text-decoration: none
-
+    text-decoration: none;
+    height: 100%;
+    /* reste à gauche naturellement dans flex */
   }
 
   &__logo {
@@ -35,16 +37,22 @@
   }
 
   &__brand {
-    font-size: 1.4rem;
+    font-size: 2rem;
     color: var(--color-light);
     text-shadow: 0 0 6px var(--color-accent);
-    font-size: 2rem;
+    margin-left: 12px;
   }
 
+  // NAV CENTRÉ ABSOLUMENT dans le header
   &__nav {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
     display: flex;
     align-items: center;
     gap: 12px;
+    z-index: 2;
 
     .nav__btn {
       padding: 6px 12px;
@@ -107,22 +115,26 @@
     }
   }
 
+  // Burger menu à droite (toujours à droite avec margin-left:auto)
   .burgerBtn {
-    display: none;
+    margin-left: auto;
+    z-index: 3;
     font-size: 1.8rem;
     color: var(--color-accent);
     background: none;
     border: none;
     cursor: pointer;
+    display: none; // affiché sur mobile via @media
   }
 
+  // ---------- RESPONSIVE ----------
   @media (max-width: 1024px) {
     &__brand {
       font-size: 1.2rem;
     }
 
     &__logo {
-      height: 50px;
+      height: 36px;
     }
 
     &__nav {
@@ -136,16 +148,26 @@
   }
 
   @media (max-width: 768px) {
-    .burgerBtn {
-      display: block;
+    &__container {
+      flex-direction: row;
+      align-items: center;
+      min-height: 60px;
+    }
+
+    &__left {
+      flex: 1;
+      justify-content: flex-start;
     }
 
     &__nav {
-      display: none;
-      flex-wrap: wrap;
+      position: static;
+      transform: none;
+      width: 100%;
       justify-content: center;
+      flex-wrap: wrap;
       gap: 10px;
-      margin-top: 15px;
+      margin-top: 12px;
+      display: none;
 
       &.open {
         display: flex;
@@ -178,6 +200,13 @@
     &__brand {
       font-size: 1rem;
     }
-  }
 
+    .burgerBtn {
+      display: block;
+      position: static;
+      margin-left: auto;
+      font-size: 2rem;
+      color: var(--color-accent);
+    }
+  }
 }
