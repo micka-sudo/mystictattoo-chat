@@ -37,11 +37,13 @@ const Header = () => {
     return (
         <header className={styles.header}>
             <div className={styles.header__container}>
+                {/* Bloc gauche */}
                 <Link to="/" className={styles.header__left} onClick={() => setMobileMenuOpen(false)}>
                     <img src="/logo.png" alt="Logo" className={styles.header__logo} />
                     <span className={styles.header__brand}>Mystic Tattoo</span>
                 </Link>
 
+                {/* Menu centré */}
                 <nav
                     className={`${styles.header__nav} ${mobileMenuOpen ? styles.open : ''}`}
                     onMouseLeave={() => setMobileMenuOpen(false)}
@@ -126,7 +128,13 @@ const Header = () => {
                     )}
                 </nav>
 
-                {/* Optionnel : burger menu à droite */}
+                {/* Bloc droite : "Mystic Tattoo" + Logo */}
+                <Link to="/" className={styles.header__right} onClick={() => setMobileMenuOpen(false)}>
+                    <span className={styles.header__brand}>Mystic Tattoo</span>
+                    <img src="/logo.png" alt="Logo" className={styles.header__logo} />
+                </Link>
+
+                {/* Burger menu à droite (mobile seulement) */}
                 <button
                     className={styles.burgerBtn}
                     onClick={() => setMobileMenuOpen(prev => !prev)}
