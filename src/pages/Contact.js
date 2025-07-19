@@ -38,12 +38,12 @@ const Contact = () => {
                     </div>
 
                     <div className={styles.socials}>
-                        <h2>Suivez-nous</h2>
+                        <h2>Suivez-moi</h2>
                         <div className={styles.socialLinks}>
-                            <a href="https://www.instagram.com/mystictattoo" target="_blank" rel="noopener noreferrer">
+                            <a href="https://www.instagram.com/directory.nancy.tattoo.artists/p/CvKA3RAri-q/?locale=ne_NP" target="_blank" rel="noopener noreferrer">
                                 <img src="/icons/instagram.png" alt="Instagram" />
                             </a>
-                            <a href="https://www.facebook.com/mystictattoo" target="_blank" rel="noopener noreferrer">
+                            <a href="https://www.facebook.com/p/Mystic-Tattoo-Nancy-100057617876652/?locale=fr_FR" target="_blank" rel="noopener noreferrer">
                                 <img src="/icons/facebook.png" alt="Facebook" />
                             </a>
                         </div>

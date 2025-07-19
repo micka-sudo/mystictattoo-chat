@@ -78,10 +78,24 @@ const Header = () => {
                                     : '0px'
                             }}
                         >
+                            {/* 🔹 Lien vers "Tous" */}
+                            <li>
+                                <Link
+                                    to="/gallery"
+                                    onClick={() => {
+                                        setDropdownOpen(false);
+                                        setMobileMenuOpen(false);
+                                    }}
+                                >
+                                    Tous
+                                </Link>
+                            </li>
+
+                            {/* 🔁 Liens dynamiques vers chaque catégorie */}
                             {categories.map((cat) => (
                                 <li key={cat}>
                                     <Link
-                                        to={`/gallery?style=${cat}`}
+                                        to={`/gallery/${cat}`}
                                         onClick={() => {
                                             setDropdownOpen(false);
                                             setMobileMenuOpen(false);
@@ -130,7 +144,7 @@ const Header = () => {
                         <>
                             <Link
                                 className={styles.nav__btn}
-                                to="/admin"
+                                to="/admin/home"
                                 onClick={() => setMobileMenuOpen(false)}
                             >
                                 🛠 Administration
