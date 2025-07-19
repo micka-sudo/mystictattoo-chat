@@ -50,7 +50,7 @@
   &__brand {
     font-size: 2rem;
     color: var(--color-light);
-    text-shadow: 0 0 6px var(--color-accent);
+    text-shadow: 0 0 6px var(--color-background);
     margin-left: 12px;
     margin-right: 0;
   }
@@ -75,8 +75,8 @@
     .nav__btn {
       padding: 6px 12px;
       border: 1px solid transparent;
-      background: var(--color-background);
-      color: var(--color-light);
+      background: var(--color-light);
+      color: var(--color-background);
       font-family: var(--font-gothic);
       font-size: 1.5rem;
       border-radius: 8px;
