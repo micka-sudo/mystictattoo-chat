@@ -2,23 +2,36 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Layout from '../layouts/Layout';
 import styles from './AdminHome.module.scss';
-import api, { apiBase } from '../lib/api'; // Appels backend centralisés via axios
+import api, { apiBase } from '../lib/api';
 
 const AdminHome = () => {
     const [news, setNews] = useState([]);
 
-    useEffect(() => {
-        const fetchNews = async () => {
-            try {
-                const res = await api.get('/news');
-                setNews(res.data);
-            } catch (error) {
-                console.error('Erreur chargement actus admin', error);
-            }
-        };
+    const fetchNews = async () => {
+        try {
+            const res = await api.get('/news');
+            setNews(res.data);
+        } catch (error) {
+            console.error('Erreur chargement actus admin', error);
+        }
+    };
 
+    useEffect(() => {
         fetchNews();
     }, []);
+
+    // 🔁 Supprimer une actu
+    const handleDelete = async (id) => {
+        if (!window.confirm('Supprimer cette actualité ?')) return;
+
+        try {
+            await api.delete(`/news/${id}`);
+            setNews(prev => prev.filter(item => item.id !== id));
+        } catch (error) {
+            console.error('Erreur suppression actu', error);
+            alert("Erreur lors de la suppression.");
+        }
+    };
 
     return (
         <Layout>
@@ -47,6 +60,14 @@ const AdminHome = () => {
                                     />
                                 )}
                                 <p>{item.content}</p>
+
+                                {/* 🔴 Bouton supprimer */}
+                                <button
+                                    onClick={() => handleDelete(item.id)}
+                                    className={styles.deleteBtn}
+                                >
+                                    ❌ Supprimer
+                                </button>
                             </li>
                         ))}
                     </ul>

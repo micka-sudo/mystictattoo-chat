@@ -1,0 +1,83 @@
+.contact {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  text-align: center;
+
+  .title {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #484748;
+    margin-bottom: 40px;
+  }
+
+  .card {
+    background-color: #fefefe;
+    border-radius: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+
+    @media (min-width: 768px) {
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+    }
+  }
+
+  .info {
+    flex: 1;
+
+    .infoItem {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.1rem;
+      color: #333333;
+      margin-bottom: 15px;
+
+      img {
+        width: 28px;
+        height: 28px;
+      }
+
+      a {
+        color: #875c94;
+        text-decoration: none;
+
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
+  }
+
+  .socials {
+    flex: 1;
+    text-align: center;
+
+    h2 {
+      font-size: 1.4rem;
+      margin-bottom: 10px;
+      color: #484748;
+    }
+
+    .socialLinks {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+
+      a img {
+        width: 36px;
+        height: 36px;
+        transition: transform 0.2s ease;
+
+        &:hover {
+          transform: scale(1.1);
+        }
+      }
+    }
+  }
+}

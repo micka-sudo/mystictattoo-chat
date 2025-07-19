@@ -11,8 +11,8 @@ html,
 body {
   height: 100%;
   font-family: var(--font-gothic);
-  background-color: var(--color-background);
-  color: var(--color-light);
+  background-color: var(--color-light);
+  color: var(--color-dark);
   scroll-behavior: smooth;
 }
 
@@ -29,7 +29,7 @@ img, video {
 }
 
 h1, h2, h3, h4, h5 {
-  font-family: var(--font-gothic);
+  font-family: var(--font-gothict);
   color: var(--color-accent);
 }
 
@@ -39,7 +39,7 @@ p {
 }
 
 button {
-  font-family: var(--font-gothic);
+  font-family: var(--font-gothict);
   letter-spacing: 0.5px;
   cursor: pointer;
   transition: all 0.3s ease;

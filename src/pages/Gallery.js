@@ -28,7 +28,7 @@ const SCHEMA_ORG = {
     "image": "https://www.mystic-tattoo.fr/logo.png",
     "address": {
         "@type": "PostalAddress",
-        "streetAddress": "23 Rue des Arts",
+        "streetAddress": "19 Boulevard Jean Jaurès",
         "addressLocality": "Nancy",
         "postalCode": "54000",
         "addressCountry": "FR"

@@ -3,6 +3,10 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import styles from './Header.module.scss';
 import useCategories from '../hooks/useCategories';
 
+/**
+ * Composant d'en-tête principal du site.
+ * Affiche le logo, les liens de navigation, la galerie (dropdown), et le menu mobile.
+ */
 const Header = () => {
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -19,6 +23,7 @@ const Header = () => {
     const showReservation = false;
     const showLogin = false;
 
+    // Ferme le dropdown si on clique en dehors
     useEffect(() => {
         const handleClickOutside = (e) => {
             if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
@@ -37,13 +42,13 @@ const Header = () => {
     return (
         <header className={styles.header}>
             <div className={styles.header__container}>
-                {/* Bloc gauche */}
+                {/* Logo et titre à gauche */}
                 <Link to="/" className={styles.header__left} onClick={() => setMobileMenuOpen(false)}>
                     <img src="/logo.png" alt="Logo" className={styles.header__logo} />
                     <span className={styles.header__brand}>Mystic Tattoo</span>
                 </Link>
 
-                {/* Menu centré */}
+                {/* Menu central : liens principaux */}
                 <nav
                     className={`${styles.header__nav} ${mobileMenuOpen ? styles.open : ''}`}
                     onMouseLeave={() => setMobileMenuOpen(false)}
@@ -73,10 +78,24 @@ const Header = () => {
                                     : '0px'
                             }}
                         >
+                            {/* 🔹 Lien vers "Tous" */}
+                            <li>
+                                <Link
+                                    to="/gallery"
+                                    onClick={() => {
+                                        setDropdownOpen(false);
+                                        setMobileMenuOpen(false);
+                                    }}
+                                >
+                                    Tous
+                                </Link>
+                            </li>
+
+                            {/* 🔁 Liens dynamiques vers chaque catégorie */}
                             {categories.map((cat) => (
                                 <li key={cat}>
                                     <Link
-                                        to={`/gallery?style=${cat}`}
+                                        to={`/gallery/${cat}`}
                                         onClick={() => {
                                             setDropdownOpen(false);
                                             setMobileMenuOpen(false);
@@ -89,6 +108,16 @@ const Header = () => {
                         </ul>
                     </div>
 
+                    {/* Lien vers la page de contact */}
+                    <Link
+                        className={styles.nav__btn}
+                        to="/contact"
+                        onClick={() => setMobileMenuOpen(false)}
+                    >
+                        Contact
+                    </Link>
+
+                    {/* Lien vers la réservation - désactivé ici mais prêt à être activé */}
                     {showReservation && (
                         <Link
                             className={styles.nav__btn}
@@ -99,6 +128,7 @@ const Header = () => {
                         </Link>
                     )}
 
+                    {/* Connexion admin */}
                     {showLogin && !isAdminLoggedIn && (
                         <Link
                             className={styles.nav__btn}
@@ -109,11 +139,12 @@ const Header = () => {
                         </Link>
                     )}
 
+                    {/* Lien admin si connecté */}
                     {isAdminLoggedIn && (
                         <>
                             <Link
                                 className={styles.nav__btn}
-                                to="/admin"
+                                to="/admin/home"
                                 onClick={() => setMobileMenuOpen(false)}
                             >
                                 🛠 Administration
@@ -128,13 +159,13 @@ const Header = () => {
                     )}
                 </nav>
 
-                {/* Bloc droite : "Mystic Tattoo" + Logo */}
+                {/* Logo et titre à droite (mobile/tablette) */}
                 <Link to="/" className={styles.header__right} onClick={() => setMobileMenuOpen(false)}>
                     <span className={styles.header__brand}>Mystic Tattoo</span>
                     <img src="/logo.png" alt="Logo" className={styles.header__logo} />
                 </Link>
 
-                {/* Burger menu à droite (mobile seulement) */}
+                {/* Bouton burger mobile */}
                 <button
                     className={styles.burgerBtn}
                     onClick={() => setMobileMenuOpen(prev => !prev)}
