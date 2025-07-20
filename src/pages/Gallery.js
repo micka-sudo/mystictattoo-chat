@@ -17,29 +17,7 @@ const styleKeywords = {
     oldschool: "tatouage oldschool Nancy, tatoueur oldschool Nancy, style oldschool",
     minimaliste: "tatouage minimaliste Nancy, tatoueur minimaliste Nancy, style minimaliste",
     graphique: "tatouage graphique Nancy, tatoueur graphique Nancy, style graphique",
-    // Ajoute ici tous tes styles spécifiques
-};
-
-// 🔴 Données structurées Schema.org (spécifique à la page galerie)
-const SCHEMA_ORG = {
-    "@context": "https://schema.org",
-    "@type": "TattooParlor",
-    "name": "Mystic Tattoo",
-    "image": "https://www.mystic-tattoo.fr/logo.png",
-    "address": {
-        "@type": "PostalAddress",
-        "streetAddress": "19 Boulevard Jean Jaurès",
-        "addressLocality": "Nancy",
-        "postalCode": "54000",
-        "addressCountry": "FR"
-    },
-    "geo": {
-        "@type": "GeoCoordinates",
-        "latitude": 48.6921,
-        "longitude": 6.1844
-    },
-    "telephone": "+33612345678",
-    "url": "https://www.mystic-tattoo.fr/gallery"
+    blackwork: "tatouage blackwork Nancy, tatoueur blackwork Nancy, style blackwork"
 };
 
 const Gallery = () => {
@@ -57,7 +35,6 @@ const Gallery = () => {
 
     const galleryItems = style ? media : Object.values(mediaByCategory).flat();
 
-    // 🏷️ Titre SEO-friendly
     const styleTitle = style ? `${style.charAt(0).toUpperCase() + style.slice(1)}` : "Tous les styles";
     const pageTitle = style
         ? `Tatouage ${styleTitle} Nancy - Galerie Mystic Tattoo`
@@ -70,10 +47,34 @@ const Gallery = () => {
         : `https://www.mystic-tattoo.fr/gallery`;
     const firstImageUrl = galleryItems[0]?.url ? `${apiBase}${galleryItems[0].url}` : null;
 
-    // 🏷️ Keywords dynamiques
     const keywords = style
         ? `${SEO_KEYWORDS_BASE}, ${styleKeywords[style] || styleTitle + " Nancy, tatouage " + styleTitle.toLowerCase() + " Nancy"}`
         : SEO_KEYWORDS_BASE;
+
+    const SCHEMA_ORG = {
+        "@context": "https://schema.org",
+        "@type": "TattooParlor",
+        "name": "Mystic Tattoo",
+        "image": "https://www.mystic-tattoo.fr/logo.png",
+        "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "19 Boulevard Jean Jaurès",
+            "addressLocality": "Nancy",
+            "postalCode": "54000",
+            "addressCountry": "FR"
+        },
+        "geo": {
+            "@type": "GeoCoordinates",
+            "latitude": 48.6921,
+            "longitude": 6.1844
+        },
+        "telephone": "+33688862646",
+        "url": `https://www.mystic-tattoo.fr/gallery${style ? `/${style}` : ''}`,
+        "sameAs": [
+            "https://www.instagram.com/directory.nancy.tattoo.artists/p/CvKA3RAri-q/?locale=ne_NP",
+            "https://www.facebook.com/p/Mystic-Tattoo-Nancy-100057617876652/?locale=fr_FR"
+        ]
+    };
 
     useEffect(() => {
         const query = new URLSearchParams(location.search);
@@ -89,7 +90,6 @@ const Gallery = () => {
             try {
                 if (style) {
                     if (style.toLowerCase() === "flash") {
-                        // Redirection si quelqu’un tape manuellement /gallery/flash
                         navigate("/flash", { replace: true });
                         return;
                     }
@@ -164,6 +164,12 @@ const Gallery = () => {
                     <h1 className={styles.gallery__title}>
                         Galerie {style && `- ${style.charAt(0).toUpperCase() + style.slice(1)}`}
                     </h1>
+                    {style && (
+                        <p style={{ textAlign: "center", color: "#484748", fontSize: "1.1rem", marginBottom: "20px" }}>
+                            Découvrez nos créations de tatouages <strong>{styleTitle.toLowerCase()}</strong> réalisées à Nancy.
+                            Un style {styleTitle.toLowerCase()} unique, dessiné avec passion par Mystic Tattoo.
+                        </p>
+                    )}
                     <div className={styles.gallery__categories}>
                         <button
                             className={`${styles.gallery__categoryBtn} ${!style ? styles.active : ""}`}
