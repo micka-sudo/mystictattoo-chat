@@ -22,7 +22,11 @@ const SCHEMA_ORG = {
         "longitude": 6.1844
     },
     "telephone": "+33688862646",
-    "url": "https://www.mystic-tattoo.fr/flash"
+    "url": "https://www.mystic-tattoo.fr/flash",
+    "sameAs": [
+        "https://www.instagram.com/directory.nancy.tattoo.artists/p/CvKA3RAri-q/?locale=ne_NP",
+        "https://www.facebook.com/p/Mystic-Tattoo-Nancy-100057617876652/?locale=fr_FR"
+    ]
 };
 
 const Flash = () => {
@@ -70,10 +74,17 @@ const Flash = () => {
             <div className={styles.gallery}>
                 <h1 className={styles.gallery__title}>Flash tattoos disponibles</h1>
 
-                <p style={{ textAlign: "center", marginBottom: "30px", color: "#484748", fontSize: "1.1rem" }}>
-                    Découvrez ici tous les flashs disponibles au salon Mystic Tattoo à Nancy. Ces créations sont
-                    prêtes à tatouer : elles sont uniques, disponibles en un seul exemplaire et régulièrement mises à jour.
-                    Réservez vite votre coup de cœur !
+                <p style={{
+                    textAlign: "center",
+                    marginBottom: "30px",
+                    color: "white",
+                    fontSize: "1rem",
+                    maxWidth: "800px",
+                    marginInline: "auto"
+                }}>
+                    Découvrez ici tous les flashs disponibles au salon <strong>Mystic Tattoo</strong> à Nancy.
+                    Chaque dessin est une pièce unique, conçue pour être tatouée une seule fois. Disponibles immédiatement,
+                    ces flashs sont idéals pour un projet rapide et original. N’attendez plus pour réserver votre coup de cœur !
                 </p>
 
                 {loading ? (

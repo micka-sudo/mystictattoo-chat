@@ -21,18 +21,18 @@
   .title {
     font-size: 2.5rem;
     font-weight: bold;
-    color: #484748;
+    color: var(--color-light);
     margin-bottom: 40px;
   }
 
   .intro {
-    font-size: 1.2rem;
-    color: #333333;
+    font-size: 1rem;
+    color: var(--color-light);
     margin-bottom: 30px;
   }
 
   .card {
-    background-color: #fefefe;
+    background-color: var(--color-background);
     border-radius: 20px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
     padding: 30px;
@@ -64,7 +64,7 @@
       }
 
       a {
-        color: #875c94;
+        color: var(--color-light);
         text-decoration: none;
 
         &:hover {
@@ -81,7 +81,7 @@
     h2 {
       font-size: 1.4rem;
       margin-bottom: 10px;
-      color: #484748;
+      color: var(--color-light);
     }
 
     .socialLinks {

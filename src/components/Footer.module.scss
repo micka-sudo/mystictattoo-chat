@@ -5,9 +5,9 @@
   bottom: 0;
   left: 0;
   width: 100%;
-  background-color: transparent; // plus transparent
+  background-color: var(--color-light);
   color: var(--color-background);
-  font-family: var(--font-gothic);
+  font-family: var(--font-holocene);
   border-top: 2px solid var(--color-accent);
   padding: 10px 20px;
   z-index: 999;

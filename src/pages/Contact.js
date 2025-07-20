@@ -5,6 +5,31 @@ import styles from './Contact.module.scss';
 
 const SEO_KEYWORDS = "contact Mystic Tattoo, tatoueur Nancy, réseaux sociaux tatouage, salon tattoo Nancy";
 
+const SCHEMA_ORG = {
+    "@context": "https://schema.org",
+    "@type": "TattooParlor",
+    "name": "Mystic Tattoo",
+    "image": "https://www.mystic-tattoo.fr/logo.png",
+    "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "19 Boulevard Jean Jaurès",
+        "addressLocality": "Nancy",
+        "postalCode": "54000",
+        "addressCountry": "FR"
+    },
+    "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": 48.6921,
+        "longitude": 6.1844
+    },
+    "telephone": "+33688862646",
+    "url": "https://www.mystic-tattoo.fr/contact",
+    "sameAs": [
+        "https://www.instagram.com/directory.nancy.tattoo.artists/p/CvKA3RAri-q/?locale=ne_NP",
+        "https://www.facebook.com/p/Mystic-Tattoo-Nancy-100057617876652/?locale=fr_FR"
+    ]
+};
+
 const Contact = () => {
     return (
         <Layout>
@@ -13,6 +38,11 @@ const Contact = () => {
                 description="Retrouvez toutes les infos pour contacter Mystic Tattoo à Nancy : adresse, téléphone, Instagram, Facebook."
                 url="https://www.mystic-tattoo.fr/contact"
                 keywords={SEO_KEYWORDS}
+            />
+
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(SCHEMA_ORG) }}
             />
 
             {/* 📸 Image de présentation avant le contenu de contact */}
@@ -27,32 +57,51 @@ const Contact = () => {
             <section className={styles.contact}>
                 <h1 className={styles.title}>Contact</h1>
 
-                {/* 🎉 Message d’accueil sympa */}
                 <p className={styles.intro}>
-                    Une question, une idée de tatouage &nbsp;?
+                    Une question, une idée de tatouage ?
                     <br />
                     N’hésitez pas à me contacter ou à passer directement au salon ! 🤘
+                </p>
+
+                <p style={{ textAlign: 'center', fontSize: '0.8rem', color: 'white', marginBottom: '20px' }}>
+                    Le salon <strong>Mystic Tattoo</strong> est situé à Nancy (54000), proche du centre-ville.
+                    Pour toute demande d’information, prise de rendez-vous ou suivi, vous pouvez me joindre par téléphone
+                    ou sur les réseaux sociaux. Je vous accueille dans un cadre propre, chaleureux et professionnel.
                 </p>
 
                 <div className={styles.card}>
                     <div className={styles.info}>
                         <div className={styles.infoItem}>
                             <img src="/icons/carte.png" alt="Adresse" />
-                            <p><a href="https://www.google.com/maps?q=19+Boulevard+Jean+Jaurès,+54000+Nancy">19 Boulevard Jean Jaurès, 54000 Nancy</a></p>
+                            <p>
+                                <a href="https://www.google.com/maps?q=19+Boulevard+Jean+Jaurès,+54000+Nancy">
+                                    19 Boulevard Jean Jaurès, 54000 Nancy
+                                </a>
+                            </p>
                         </div>
                         <div className={styles.infoItem}>
                             <img src="/icons/sonnerie-du-telephone.png" alt="Téléphone" />
-                            <p><a href="tel:+33688862646">06.88.86.26.46</a></p>
+                            <p>
+                                <a href="tel:+33688862646">06.88.86.26.46</a>
+                            </p>
                         </div>
                     </div>
 
                     <div className={styles.socials}>
                         <h2>Suivez-moi</h2>
                         <div className={styles.socialLinks}>
-                            <a href="https://www.instagram.com/directory.nancy.tattoo.artists/p/CvKA3RAri-q/?locale=ne_NP" target="_blank" rel="noopener noreferrer">
+                            <a
+                                href="https://www.instagram.com/directory.nancy.tattoo.artists/p/CvKA3RAri-q/?locale=ne_NP"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
                                 <img src="/icons/instagram.png" alt="Instagram" />
                             </a>
-                            <a href="https://www.facebook.com/p/Mystic-Tattoo-Nancy-100057617876652/?locale=fr_FR" target="_blank" rel="noopener noreferrer">
+                            <a
+                                href="https://www.facebook.com/p/Mystic-Tattoo-Nancy-100057617876652/?locale=fr_FR"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
                                 <img src="/icons/facebook.png" alt="Facebook" />
                             </a>
                         </div>
