@@ -90,7 +90,7 @@ const Home = () => {
                 <p className={styles.home__subtitle}>
                     Tatouage artistique, styles variés, découvrez nos créations à Nancy.
                 </p>
-                <p style={{ textAlign: "center", fontSize: "1.1rem", maxWidth: "800px", margin: "0 auto 30px", color: "#484748" }}>
+                <p style={{ textAlign: "center", fontSize: "1rem", maxWidth: "800px", margin: "0 auto 30px", color: "white" }}>
                     Mystic Tattoo vous propose des créations uniques dans des styles variés : réaliste, japonais, oldschool, minimaliste ou graphique.
                     Hygiène irréprochable, écoute, accompagnement personnalisé. Prenez rendez-vous avec un tatoueur passionné au cœur de Nancy !
 

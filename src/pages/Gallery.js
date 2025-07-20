@@ -165,7 +165,7 @@ const Gallery = () => {
                         Galerie {style && `- ${style.charAt(0).toUpperCase() + style.slice(1)}`}
                     </h1>
                     {style && (
-                        <p style={{ textAlign: "center", color: "#484748", fontSize: "1.1rem", marginBottom: "20px" }}>
+                        <p style={{ textAlign: "center", color: "white", fontSize: "1.1rem", marginBottom: "20px" }}>
                             Découvrez nos créations de tatouages <strong>{styleTitle.toLowerCase()}</strong> réalisées à Nancy.
                             Un style {styleTitle.toLowerCase()} unique, dessiné avec passion par Mystic Tattoo.
                         </p>

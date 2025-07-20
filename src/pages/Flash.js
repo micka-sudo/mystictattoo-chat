@@ -77,8 +77,8 @@ const Flash = () => {
                 <p style={{
                     textAlign: "center",
                     marginBottom: "30px",
-                    color: "#484748",
-                    fontSize: "1.1rem",
+                    color: "white",
+                    fontSize: "1rem",
                     maxWidth: "800px",
                     marginInline: "auto"
                 }}>

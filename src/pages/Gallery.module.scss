@@ -23,8 +23,8 @@
 
   &__title {
     font-size: 2.5rem;
-    font-family: var(--font-gothic);
-    color: var(--color-background);
+    font-family: var(--font-holocene);
+    color: var(--color-light);
     text-align: center;
     margin-bottom: 20px;
   }
@@ -37,14 +37,14 @@
   }
 
   &__categoryBtn {
-    background: var(--color-light);
-    color: var(--color-background);
+    background: var(--color-background);
+    color: var(--color-light);
 
     border-radius: 12px;
     padding: 10px 20px;
     font-weight: 600;
     font-size: 1rem;
-    font-family: var(--font-gothic);
+    font-family: var(--font-holocene);
     letter-spacing: 0.5px;
     cursor: pointer;
     text-decoration: none;
@@ -52,14 +52,14 @@
     backdrop-filter: blur(4px);
 
     &:hover {
-      color: var(--color-background);
+      color: var(--color-light);
       box-shadow: 0 0 12px var(--color-accent);
       border-color: var(--color-accent);
       transform: translateY(-1px);
     }
 
     &.active {
-      color: var(--color-background);
+      color: var(--color-light);
       border-color: var(--color-accent);
     }
   }
@@ -156,7 +156,7 @@
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    font-size: 4rem;
+    font-size: 3rem;
     color: white;
     background: rgba(255, 255, 255, 0.15);
     border: none;

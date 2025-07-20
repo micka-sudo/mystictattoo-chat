@@ -63,7 +63,7 @@ const Contact = () => {
                     N’hésitez pas à me contacter ou à passer directement au salon ! 🤘
                 </p>
 
-                <p style={{ textAlign: 'center', fontSize: '1.1rem', color: '#484748', marginBottom: '20px' }}>
+                <p style={{ textAlign: 'center', fontSize: '0.8rem', color: 'white', marginBottom: '20px' }}>
                     Le salon <strong>Mystic Tattoo</strong> est situé à Nancy (54000), proche du centre-ville.
                     Pour toute demande d’information, prise de rendez-vous ou suivi, vous pouvez me joindre par téléphone
                     ou sur les réseaux sociaux. Je vous accueille dans un cadre propre, chaleureux et professionnel.
