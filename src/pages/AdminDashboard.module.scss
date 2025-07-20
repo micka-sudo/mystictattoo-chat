@@ -13,38 +13,41 @@
   }
 
   h3 {
-    color: var(--color-accent);
+    color: var(--color-light);
     margin-bottom: 15px;
     font-size: 1.3rem;
   }
 }
 
+/* 🔼 Formulaires d'upload (média ou actu) */
 .uploadForm {
   display: flex;
   flex-direction: column;
   gap: 12px;
   margin-bottom: 30px;
+  max-width: 500px;
 
   input,
   select,
-  button {
+  button,
+  textarea {
     font-family: var(--font-default);
     padding: 10px;
     border-radius: 6px;
     font-size: 1rem;
   }
 
-  input[type="file"] {
+  input[type="file"],
+  input[type="text"],
+  textarea,
+  select {
     background: var(--color-dark);
     color: var(--color-light);
     border: 1px solid var(--color-accent);
   }
 
-  input[type="text"],
-  select {
-    background: var(--color-dark);
-    color: var(--color-light);
-    border: 1px solid var(--color-accent);
+  textarea {
+    resize: vertical;
   }
 
   button {
@@ -60,12 +63,23 @@
       color: var(--color-background);
     }
   }
+
+  @media (max-width: 600px) {
+    input,
+    select,
+    button,
+    textarea {
+      font-size: 0.9rem;
+    }
+  }
 }
 
+/* 🔁 Filtres des catégories */
 .filterBar {
   margin-bottom: 20px;
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 10px;
 
   label {
@@ -82,12 +96,22 @@
   }
 }
 
+/* 🖼 Grille médias + actualités */
 .mediaGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   gap: 20px;
+
+  @media (max-width: 768px) {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  }
+
+  @media (max-width: 500px) {
+    grid-template-columns: 1fr;
+  }
 }
 
+/* 📦 Élément media ou actu */
 .mediaItem {
   border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 8px;
@@ -102,6 +126,13 @@
     border-radius: 6px;
     object-fit: cover;
     background: black;
+    max-height: 300px;
+  }
+
+  p {
+    margin-top: 8px;
+    font-size: 0.85rem;
+    color: var(--color-light);
   }
 
   select {
@@ -113,8 +144,16 @@
     color: var(--color-light);
     border: 1px solid var(--color-accent);
   }
+
+  strong {
+    font-weight: bold;
+    color: var(--color-secondary);
+    margin-bottom: 6px;
+    font-size: 1rem;
+  }
 }
 
+/* ℹ️ Infos du média */
 .mediaInfo,
 .meta {
   margin-top: 8px;
@@ -138,6 +177,7 @@
   font-weight: bold;
 }
 
+/* ❌ Bouton suppression */
 .deleteBtn {
   margin-top: 10px;
   padding: 6px 12px;
@@ -154,6 +194,7 @@
   }
 }
 
+/* 🛠 Changement de catégorie */
 .moveSection {
   display: flex;
   flex-direction: column;
@@ -175,4 +216,9 @@
       color: var(--color-light);
     }
   }
+}
+
+/* 📋 Section actualités */
+.newsSection {
+  margin-bottom: 40px;
 }

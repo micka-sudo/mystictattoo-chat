@@ -4,20 +4,13 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
 import Gallery from './pages/Gallery';
 import Reservation from './pages/Reservation';
-import Contact from './pages/Contact'; // ✅ ajout manquant
+import Contact from './pages/Contact';
 import AdminLogin from './pages/AdminLogin';
 import AdminDashboard from './pages/AdminDashboard';
-import AdminUpload from './pages/AdminUpload';
-import AdminHome from './pages/AdminHome';
 import AdminReservations from './pages/AdminReservations';
 import RequireAuth from './components/RequireAuth';
 import Flash from './pages/Flash';
 
-
-/**
- * Définition des routes de l'application.
- * Séparation entre routes publiques et administrateur.
- */
 function App() {
     return (
         <Router>
@@ -25,24 +18,15 @@ function App() {
                 {/* =================== PUBLIC =================== */}
                 <Route path="/" element={<Home />} />
                 <Route path="/gallery" element={<Gallery />} />
-                <Route path="/gallery/:style" element={<Gallery />} /> {/* ✅ SEO-friendly */}
+                <Route path="/gallery/:style" element={<Gallery />} />
                 <Route path="/contact" element={<Contact />} />
                 <Route path="/reservation" element={<Reservation />} />
                 <Route path="/flash" element={<Flash />} />
 
                 {/* =================== ADMIN PUBLIC =================== */}
                 <Route path="/admin/login" element={<AdminLogin />} />
-                <Route path="/admin/home" element={<AdminHome />} />
 
                 {/* =================== ADMIN PRIVÉ =================== */}
-                <Route
-                    path="/admin"
-                    element={
-                        <RequireAuth>
-                            <AdminUpload />
-                        </RequireAuth>
-                    }
-                />
                 <Route
                     path="/admin/dashboard"
                     element={
