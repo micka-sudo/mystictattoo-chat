@@ -11,6 +11,8 @@ import AdminUpload from './pages/AdminUpload';
 import AdminHome from './pages/AdminHome';
 import AdminReservations from './pages/AdminReservations';
 import RequireAuth from './components/RequireAuth';
+import Flash from './pages/Flash';
+
 
 /**
  * Définition des routes de l'application.
@@ -26,6 +28,7 @@ function App() {
                 <Route path="/gallery/:style" element={<Gallery />} /> {/* ✅ SEO-friendly */}
                 <Route path="/contact" element={<Contact />} />
                 <Route path="/reservation" element={<Reservation />} />
+                <Route path="/flash" element={<Flash />} />
 
                 {/* =================== ADMIN PUBLIC =================== */}
                 <Route path="/admin/login" element={<AdminLogin />} />
