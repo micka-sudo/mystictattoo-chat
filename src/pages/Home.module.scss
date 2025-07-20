@@ -9,9 +9,9 @@
   width: 100%;
 
   &__title {
-    font-family: var(--font-gothic);
-    font-size: 3rem;
-    color: var(--color-background);
+    font-family: var(--font-holocene);
+    font-size: 2.5rem;
+    color: var(--color-light);
     margin: 10px 0 15px;
   }
 
@@ -44,6 +44,7 @@
     border-radius: 12px;
     overflow: hidden;
     position: relative;
+    margin-bottom: 40px; // ✅ idem
 
     &Bg {
       position: absolute;
@@ -67,6 +68,7 @@
     border-radius: 12px;
     overflow: hidden;
     position: relative;
+    margin-bottom: 40px; // ✅ idem
 
     .home__heroBg {
       width: 100%;
@@ -82,18 +84,18 @@
 
   &__content {
     flex: 1;
-    background: var(--color-light);
-    color: var(--color-background);
+    background: var(--color-background);
+    color: var(--color-light);
     padding: 40px;
-    font-family: var(--font-gothic);
+    font-family: var(--font-holocene);
     border-radius: 10px;
     display: flex;
     flex-direction: column;
 
     h2 {
-      font-family: var(--font-gothic);
-      font-size: 1.8rem;
-      color: var(--color-background);
+      font-family: var(--font-holocene);
+      font-size: 1rem;
+      color: var(--color-light);
       margin-bottom: 25px;
       text-align: left;
     }
@@ -113,7 +115,7 @@
   }
 
   &__newsItem {
-    background: var(--color-light);
+    background: var(--color-background);
     border-radius: 10px;
     padding: 20px;
     text-align: left;
@@ -126,9 +128,9 @@
     strong {
       display: block;
       font-size: 1.2rem;
-      color: var(--color-background);
+      color: var(--color-light);
       margin-bottom: 10px;
-      font-family: var(--font-gothic);
+      font-family: var(--font-holocene);
     }
 
     img {

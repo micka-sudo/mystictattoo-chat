@@ -24,8 +24,12 @@ const SCHEMA_ORG = {
         "latitude": 48.6921,
         "longitude": 6.1844
     },
-    "telephone": "+33612345678",
-    "url": "https://www.mystic-tattoo.fr"
+    "telephone": "+33688862646",
+    "url": "https://www.mystic-tattoo.fr",
+    "sameAs": [
+        "https://www.instagram.com/directory.nancy.tattoo.artists/p/CvKA3RAri-q/?locale=ne_NP",
+        "https://www.facebook.com/p/Mystic-Tattoo-Nancy-100057617876652/?locale=fr_FR"
+    ]
 };
 
 const Home = () => {
@@ -85,6 +89,11 @@ const Home = () => {
                 </h1>
                 <p className={styles.home__subtitle}>
                     Tatouage artistique, styles variés, découvrez nos créations à Nancy.
+                </p>
+                <p style={{ textAlign: "center", fontSize: "1rem", maxWidth: "800px", margin: "0 auto 30px", color: "white" }}>
+                    Mystic Tattoo vous propose des créations uniques dans des styles variés : réaliste, japonais, oldschool, minimaliste ou graphique.
+                    Hygiène irréprochable, écoute, accompagnement personnalisé. Prenez rendez-vous avec un tatoueur passionné au cœur de Nancy !
+
                 </p>
 
                 <div className={showNews ? styles.home__main : styles.home__singleColumn}>

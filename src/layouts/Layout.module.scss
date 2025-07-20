@@ -4,11 +4,11 @@
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  background-color: var(--color-light);
-  color: var(--color-background);
+  background-color: var(--color-background);
+  color: var(--color-light);
 }
 
 .main {
   flex-grow: 1;
-  padding: 40px 20px;
+  margin-bottom: 40px;
 }
