@@ -9,37 +9,40 @@
   color: var(--color-background);
   font-family: var(--font-holocene);
   border-top: 2px solid var(--color-accent);
-  padding: 10px 20px 8px;
+  padding: 10px 20px;
   z-index: 999;
   backdrop-filter: blur(8px);
-  text-align: center;
+  transition: background 0.3s ease;
 
-  // ✅ Ligne du haut : adresse + icônes
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
   &__top {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    flex-wrap: nowrap;
     gap: 20px;
+    width: 100%;
 
-    @media (max-width: 600px) {
+    @media (max-width: 768px) {
       flex-direction: column;
-      gap: 6px;
+      align-items: center;
+      gap: 10px;
     }
   }
 
-  &__address {
+  &__address,
+  &__phone {
     font-size: 0.95rem;
-
+    white-space: nowrap;
     a {
+      color: inherit;
       text-decoration: none;
-      color: var(--color-background);
-      font-weight: 500;
+    }
 
-      &:hover {
-        color: var(--color-accent);
-        text-decoration: underline;
-      }
+    @media (max-width: 768px) {
+      font-size: 0.85rem;
     }
   }
 
@@ -47,37 +50,30 @@
     display: flex;
     gap: 12px;
 
-    a img {
-      width: 24px;
-      height: 24px;
-      transition: 0.3s;
-
-      &:hover {
-        transform: scale(1.1);
-        filter: drop-shadow(0 0 4px var(--color-accent));
-      }
-    }
-  }
-
-  &__phone {
-    margin-top: 4px;
-    font-weight: bold;
-    font-size: 1rem;
-
     a {
-      color: var(--color-background);
-      text-decoration: none;
+      display: flex;
+      align-items: center;
 
-      &:hover {
-        color: var(--color-accent);
-        text-decoration: underline;
+      img {
+        width: 24px;
+        height: 24px;
+        transition: 0.3s;
+
+        &:hover {
+          transform: scale(1.1);
+          filter: drop-shadow(0 0 4px var(--color-accent));
+        }
       }
+    }
+
+    @media (max-width: 768px) {
+      gap: 8px;
     }
   }
 
-  &__legal {
-    font-size: 0.8rem;
-    margin-top: 2px;
-    color: rgba(0, 0, 0, 0.6);
+  &__bottom {
+    text-align: center;
+    margin-top: 8px;
+    font-size: 0.85rem;
   }
 }
