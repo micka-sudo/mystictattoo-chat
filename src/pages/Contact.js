@@ -15,6 +15,15 @@ const Contact = () => {
                 keywords={SEO_KEYWORDS}
             />
 
+            {/* 📸 Image de présentation avant le contenu de contact */}
+            <div className={styles.imageWrapper}>
+                <img
+                    src="/images/IMG_6456_1752991546168.png"
+                    alt="Tatouage - Mystic Tattoo"
+                    className={styles.bannerImage}
+                />
+            </div>
+
             <section className={styles.contact}>
                 <h1 className={styles.title}>Contact</h1>
 
