@@ -1,9 +1,29 @@
-// src/pages/Flash.js
 import React, { useEffect, useState } from "react";
 import Layout from "../layouts/Layout";
 import SEO from "../components/SEO";
 import styles from "./Gallery.module.scss"; // réutilisation du style galerie
 import api, { apiBase } from "../lib/api";
+
+const SCHEMA_ORG = {
+    "@context": "https://schema.org",
+    "@type": "TattooParlor",
+    "name": "Mystic Tattoo",
+    "image": "https://www.mystic-tattoo.fr/logo.png",
+    "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "19 Boulevard Jean Jaurès",
+        "addressLocality": "Nancy",
+        "postalCode": "54000",
+        "addressCountry": "FR"
+    },
+    "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": 48.6921,
+        "longitude": 6.1844
+    },
+    "telephone": "+33688862646",
+    "url": "https://www.mystic-tattoo.fr/flash"
+};
 
 const Flash = () => {
     const [media, setMedia] = useState([]);
@@ -42,8 +62,19 @@ const Flash = () => {
                 keywords="tatouage flash Nancy, flash tattoo Nancy, Mystic Tattoo, tatoueur Nancy"
             />
 
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(SCHEMA_ORG) }}
+            />
+
             <div className={styles.gallery}>
                 <h1 className={styles.gallery__title}>Flash tattoos disponibles</h1>
+
+                <p style={{ textAlign: "center", marginBottom: "30px", color: "#484748", fontSize: "1.1rem" }}>
+                    Découvrez ici tous les flashs disponibles au salon Mystic Tattoo à Nancy. Ces créations sont
+                    prêtes à tatouer : elles sont uniques, disponibles en un seul exemplaire et régulièrement mises à jour.
+                    Réservez vite votre coup de cœur !
+                </p>
 
                 {loading ? (
                     <p>Chargement...</p>
@@ -77,7 +108,9 @@ const Flash = () => {
 
                 {lightboxIndex !== null && (
                     <div className={styles.gallery__overlay} onClick={closeLightbox}>
-                        <button onClick={(e) => { e.stopPropagation(); prev(); }} className={styles.leftArrow}>&#10094;</button>
+                        <button onClick={(e) => { e.stopPropagation(); prev(); }} className={styles.leftArrow}>
+                            &#10094;
+                        </button>
                         <div onClick={(e) => e.stopPropagation()}>
                             {media[lightboxIndex].type === "image" ? (
                                 <img
@@ -92,7 +125,9 @@ const Flash = () => {
                                 />
                             )}
                         </div>
-                        <button onClick={(e) => { e.stopPropagation(); next(); }} className={styles.rightArrow}>&#10095;</button>
+                        <button onClick={(e) => { e.stopPropagation(); next(); }} className={styles.rightArrow}>
+                            &#10095;
+                        </button>
                     </div>
                 )}
             </div>
