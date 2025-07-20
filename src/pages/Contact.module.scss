@@ -1,3 +1,17 @@
+.imageWrapper {
+  width: 100%;
+  overflow: hidden;
+
+  .bannerImage {
+    width: 100%;
+    height: auto;
+    max-height: 400px; // tu peux ajuster selon besoin
+    object-fit: contain;
+    display: block;
+
+  }
+}
+
 .contact {
   max-width: 900px;
   margin: 0 auto;
@@ -9,6 +23,12 @@
     font-weight: bold;
     color: #484748;
     margin-bottom: 40px;
+  }
+
+  .intro {
+    font-size: 1.2rem;
+    color: #333333;
+    margin-bottom: 30px;
   }
 
   .card {
