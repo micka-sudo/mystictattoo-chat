@@ -19,7 +19,7 @@ const AdminLogin = () => {
             if (res.status === 200 && res.data.token) {
                 localStorage.setItem('admin_token', res.data.token);
                 setStatus('✅ Connexion réussie');
-                navigate('/admin');
+                navigate('/admin/dashboard');
             } else {
                 setStatus('❌ Mot de passe incorrect');
             }
