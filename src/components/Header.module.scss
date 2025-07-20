@@ -16,30 +16,18 @@
   &__container {
     display: flex;
     align-items: center;
-    position: relative;
+    justify-content: space-between;
     width: 100%;
     min-height: 60px;
   }
 
-  // Bloc gauche : logo + nom
-  &__left {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    text-decoration: none;
-    height: 100%;
-    /* reste à gauche naturellement dans flex */
-  }
-
-  // Bloc droite : nom + logo
+  &__left,
   &__right {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
     text-decoration: none;
     height: 100%;
-    margin-left: auto;
-    /* pour bien coller à droite */
   }
 
   &__logo {
@@ -51,17 +39,9 @@
     font-size: 2rem;
     color: var(--color-light);
     text-shadow: 0 0 6px var(--color-background);
-    margin-left: 12px;
-    margin-right: 0;
+    margin: 0 12px;
   }
 
-  // Pour le brand dans le bloc droite, on inverse la marge
-  &__right .header__brand {
-    margin-left: 0;
-    margin-right: 12px;
-  }
-
-  // NAV CENTRÉ ABSOLUMENT dans le header
   &__nav {
     position: absolute;
     left: 50%;
@@ -78,10 +58,10 @@
       background: var(--color-light);
       color: var(--color-background);
       font-family: var(--font-holocene);
-      font-size: 1.5rem;
+      font-size: 1.4rem;
       border-radius: 8px;
       cursor: pointer;
-      transition: 0.3s ease;
+      transition: all 0.3s ease;
 
       &:hover {
         border-color: var(--color-accent);
@@ -121,7 +101,7 @@
             color: var(--color-light);
             text-decoration: none;
             border-radius: 6px;
-            transition: 0.2s;
+            transition: 0.2s ease;
 
             &:hover {
               background-color: var(--color-accent);
@@ -133,53 +113,45 @@
     }
   }
 
-  // Burger menu à droite (toujours à droite avec margin-left:auto)
   .burgerBtn {
-    position: absolute;
-    right: 20px;
+    display: none;
+    position: relative;
     z-index: 3;
-    font-size: 1.8rem;
+    font-size: 2rem;
     color: var(--color-accent);
     background: none;
     border: none;
     cursor: pointer;
-    display: none; // affiché sur mobile via @media
   }
 
   // ---------- RESPONSIVE ----------
   @media (max-width: 1024px) {
     &__brand {
-      font-size: 1.2rem;
+      font-size: 1.5rem;
     }
 
     &__logo {
-      height: 36px;
+      height: 42px;
     }
 
-    &__nav {
-      gap: 10px;
-
-      .nav__btn {
-        padding: 5px 10px;
-        font-size: 0.9rem;
-      }
+    &__nav .nav__btn {
+      font-size: 1.1rem;
+      padding: 5px 10px;
     }
   }
 
   @media (max-width: 768px) {
     &__container {
-      flex-direction: row;
-      align-items: center;
-      min-height: 60px;
+      flex-wrap: wrap;
+      gap: 8px;
     }
 
     &__left {
       flex: 1;
-      justify-content: flex-start;
     }
 
     &__right {
-      display: none; // On masque le bloc droite sur mobile pour ne pas surcharger le header
+      display: none;
     }
 
     &__nav {
@@ -188,24 +160,20 @@
       width: 100%;
       justify-content: center;
       flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 12px;
       display: none;
+      margin-top: 10px;
 
       &.open {
         display: flex;
       }
 
       .nav__btn {
-        width: auto;
-        padding: 6px 12px;
-        font-size: 0.9rem;
+        font-size: 1rem;
+        padding: 8px 10px;
         white-space: nowrap;
       }
 
       .dropdown {
-        position: relative;
-
         &__menu {
           position: absolute;
           top: 100%;
@@ -220,16 +188,9 @@
       }
     }
 
-    &__brand {
-      font-size: 1rem;
-    }
-
     .burgerBtn {
       display: block;
-      position: static;
       margin-left: auto;
-      font-size: 2rem;
-      color: var(--color-accent);
     }
   }
 }

@@ -1,3 +1,5 @@
+// ✅ Gallery.js corrigé (path au lieu de url)
+
 import React, { useEffect, useState } from "react";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
 import api, { apiBase } from "../lib/api";
@@ -6,11 +8,9 @@ import styles from "./Gallery.module.scss";
 import useCategories from "../hooks/useCategories";
 import SEO from "../components/SEO";
 
-// 🟡 Mots-clés SEO principaux
 const SEO_KEYWORDS_BASE =
     "tatoueur Nancy, salon de tatouage Nancy, tatouage Nancy, tatouage artistique Nancy, Mystic Tattoo, tattoo Nancy, meilleur tatoueur Nancy, galerie tatouage Nancy, tatouage personnalisé Nancy";
 
-// 🔵 Mots-clés SEO par style
 const styleKeywords = {
     japonais: "tatouage japonais Nancy, tatoueur japonais Nancy, style japonais",
     realiste: "tatouage réaliste Nancy, tatoueur réaliste Nancy, style réaliste",
@@ -32,7 +32,6 @@ const Gallery = () => {
 
     const { categories = [] } = useCategories();
     const filteredCategories = categories.filter((cat) => cat.toLowerCase() !== "flash");
-
     const galleryItems = style ? media : Object.values(mediaByCategory).flat();
 
     const styleTitle = style ? `${style.charAt(0).toUpperCase() + style.slice(1)}` : "Tous les styles";
@@ -45,7 +44,7 @@ const Gallery = () => {
     const canonicalUrl = style
         ? `https://www.mystic-tattoo.fr/gallery/${style}`
         : `https://www.mystic-tattoo.fr/gallery`;
-    const firstImageUrl = galleryItems[0]?.url ? `${apiBase}${galleryItems[0].url}` : null;
+    const firstImageUrl = galleryItems[0]?.path ? `${apiBase}${galleryItems[0].path}` : null;
 
     const keywords = style
         ? `${SEO_KEYWORDS_BASE}, ${styleKeywords[style] || styleTitle + " Nancy, tatouage " + styleTitle.toLowerCase() + " Nancy"}`
@@ -112,9 +111,7 @@ const Gallery = () => {
             }
         };
 
-        if (categories.length > 0) {
-            fetchMedia();
-        }
+        if (categories.length > 0) fetchMedia();
     }, [categories, style]);
 
     const openLightbox = (index) => setLightboxIndex(index);
@@ -126,14 +123,14 @@ const Gallery = () => {
         <div key={index} className={styles.gallery__item}>
             {item.type === "image" ? (
                 <img
-                    src={`${apiBase}${item.url}`}
+                    src={`${apiBase}${item.path}`}
                     alt={`Tatouage ${styleTitle} à Nancy - Mystic Tattoo`}
                     loading="lazy"
                     onClick={() => openLightbox(index)}
                 />
             ) : (
                 <video
-                    src={`${apiBase}${item.url}`}
+                    src={`${apiBase}${item.path}`}
                     autoPlay
                     muted
                     loop
@@ -171,16 +168,10 @@ const Gallery = () => {
                         </p>
                     )}
                     <div className={styles.gallery__categories}>
-                        <button
-                            className={`${styles.gallery__categoryBtn} ${!style ? styles.active : ""}`}
-                            onClick={() => navigate("/gallery")}
-                        >
-                            Tous
-                        </button>
+                        <button className={`${styles.gallery__categoryBtn} ${!style ? styles.active : ""}`} onClick={() => navigate("/gallery")}>Tous</button>
                         {filteredCategories.map((cat) => {
                             const hasMedia = mediaByCategory[cat]?.length > 0;
                             if (!style && !hasMedia) return null;
-
                             return (
                                 <button
                                     key={cat}
@@ -198,24 +189,16 @@ const Gallery = () => {
                     <p>Chargement...</p>
                 ) : style ? (
                     <div className={styles.gallery__grid}>
-                        {media.length > 0 ? (
-                            media.map((item, idx) => renderItem(item, idx))
-                        ) : (
-                            <p>Aucun média trouvé dans cette catégorie.</p>
-                        )}
+                        {media.length > 0 ? media.map((item, idx) => renderItem(item, idx)) : <p>Aucun média trouvé dans cette catégorie.</p>}
                     </div>
                 ) : (
                     Object.entries(mediaByCategory).map(([cat, items]) => {
                         if (!items || items.length === 0) return null;
                         return (
                             <section key={cat}>
-                                <h2 className={styles.gallery__title}>
-                                    {cat.charAt(0).toUpperCase() + cat.slice(1)}
-                                </h2>
+                                <h2 className={styles.gallery__title}>{cat.charAt(0).toUpperCase() + cat.slice(1)}</h2>
                                 <div className={styles.gallery__grid}>
-                                    {items.map((item, idx) =>
-                                        renderItem(item, galleryItems.indexOf(item))
-                                    )}
+                                    {items.map((item, idx) => renderItem(item, galleryItems.indexOf(item)))}
                                 </div>
                             </section>
                         );
@@ -224,38 +207,15 @@ const Gallery = () => {
 
                 {lightboxIndex !== null && (
                     <div className={styles.gallery__overlay} onClick={closeLightbox}>
-                        <button
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                prev();
-                            }}
-                            className={styles.leftArrow}
-                        >
-                            &#10094;
-                        </button>
+                        <button onClick={(e) => { e.stopPropagation(); prev(); }} className={styles.leftArrow}>&#10094;</button>
                         <div onClick={(e) => e.stopPropagation()}>
                             {galleryItems[lightboxIndex].type === "image" ? (
-                                <img
-                                    src={`${apiBase}${galleryItems[lightboxIndex].url}`}
-                                    alt={`Tatouage ${styleTitle} à Nancy - Mystic Tattoo`}
-                                />
+                                <img src={`${apiBase}${galleryItems[lightboxIndex].path}`} alt={`Tatouage ${styleTitle} à Nancy - Mystic Tattoo`} />
                             ) : (
-                                <video
-                                    src={`${apiBase}${galleryItems[lightboxIndex].url}`}
-                                    autoPlay
-                                    controls
-                                />
+                                <video src={`${apiBase}${galleryItems[lightboxIndex].path}`} autoPlay controls />
                             )}
                         </div>
-                        <button
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                next();
-                            }}
-                            className={styles.rightArrow}
-                        >
-                            &#10095;
-                        </button>
+                        <button onClick={(e) => { e.stopPropagation(); next(); }} className={styles.rightArrow}>&#10095;</button>
                     </div>
                 )}
             </div>

@@ -3,27 +3,22 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import styles from './Header.module.scss';
 import useCategories from '../hooks/useCategories';
 
-/**
- * Composant d'en-tête principal du site.
- * Affiche le logo, les liens de navigation, la galerie (dropdown), et le menu mobile.
- */
 const Header = () => {
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
     const dropdownRef = useRef(null);
     const dropdownMenuRef = useRef(null);
+    const { categories = [] } = useCategories();
+    const filteredCategories = categories.filter(cat => cat.toLowerCase() !== 'flash');
 
     const location = useLocation();
     const navigate = useNavigate();
-    const { categories = [] } = useCategories();
-
     const isAdminLoggedIn = Boolean(localStorage.getItem('admin_token'));
 
     const showReservation = false;
     const showLogin = false;
 
-    // Ferme le dropdown si on clique en dehors
     useEffect(() => {
         const handleClickOutside = (e) => {
             if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
@@ -42,31 +37,29 @@ const Header = () => {
     return (
         <header className={styles.header}>
             <div className={styles.header__container}>
-                {/* Logo et titre à gauche */}
+                {/* Logo gauche */}
                 <Link to="/" className={styles.header__left} onClick={() => setMobileMenuOpen(false)}>
-                    <img src="/logo.png" alt="Logo" className={styles.header__logo} />
+                    <img src="/logo.png" alt="Logo Mystic Tattoo" className={styles.header__logo} />
                     <span className={styles.header__brand}>Mystic Tattoo</span>
                 </Link>
 
-                {/* Menu central : liens principaux */}
+                {/* NAVIGATION CENTRALE */}
                 <nav
                     className={`${styles.header__nav} ${mobileMenuOpen ? styles.open : ''}`}
-                    onMouseLeave={() => setMobileMenuOpen(false)}
+                    onMouseLeave={() => setDropdownOpen(false)}
                 >
-                    <Link
-                        className={styles.nav__btn}
-                        to="/"
-                        onClick={() => setMobileMenuOpen(false)}
-                    >
+                    <Link className={styles.nav__btn} to="/" onClick={() => setMobileMenuOpen(false)}>
                         Accueil
                     </Link>
 
+                    {/* Dropdown Galerie */}
                     <div className={styles.dropdown} ref={dropdownRef}>
                         <button
                             className={`${styles.nav__btn} ${styles.dropdownToggle} ${dropdownOpen ? styles.open : ''}`}
                             onClick={() => setDropdownOpen(!dropdownOpen)}
+                            aria-expanded={dropdownOpen}
                         >
-                            Galerie <span className={styles.chevron}></span>
+                            Galerie
                         </button>
 
                         <ul
@@ -78,21 +71,14 @@ const Header = () => {
                                     : '0px'
                             }}
                         >
-                            {/* 🔹 Lien vers "Tous" */}
                             <li>
-                                <Link
-                                    to="/gallery"
-                                    onClick={() => {
-                                        setDropdownOpen(false);
-                                        setMobileMenuOpen(false);
-                                    }}
-                                >
-                                    Tous
-                                </Link>
+                                <Link to="/gallery" onClick={() => {
+                                    setDropdownOpen(false);
+                                    setMobileMenuOpen(false);
+                                }}>Tous</Link>
                             </li>
 
-                            {/* 🔁 Liens dynamiques vers chaque catégorie */}
-                            {categories.map((cat) => (
+                            {filteredCategories.map((cat) => (
                                 <li key={cat}>
                                     <Link
                                         to={`/gallery/${cat}`}
@@ -108,76 +94,52 @@ const Header = () => {
                         </ul>
                     </div>
 
-                    <Link
-                        className={styles.nav__btn}
-                        to="/flash"
-                        onClick={() => setMobileMenuOpen(false)}
-                    >
+                    {/* Lien Flash */}
+                    <Link className={styles.nav__btn} to="/flash" onClick={() => setMobileMenuOpen(false)}>
                         Flash
                     </Link>
 
-
-                    {/* Lien vers la page de contact */}
-                    <Link
-                        className={styles.nav__btn}
-                        to="/contact"
-                        onClick={() => setMobileMenuOpen(false)}
-                    >
+                    {/* Contact */}
+                    <Link className={styles.nav__btn} to="/contact" onClick={() => setMobileMenuOpen(false)}>
                         Contact
                     </Link>
 
-                    {/* Lien vers la réservation - désactivé ici mais prêt à être activé */}
-                    {showReservation && (
-                        <Link
-                            className={styles.nav__btn}
-                            to="/reservation"
-                            onClick={() => setMobileMenuOpen(false)}
-                        >
-                            Réserver
-                        </Link>
-                    )}
-
-                    {/* Connexion admin */}
-                    {showLogin && !isAdminLoggedIn && (
-                        <Link
-                            className={styles.nav__btn}
-                            to="/admin/login"
-                            onClick={() => setMobileMenuOpen(false)}
-                        >
-                            Connexion
-                        </Link>
-                    )}
-
-                    {/* Lien admin si connecté */}
+                    {/* Admin / Login */}
                     {isAdminLoggedIn && (
                         <>
-                            <Link
-                                className={styles.nav__btn}
-                                to="/admin/home"
-                                onClick={() => setMobileMenuOpen(false)}
-                            >
-                                🛠 Administration
+                            <Link className={styles.nav__btn} to="/admin/home" onClick={() => setMobileMenuOpen(false)}>
+                                🛠 Admin
                             </Link>
-                            <button
-                                className={styles.nav__btn}
-                                onClick={handleLogout}
-                            >
+                            <button className={styles.nav__btn} onClick={handleLogout}>
                                 Déconnexion
                             </button>
                         </>
                     )}
+
+                    {showLogin && !isAdminLoggedIn && (
+                        <Link className={styles.nav__btn} to="/admin/login" onClick={() => setMobileMenuOpen(false)}>
+                            Connexion
+                        </Link>
+                    )}
+
+                    {showReservation && (
+                        <Link className={styles.nav__btn} to="/reservation" onClick={() => setMobileMenuOpen(false)}>
+                            Réserver
+                        </Link>
+                    )}
                 </nav>
 
-                {/* Logo et titre à droite (mobile/tablette) */}
+                {/* Bloc droit (mobile only : masqué sur petit écran) */}
                 <Link to="/" className={styles.header__right} onClick={() => setMobileMenuOpen(false)}>
                     <span className={styles.header__brand}>Mystic Tattoo</span>
                     <img src="/logo.png" alt="Logo" className={styles.header__logo} />
                 </Link>
 
-                {/* Bouton burger mobile */}
+                {/* Menu Burger mobile */}
                 <button
                     className={styles.burgerBtn}
                     onClick={() => setMobileMenuOpen(prev => !prev)}
+                    aria-label="Menu mobile"
                 >
                     ☰
                 </button>
