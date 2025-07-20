@@ -53,6 +53,7 @@ const Gallery = () => {
     const [lightboxIndex, setLightboxIndex] = useState(null);
 
     const { categories = [] } = useCategories();
+    const filteredCategories = categories.filter((cat) => cat.toLowerCase() !== "flash");
 
     const galleryItems = style ? media : Object.values(mediaByCategory).flat();
 
@@ -74,7 +75,6 @@ const Gallery = () => {
         ? `${SEO_KEYWORDS_BASE}, ${styleKeywords[style] || styleTitle + " Nancy, tatouage " + styleTitle.toLowerCase() + " Nancy"}`
         : SEO_KEYWORDS_BASE;
 
-    // Redirection des anciennes URLs (ex: /gallery?style=japonais)
     useEffect(() => {
         const query = new URLSearchParams(location.search);
         const oldStyle = query.get("style");
@@ -88,12 +88,17 @@ const Gallery = () => {
             setLoading(true);
             try {
                 if (style) {
+                    if (style.toLowerCase() === "flash") {
+                        // Redirection si quelqu’un tape manuellement /gallery/flash
+                        navigate("/flash", { replace: true });
+                        return;
+                    }
                     const res = await api.get(`/media?style=${style}`);
                     setMedia(res.data);
                 } else {
                     const all = {};
                     await Promise.all(
-                        categories.map(async (cat) => {
+                        filteredCategories.map(async (cat) => {
                             const res = await api.get(`/media?style=${cat}`);
                             all[cat] = res.data;
                         })
@@ -117,7 +122,6 @@ const Gallery = () => {
     const prev = () => setLightboxIndex((prev) => (prev === 0 ? galleryItems.length - 1 : prev - 1));
     const next = () => setLightboxIndex((prev) => (prev === galleryItems.length - 1 ? 0 : prev + 1));
 
-    // 🟢 Alt SEO-friendly
     const renderItem = (item, index) => (
         <div key={index} className={styles.gallery__item}>
             {item.type === "image" ? (
@@ -142,7 +146,6 @@ const Gallery = () => {
 
     return (
         <Layout>
-            {/* SEO principal + open graph */}
             <SEO
                 title={pageTitle}
                 description={pageDescription}
@@ -151,7 +154,6 @@ const Gallery = () => {
                 keywords={keywords}
             />
 
-            {/* Données structurées Schema.org pour Google */}
             <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(SCHEMA_ORG) }}
@@ -169,7 +171,7 @@ const Gallery = () => {
                         >
                             Tous
                         </button>
-                        {categories.map((cat) => {
+                        {filteredCategories.map((cat) => {
                             const hasMedia = mediaByCategory[cat]?.length > 0;
                             if (!style && !hasMedia) return null;
 

@@ -108,6 +108,15 @@ const Header = () => {
                         </ul>
                     </div>
 
+                    <Link
+                        className={styles.nav__btn}
+                        to="/flash"
+                        onClick={() => setMobileMenuOpen(false)}
+                    >
+                        Flash
+                    </Link>
+
+
                     {/* Lien vers la page de contact */}
                     <Link
                         className={styles.nav__btn}
