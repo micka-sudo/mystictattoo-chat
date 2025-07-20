@@ -17,8 +17,9 @@ const Header = () => {
     const isAdminLoggedIn = Boolean(localStorage.getItem('admin_token'));
 
     const showReservation = false;
-    const showLogin = false;
+    const showLogin = true; // 👉 affichage bouton Connexion
 
+    // Ferme dropdown au clic extérieur
     useEffect(() => {
         const handleClickOutside = (e) => {
             if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
@@ -37,7 +38,7 @@ const Header = () => {
     return (
         <header className={styles.header}>
             <div className={styles.header__container}>
-                {/* Logo gauche */}
+                {/* Logo à gauche */}
                 <Link to="/" className={styles.header__left} onClick={() => setMobileMenuOpen(false)}>
                     <img src="/logo.png" alt="Logo Mystic Tattoo" className={styles.header__logo} />
                     <span className={styles.header__brand}>Mystic Tattoo</span>
@@ -94,7 +95,7 @@ const Header = () => {
                         </ul>
                     </div>
 
-                    {/* Lien Flash */}
+                    {/* Flash */}
                     <Link className={styles.nav__btn} to="/flash" onClick={() => setMobileMenuOpen(false)}>
                         Flash
                     </Link>
@@ -104,38 +105,40 @@ const Header = () => {
                         Contact
                     </Link>
 
-                    {/* Admin / Login */}
-                    {isAdminLoggedIn && (
-                        <>
-                            <Link className={styles.nav__btn} to="/admin/home" onClick={() => setMobileMenuOpen(false)}>
-                                🛠 Admin
-                            </Link>
-                            <button className={styles.nav__btn} onClick={handleLogout}>
-                                Déconnexion
-                            </button>
-                        </>
-                    )}
-
+                    {/* Connexion (si non connecté) */}
                     {showLogin && !isAdminLoggedIn && (
                         <Link className={styles.nav__btn} to="/admin/login" onClick={() => setMobileMenuOpen(false)}>
                             Connexion
                         </Link>
                     )}
 
+                    {/* Réservation (optionnel) */}
                     {showReservation && (
                         <Link className={styles.nav__btn} to="/reservation" onClick={() => setMobileMenuOpen(false)}>
                             Réserver
                         </Link>
                     )}
+
+                    {/* Admin (si connecté) */}
+                    {isAdminLoggedIn && (
+                        <>
+                            <Link className={styles.nav__btn} to="/admin/dashboard" onClick={() => setMobileMenuOpen(false)}>
+                                Admin
+                            </Link>
+                            <button className={styles.nav__btn} onClick={handleLogout}>
+                                Déconnexion
+                            </button>
+                        </>
+                    )}
                 </nav>
 
-                {/* Bloc droit (mobile only : masqué sur petit écran) */}
+                {/* Bloc droit (visible sur desktop seulement) */}
                 <Link to="/" className={styles.header__right} onClick={() => setMobileMenuOpen(false)}>
                     <span className={styles.header__brand}>Mystic Tattoo</span>
                     <img src="/logo.png" alt="Logo" className={styles.header__logo} />
                 </Link>
 
-                {/* Menu Burger mobile */}
+                {/* Menu burger (mobile) */}
                 <button
                     className={styles.burgerBtn}
                     onClick={() => setMobileMenuOpen(prev => !prev)}

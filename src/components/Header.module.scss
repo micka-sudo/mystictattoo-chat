@@ -19,6 +19,8 @@
     justify-content: space-between;
     width: 100%;
     min-height: 60px;
+    flex-wrap: wrap;
+    gap: 8px;
   }
 
   &__left,
@@ -142,12 +144,14 @@
 
   @media (max-width: 768px) {
     &__container {
+      flex-direction: row;
       flex-wrap: wrap;
       gap: 8px;
     }
 
     &__left {
       flex: 1;
+      justify-content: flex-start;
     }
 
     &__right {
@@ -162,6 +166,7 @@
       flex-wrap: wrap;
       display: none;
       margin-top: 10px;
+      gap: 10px;
 
       &.open {
         display: flex;
@@ -169,7 +174,7 @@
 
       .nav__btn {
         font-size: 1rem;
-        padding: 8px 10px;
+        padding: 8px 12px;
         white-space: nowrap;
       }
 
