@@ -5,231 +5,177 @@ import api, { apiBase } from '../lib/api';
 
 const AdminDashboard = () => {
     const [media, setMedia] = useState([]);
+    const [file, setFile] = useState(null);
+    const [selectedCategory, setSelectedCategory] = useState('');
+    const [customCategory, setCustomCategory] = useState('');
     const [filter, setFilter] = useState('all');
-    const [tags, setTags] = useState({});
-    const [news, setNews] = useState([]);
-    const [newItem, setNewItem] = useState({ title: '', content: '' });
-    const [editId, setEditId] = useState(null);
-    const [editItem, setEditItem] = useState({ title: '', content: '' });
+    const [categories, setCategories] = useState([]);
 
-    const [showNewsOnHome, setShowNewsOnHome] = useState(true); // 👈 toggle actualité accueil
-
-    // Charger les médias
     useEffect(() => {
-        const fetchMedia = async () => {
-            try {
-                const res = await api.get('/media');
-                setMedia(res.data);
-                setTags(res.data.reduce((acc, item) => {
-                    acc[item.file] = item.tags || [];
-                    return acc;
-                }, {}));
-            } catch (err) {
-                console.error('Erreur chargement médias', err);
-            }
-        };
         fetchMedia();
     }, []);
 
-    // Charger les actualités
-    useEffect(() => {
-        const fetchNews = async () => {
-            try {
-                const res = await api.get('/news');
-                setNews(res.data);
-            } catch (err) {
-                console.error('Erreur chargement actualités', err);
-            }
-        };
-        fetchNews();
-    }, []);
-
-    // Charger config accueil (showNews)
-    useEffect(() => {
-        const fetchConfig = async () => {
-            try {
-                const res = await api.get('/config/home');
-                setShowNewsOnHome(res.data.showNewsOnHome);
-            } catch (err) {
-                console.error('Erreur chargement config accueil', err);
-            }
-        };
-        fetchConfig();
-    }, []);
-
-    const updateConfig = async (value) => {
+    const fetchMedia = async () => {
         try {
-            setShowNewsOnHome(value);
-            await api.put('/config/home', { showNewsOnHome: value });
+            const res = await api.get('/media');
+            setMedia(res.data);
+            const cats = Array.from(new Set(res.data.map(m => m.category)));
+            setCategories(cats);
         } catch (err) {
-            console.error('Erreur mise à jour config', err);
+            console.error('Erreur chargement médias', err);
         }
     };
 
-    const filteredMedia = filter === 'all' ? media : media.filter((m) => m.category === filter);
-    const categories = Array.from(new Set(media.map((m) => m.category)));
+    const handleUpload = async (e) => {
+        e.preventDefault();
+        if (!file || (!selectedCategory && !customCategory)) {
+            return alert('Veuillez sélectionner ou saisir une catégorie');
+        }
+
+        const category = customCategory.trim() || selectedCategory;
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('category', category);
+
+        try {
+            const res = await api.post('/media/upload', formData);
+            setMedia([...media, res.data]);
+            if (!categories.includes(category)) {
+                setCategories([...categories, category]);
+            }
+            setFile(null);
+            setSelectedCategory('');
+            setCustomCategory('');
+        } catch (err) {
+            console.error('Erreur upload', err);
+        }
+    };
 
     const handleDelete = async (item) => {
-        if (!window.confirm(`Supprimer ${item.file} ?`)) return;
+        if (!window.confirm(`Supprimer ${item.filename} ?`)) return;
         try {
-            const res = await api.delete('/media', {
-                data: { file: item.file, category: item.category }
-            });
-            if (res.status === 200) {
-                setMedia(media.filter((m) => m.file !== item.file));
-                setTags(prev => {
-                    const updated = { ...prev };
-                    delete updated[item.file];
-                    return updated;
-                });
-            }
+            await api.delete(`/media/${item._id}`);
+            setMedia(media.filter(m => m._id !== item._id));
         } catch (err) {
-            console.error('Erreur suppression fichier', err);
+            console.error('Erreur suppression', err);
         }
     };
 
-    const addTag = (file, newTag) => {
-        if (!newTag.trim()) return;
-        setTags((prev) => ({
-            ...prev,
-            [file]: [...(prev[file] || []), newTag.trim()]
-        }));
+    const handleMove = async (item, newCategory) => {
+        if (!newCategory || newCategory === item.category) return;
+
+        try {
+            const res = await api.patch(`/media/${item._id}/move`, {
+                newCategory
+            });
+
+            const updated = res.data.media;
+            setMedia(media.map(m => m._id === updated._id ? updated : m));
+            if (!categories.includes(newCategory)) {
+                setCategories([...categories, newCategory]);
+            }
+        } catch (err) {
+            console.error('Erreur déplacement', err);
+        }
     };
 
-    const removeTag = (file, tagToRemove) => {
-        setTags((prev) => ({
-            ...prev,
-            [file]: prev[file].filter((t) => t !== tagToRemove)
-        }));
-    };
+    const filteredMedia = filter === 'all'
+        ? media
+        : media.filter(m => m.category === filter);
 
     return (
         <Layout>
             <div className={styles.adminDashboard}>
-                <h2>Tableau de bord des médias</h2>
+                <h2>🎛 Tableau de bord des médias</h2>
 
-                <div className={styles.filterBar}>
-                    <select onChange={(e) => setFilter(e.target.value)} value={filter}>
-                        <option value="all">Toutes les catégories</option>
+                {/* 📤 Upload fichier */}
+                <form onSubmit={handleUpload} className={styles.uploadForm}>
+                    <h3>Ajouter un média</h3>
+                    <input
+                        type="file"
+                        onChange={(e) => setFile(e.target.files[0])}
+                        required
+                    />
+
+                    {/* Sélecteur de catégorie existante */}
+                    <select
+                        value={selectedCategory}
+                        onChange={(e) => setSelectedCategory(e.target.value)}
+                    >
+                        <option value="">Choisir une catégorie existante</option>
                         {categories.map((cat) => (
-                            <option key={cat} value={cat}>{cat}</option>
+                            <option key={cat} value={cat}>
+                                {cat.charAt(0).toUpperCase() + cat.slice(1)}
+                            </option>
+                        ))}
+                    </select>
+
+                    <p style={{ textAlign: 'center' }}>ou</p>
+
+                    {/* Champ de nouvelle catégorie */}
+                    <input
+                        type="text"
+                        placeholder="Créer une nouvelle catégorie"
+                        value={customCategory}
+                        onChange={(e) => setCustomCategory(e.target.value)}
+                    />
+
+                    <button type="submit">➕ Ajouter</button>
+                </form>
+
+                {/* 🔍 Filtrage */}
+                <div className={styles.filterBar}>
+                    <label>Filtrer :</label>
+                    <select onChange={(e) => setFilter(e.target.value)} value={filter}>
+                        <option value="all">Toutes</option>
+                        {categories.map((cat) => (
+                            <option key={cat} value={cat}>
+                                {cat.charAt(0).toUpperCase() + cat.slice(1)}
+                            </option>
                         ))}
                     </select>
                 </div>
 
+                {/* 🖼 Galerie admin */}
                 <div className={styles.mediaGrid}>
-                    {filteredMedia.map((item, idx) => (
-                        <div key={idx} className={styles.mediaItem}>
+                    {filteredMedia.map((item) => (
+                        <div key={item._id} className={styles.mediaItem}>
                             {item.type === 'image' ? (
-                                <img src={`${apiBase}${item.url}`} alt={item.file} />
+                                <img src={`${apiBase}${item.path}`} alt={item.filename} />
                             ) : (
-                                <video src={`${apiBase}${item.url}`} controls />
+                                <video src={`${apiBase}${item.path}`} controls />
                             )}
+
                             <div className={styles.mediaInfo}>
-                                <p>{item.file}</p>
                                 <span className={styles.badge}>{item.category}</span>
                             </div>
-                            <div className={styles.tagList}>
-                                {(tags[item.file] || []).map((tag, i) => (
-                                    <span key={i} className={styles.tag}>
-                                        {tag}
-                                        <button onClick={() => removeTag(item.file, tag)}>×</button>
-                                    </span>
-                                ))}
+
+                            {/* Déplacement vers une autre catégorie */}
+                            <div className={styles.moveSection}>
+                                <select
+                                    defaultValue=""
+                                    onChange={(e) => handleMove(item, e.target.value)}
+                                >
+                                    <option value="">Déplacer vers…</option>
+                                    {categories
+                                        .filter((c) => c !== item.category)
+                                        .map((cat) => (
+                                            <option key={cat} value={cat}>
+                                                {cat.charAt(0).toUpperCase() + cat.slice(1)}
+                                            </option>
+                                        ))}
+                                </select>
                             </div>
-                            <form
-                                onSubmit={(e) => {
-                                    e.preventDefault();
-                                    const value = e.target.elements[`tag-${idx}`].value;
-                                    addTag(item.file, value);
-                                    e.target.reset();
-                                }}
+
+                            {/* Suppression */}
+                            <button
+                                className={styles.deleteBtn}
+                                onClick={() => handleDelete(item)}
                             >
-                                <input name={`tag-${idx}`} placeholder="Ajouter un tag" />
-                                <button type="submit">+ Ajouter</button>
-                            </form>
-                            <button className={styles.deleteBtn} onClick={() => handleDelete(item)}>
                                 🗑 Supprimer
                             </button>
                         </div>
                     ))}
-                </div>
-
-                <div className={styles.newsSection}>
-                    <h2>Actualités</h2>
-
-                    {/* ✅ Toggle affichage sur la page d’accueil */}
-                    <label className={styles.newsToggle}>
-                        <input
-                            type="checkbox"
-                            checked={showNewsOnHome}
-                            onChange={(e) => updateConfig(e.target.checked)}
-                        />
-                        Afficher les actualités sur la page d’accueil
-                    </label>
-
-                    <form onSubmit={async (e) => {
-                        e.preventDefault();
-                        const res = await api.post('/news', newItem);
-                        if (res.status === 201 || res.status === 200) {
-                            setNews([...news, res.data]);
-                            setNewItem({ title: '', content: '' });
-                        }
-                    }}>
-                        <input
-                            placeholder="Titre"
-                            value={newItem.title}
-                            onChange={(e) => setNewItem({ ...newItem, title: e.target.value })}
-                        />
-                        <textarea
-                            placeholder="Contenu"
-                            value={newItem.content}
-                            onChange={(e) => setNewItem({ ...newItem, content: e.target.value })}
-                        />
-                        <button type="submit">➕ Ajouter</button>
-                    </form>
-
-                    <ul>
-                        {news.map(item => (
-                            <li key={item.id} className={styles.newsItem}>
-                                {editId === item.id ? (
-                                    <>
-                                        <input
-                                            value={editItem.title}
-                                            onChange={(e) => setEditItem({ ...editItem, title: e.target.value })}
-                                        />
-                                        <textarea
-                                            value={editItem.content}
-                                            onChange={(e) => setEditItem({ ...editItem, content: e.target.value })}
-                                        />
-                                        <button onClick={async () => {
-                                            const res = await api.put(`/news/${item.id}`, editItem);
-                                            if (res.status === 200) {
-                                                const updated = res.data;
-                                                setNews(news.map(n => n.id === updated.id ? updated : n));
-                                                setEditId(null);
-                                                setEditItem({ title: '', content: '' });
-                                            }
-                                        }}>💾 Sauver</button>
-                                        <button onClick={() => setEditId(null)}>❌ Annuler</button>
-                                    </>
-                                ) : (
-                                    <>
-                                        <strong>{item.title}</strong>
-                                        <p>{item.content}</p>
-                                        <button onClick={() => {
-                                            setEditId(item.id);
-                                            setEditItem({ title: item.title, content: item.content });
-                                        }}>✏️ Modifier</button>
-                                        <button onClick={async () => {
-                                            await api.delete(`/news/${item.id}`);
-                                            setNews(news.filter(n => n.id !== item.id));
-                                        }}>🗑 Supprimer</button>
-                                    </>
-                                )}
-                            </li>
-                        ))}
-                    </ul>
                 </div>
             </div>
         </Layout>

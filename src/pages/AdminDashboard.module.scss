@@ -4,34 +4,81 @@
   padding: 30px;
   font-family: var(--font-gothic);
   color: var(--color-light);
+  background-color: var(--color-background);
 
   h2 {
-    color: var(--color-accent);
+    color: var(--color-light);
     margin-bottom: 20px;
+    font-size: 2rem;
+  }
+
+  h3 {
+    color: var(--color-accent);
+    margin-bottom: 15px;
+    font-size: 1.3rem;
+  }
+}
+
+.uploadForm {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 30px;
+
+  input,
+  select,
+  button {
+    font-family: var(--font-default);
+    padding: 10px;
+    border-radius: 6px;
+    font-size: 1rem;
+  }
+
+  input[type="file"] {
+    background: var(--color-dark);
+    color: var(--color-light);
+    border: 1px solid var(--color-accent);
+  }
+
+  input[type="text"],
+  select {
+    background: var(--color-dark);
+    color: var(--color-light);
+    border: 1px solid var(--color-accent);
+  }
+
+  button {
+    background: var(--color-accent);
+    color: var(--color-light);
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s ease;
+
+    &:hover {
+      background: var(--color-secondary);
+      color: var(--color-background);
+    }
   }
 }
 
 .filterBar {
   margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  label {
+    font-weight: 600;
+  }
 
   select {
     padding: 8px 12px;
     border-radius: 6px;
     border: 1px solid var(--color-accent);
-    font-family: inherit;
-  }
-}
-.newsToggle {
-  margin-bottom: 1rem;
-  font-weight: 500;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-
-  input[type='checkbox'] {
-    transform: scale(1.2);
-    accent-color: var(--color-accent);
-    cursor: pointer;
+    background: var(--color-dark);
+    color: var(--color-light);
+    font-family: var(--font-default);
   }
 }
 
@@ -42,9 +89,9 @@
 }
 
 .mediaItem {
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 8px;
-  background: black;
+  background: var(--color-dark);
   padding: 10px;
   display: flex;
   flex-direction: column;
@@ -54,50 +101,41 @@
     width: 100%;
     border-radius: 6px;
     object-fit: cover;
+    background: black;
+  }
+
+  select {
+    margin-top: 10px;
+    padding: 6px 8px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    background: var(--color-background);
+    color: var(--color-light);
+    border: 1px solid var(--color-accent);
   }
 }
 
-.mediaInfo {
+.mediaInfo,
+.meta {
   margin-top: 8px;
   font-size: 0.85rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 10px;
+
+  strong {
+    font-weight: 500;
+  }
 }
 
 .badge {
   background: var(--color-accent);
-  color: black;
+  color: var(--color-light);
   padding: 2px 8px;
   border-radius: 6px;
   font-size: 0.75rem;
   font-weight: bold;
-}
-
-.tagList {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 5px;
-  margin: 10px 0;
-
-  .tag {
-    background: var(--color-accent);
-    color: black;
-    padding: 4px 8px;
-    border-radius: 6px;
-    font-size: 0.75rem;
-    display: flex;
-    align-items: center;
-
-    button {
-      background: none;
-      border: none;
-      color: black;
-      font-weight: bold;
-      margin-left: 5px;
-      cursor: pointer;
-    }
-  }
 }
 
 .deleteBtn {
@@ -113,5 +151,28 @@
 
   &:hover {
     background: #d60000;
+  }
+}
+
+.moveSection {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 10px;
+
+  button {
+    padding: 6px 10px;
+    background: var(--color-secondary);
+    border: none;
+    border-radius: 6px;
+    color: var(--color-background);
+    font-weight: 600;
+    font-size: 0.85rem;
+    cursor: pointer;
+
+    &:hover {
+      background: var(--color-accent);
+      color: var(--color-light);
+    }
   }
 }
