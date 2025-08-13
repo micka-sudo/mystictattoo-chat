@@ -15,30 +15,33 @@ const AdminDashboard = () => {
     const [newsTitle, setNewsTitle] = useState('');
     const [newsContent, setNewsContent] = useState('');
     const [newsImage, setNewsImage] = useState(null);
+    const [deletingId, setDeletingId] = useState(null); // anti double-clic
 
     // Chargement au montage
     useEffect(() => {
         fetchMedia();
         fetchNews();
+        // Debug utile : vérifier la base API
+        // console.log('API baseURL =', api.defaults.baseURL);
     }, []);
 
     const fetchMedia = async () => {
         try {
             const res = await api.get('/media');
             setMedia(res.data);
-            const cats = Array.from(new Set(res.data.map(m => m.category)));
+            const cats = Array.from(new Set((res.data || []).map((m) => m.category).filter(Boolean)));
             setCategories(cats);
         } catch (err) {
-            console.error('Erreur chargement médias', err);
+            console.error('Erreur chargement médias', formatAxiosError(err));
         }
     };
 
     const fetchNews = async () => {
         try {
             const res = await api.get('/news');
-            setNews(res.data);
+            setNews(res.data || []);
         } catch (err) {
-            console.error('Erreur chargement actualités', err);
+            console.error('Erreur chargement actualités', formatAxiosError(err));
         }
     };
 
@@ -52,37 +55,44 @@ const AdminDashboard = () => {
 
         try {
             const res = await api.post('/media/upload', formData);
-            setMedia([...media, res.data]);
+            setMedia((prev) => [...prev, res.data]);
             setFile(null);
             setCategory('');
         } catch (err) {
-            console.error('Erreur upload', err);
+            console.error('Erreur upload', formatAxiosError(err));
+            alert('Upload impossible');
         }
     };
 
     const handleDelete = async (item) => {
+        if (!item?._id && !item?.id) return alert('ID média manquant');
         if (!window.confirm(`Supprimer ${item.filename} ?`)) return;
+        const id = item._id || item.id;
+
         try {
-            await api.delete(`/media/${item._id}`);
-            setMedia(media.filter(m => m._id !== item._id));
+            await api.delete(`/media/${encodeURIComponent(id)}`);
+            setMedia((prev) => prev.filter((m) => (m._id || m.id) !== id));
         } catch (err) {
-            console.error('Erreur suppression', err);
+            console.error('Erreur suppression média', formatAxiosError(err));
+            alert(`Suppression média impossible (${err.response?.status ?? 'ERR'})`);
         }
     };
 
     const handleMove = async (item) => {
+        if (!item?._id && !item?.id) return alert('ID média manquant');
         if (!moveToCategory || moveToCategory === item.category) return;
 
+        const id = item._id || item.id;
         try {
-            const res = await api.put(`/media/${item._id}/move`, {
-                newCategory: moveToCategory
+            const res = await api.put(`/media/${encodeURIComponent(id)}/move`, {
+                newCategory: moveToCategory,
             });
-
             const updated = res.data;
-            setMedia(media.map(m => m._id === updated._id ? updated : m));
+            setMedia((prev) => prev.map((m) => ((m._id || m.id) === (updated._id || updated.id) ? updated : m)));
             setMoveToCategory('');
         } catch (err) {
-            console.error('Erreur déplacement', err);
+            console.error('Erreur déplacement', formatAxiosError(err));
+            alert(`Déplacement impossible (${err.response?.status ?? 'ERR'})`);
         }
     };
 
@@ -97,28 +107,38 @@ const AdminDashboard = () => {
 
         try {
             const res = await api.post('/news', formData);
-            setNews([res.data, ...news]);
+            setNews((prev) => [res.data, ...prev]);
             setNewsTitle('');
             setNewsContent('');
             setNewsImage(null);
         } catch (err) {
-            console.error('Erreur ajout actu', err);
+            console.error('Erreur ajout actu', formatAxiosError(err));
+            alert(`Ajout impossible (${err.response?.status ?? 'ERR'})`);
         }
     };
 
-    const handleDeleteNews = async (id) => {
+    const handleDeleteNews = async (rawId) => {
+        const id = rawId || '';
+        if (!id) {
+            alert('ID actualité manquant');
+            return;
+        }
+        if (deletingId) return; // éviter double clic
         if (!window.confirm('Supprimer cette actualité ?')) return;
+
+        setDeletingId(id);
         try {
-            await api.delete(`/news/${id}`);
-            setNews(news.filter(n => n._id !== id));
+            await api.delete(`/news/${encodeURIComponent(id)}`);
+            setNews((prev) => prev.filter((n) => (n._id || n.id) !== id));
         } catch (err) {
-            console.error('Erreur suppression actu', err);
+            console.error('Erreur suppression actu', formatAxiosError(err));
+            alert(`Suppression impossible (${err.response?.status ?? 'ERR'})`);
+        } finally {
+            setDeletingId(null);
         }
     };
 
-    const filteredMedia = filter === 'all'
-        ? media
-        : media.filter(m => m.category === filter);
+    const filteredMedia = filter === 'all' ? media : media.filter((m) => m.category === filter);
 
     return (
         <Layout>
@@ -143,30 +163,33 @@ const AdminDashboard = () => {
                             onChange={(e) => setNewsContent(e.target.value)}
                             required
                         />
-                        <input
-                            type="file"
-                            accept="image/*"
-                            onChange={(e) => setNewsImage(e.target.files[0])}
-                        />
+                        <input type="file" accept="image/*" onChange={(e) => setNewsImage(e.target.files?.[0] || null)} />
                         <button type="submit">➕ Ajouter l’actualité</button>
                     </form>
 
                     <div className={styles.mediaGrid}>
-                        {news.map((item) => (
-                            <div key={item._id} className={styles.mediaItem}>
-                                <strong>{item.title}</strong>
-                                {item.image && (
-                                    <img src={`${apiBase}${item.image}`} alt={item.title} />
-                                )}
-                                <p>{item.content.slice(0, 100)}…</p>
-                                <button
-                                    className={styles.deleteBtn}
-                                    onClick={() => handleDeleteNews(item._id)}
-                                >
-                                    🗑 Supprimer
-                                </button>
-                            </div>
-                        ))}
+                        {news.map((item) => {
+                            const nid = item._id || item.id;
+                            return (
+                                <div key={nid} className={styles.mediaItem}>
+                                    <strong>{item.title}</strong>
+                                    {item.image ? (
+                                        <img src={`${apiBase}${ensureLeadingSlash(item.image)}`} alt={item.title} />
+                                    ) : null}
+                                    <p>{(item.content || '').slice(0, 100)}…</p>
+                                    <button
+                                        className={styles.deleteBtn}
+                                        disabled={deletingId === nid}
+                                        onClick={() => {
+                                            console.log('Suppression actu _id =', nid);
+                                            handleDeleteNews(nid);
+                                        }}
+                                    >
+                                        {deletingId === nid ? 'Suppression…' : '🗑 Supprimer'}
+                                    </button>
+                                </div>
+                            );
+                        })}
                     </div>
                 </section>
 
@@ -175,7 +198,7 @@ const AdminDashboard = () => {
                     <h3>🖼 Gérer les médias</h3>
 
                     <form onSubmit={handleUpload} className={styles.uploadForm}>
-                        <input type="file" onChange={(e) => setFile(e.target.files[0])} required />
+                        <input type="file" onChange={(e) => setFile(e.target.files?.[0] || null)} required />
                         <input
                             type="text"
                             placeholder="Catégorie (ex: realiste)"
@@ -191,47 +214,64 @@ const AdminDashboard = () => {
                         <select onChange={(e) => setFilter(e.target.value)} value={filter}>
                             <option value="all">Toutes</option>
                             {categories.map((cat) => (
-                                <option key={cat} value={cat}>{cat}</option>
+                                <option key={cat} value={cat}>
+                                    {cat}
+                                </option>
                             ))}
                         </select>
                     </div>
 
                     <div className={styles.mediaGrid}>
-                        {filteredMedia.map((item) => (
-                            <div key={item._id} className={styles.mediaItem}>
-                                {item.type === 'image' ? (
-                                    <img src={`${apiBase}${item.path}`} alt={item.filename} />
-                                ) : (
-                                    <video src={`${apiBase}${item.path}`} controls />
-                                )}
-                                <div className={styles.meta}>
-                                    <strong>{item.filename}</strong>
-                                    <span className={styles.badge}>{item.category}</span>
+                        {filteredMedia.map((item) => {
+                            const mid = item._id || item.id;
+                            const isImage = item.type === 'image' || /\.(png|jpe?g|webp|gif|avif)$/i.test(item.path || '');
+                            const src = `${apiBase}${ensureLeadingSlash(item.path)}`;
+                            return (
+                                <div key={mid} className={styles.mediaItem}>
+                                    {isImage ? <img src={src} alt={item.filename} /> : <video src={src} controls />}
+                                    <div className={styles.meta}>
+                                        <strong>{item.filename}</strong>
+                                        <span className={styles.badge}>{item.category}</span>
+                                    </div>
+                                    <div className={styles.moveSection}>
+                                        <select value={moveToCategory} onChange={(e) => setMoveToCategory(e.target.value)}>
+                                            <option value="">Déplacer vers…</option>
+                                            {categories
+                                                .filter((c) => c !== item.category)
+                                                .map((cat) => (
+                                                    <option key={cat} value={cat}>
+                                                        {cat}
+                                                    </option>
+                                                ))}
+                                        </select>
+                                        <button onClick={() => handleMove(item)}>📦 Déplacer</button>
+                                    </div>
+                                    <button className={styles.deleteBtn} onClick={() => handleDelete(item)}>
+                                        🗑 Supprimer
+                                    </button>
                                 </div>
-                                <div className={styles.moveSection}>
-                                    <select
-                                        value={moveToCategory}
-                                        onChange={(e) => setMoveToCategory(e.target.value)}
-                                    >
-                                        <option value="">Déplacer vers…</option>
-                                        {categories
-                                            .filter(c => c !== item.category)
-                                            .map((cat) => (
-                                                <option key={cat} value={cat}>{cat}</option>
-                                            ))}
-                                    </select>
-                                    <button onClick={() => handleMove(item)}>📦 Déplacer</button>
-                                </div>
-                                <button className={styles.deleteBtn} onClick={() => handleDelete(item)}>
-                                    🗑 Supprimer
-                                </button>
-                            </div>
-                        ))}
+                            );
+                        })}
                     </div>
                 </section>
             </div>
         </Layout>
     );
 };
+
+// ===== utils locaux =====
+function formatAxiosError(err) {
+    return {
+        message: err?.message,
+        status: err?.response?.status,
+        data: err?.response?.data,
+        url: err?.config?.url,
+        method: err?.config?.method,
+        baseURL: err?.config?.baseURL,
+    };
+}
+function ensureLeadingSlash(p = '') {
+    return p.startsWith('/') ? p : `/${p}`;
+}
 
 export default AdminDashboard;

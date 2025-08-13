@@ -91,8 +91,8 @@ const Home = () => {
                     Tatouage artistique, styles variés, découvrez nos créations à Nancy.
                 </p>
                 <p style={{ textAlign: "center", fontSize: "1rem", maxWidth: "800px", margin: "0 auto 30px", color: "white" }}>
-                    Mystic Tattoo vous propose des créations uniques dans des styles variés : réaliste, japonais, oldschool, minimaliste ou graphique.
-                    Hygiène irréprochable, écoute, accompagnement personnalisé. Prenez rendez-vous avec un tatoueur passionné au cœur de Nancy !
+                    Mystic Tattoo est une salle de tatouage privative et indépendante depuis 2006, incontournable à Nancy (54000). Tatoueur passionné, je vous accueille dans un espace dédié alliant hygiène irréprochable, conseils personnalisés et créativité.
+                    Découvrez ma galerie, prenez rendez-vous en ligne et vivez une expérience unique, en toute confidentialité
                 </p>
 
                 <div className={showNews ? styles.home__main : styles.home__singleColumn}>
