@@ -8,6 +8,14 @@
   text-align: center;
   width: 100%;
 
+  /* ✅ Réserve de la place pour le footer afin qu'il ne masque pas le contenu */
+  min-height: 100dvh;
+  padding-bottom: max(140px, env(safe-area-inset-bottom));
+
+  @media (max-width: 480px) {
+    padding-bottom: max(180px, env(safe-area-inset-bottom));
+  }
+
   &__title {
     font-family: var(--font-holocene);
     font-size: 2.5rem;
@@ -44,7 +52,7 @@
     border-radius: 12px;
     overflow: hidden;
     position: relative;
-    margin-bottom: 40px; // ✅ idem
+    margin-bottom: 40px;
 
     &Bg {
       position: absolute;
@@ -68,7 +76,7 @@
     border-radius: 12px;
     overflow: hidden;
     position: relative;
-    margin-bottom: 40px; // ✅ idem
+    margin-bottom: 40px;
 
     .home__heroBg {
       width: 100%;
