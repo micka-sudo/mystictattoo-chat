@@ -83,7 +83,7 @@ const Flash = () => {
                     marginInline: "auto"
                 }}>
                     Découvrez ici tous les flashs disponibles au salon <strong>Mystic Tattoo</strong> à Nancy.
-                    Chaque dessin est une pièce unique, conçue pour être tatouée une seule fois. Disponibles immédiatement,
+                    Chaque dessin est adapté pour vous, conçue pour être tatouée une seule fois. Disponibles immédiatement,
                     ces flashs sont idéals pour un projet rapide et original. N’attendez plus pour réserver votre coup de cœur !
                 </p>
 
