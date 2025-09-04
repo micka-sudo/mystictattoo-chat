@@ -15,6 +15,15 @@
   <meta name="robots" content="index, follow" />
   <meta name="google-site-verification" content="jfeivP39cdpVR5f6H8K5c6SWcdOnAdwkoHrp38FtfcA" />
 
+  <!-- Préchargement polices -->
+  <link rel="preload" href="/fonts/holocene-latin.woff2" as="font" type="font/woff2" crossorigin>
+
+  <!-- Préchargement de l’image héro (remplacez par vos versions AVIF/WebP selon vos besoins) -->
+  <link rel="preload" as="image"
+        href="/images/hero-1200.avif"
+        imagesrcset="/images/hero-800.avif 800w, /images/hero-1200.avif 1200w, /images/hero-2000.avif 2000w"
+        imagesizes="(max-width:768px) 100vw, 1200px">
+
 
   <!-- ✅ Canonical URL (pour les moteurs de recherche) -->
   <link rel="canonical" href="https://www.mystic-tattoo.fr/" />
