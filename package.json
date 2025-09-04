@@ -3,21 +3,21 @@
   "version": "1.0.0",
   "private": true,
   "dependencies": {
-    "axios": "^0.27.2",
+    "axios": "1.11.0",
     "bcrypt": "^5.1.1",
     "browser-image-compression": "^2.0.2",
-    "framer-motion": "^12.6.3",
+    "framer-motion": "12.23.12",
     "heic-convert": "^2.1.0",
     "jwt-decode": "^4.0.0",
-    "lucide-react": "^0.487.0",
+    "lucide-react": "0.539.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-helmet-async": "^2.0.5",
     "react-icons": "^5.5.0",
-    "react-router-dom": "^6.4.0",
+    "react-router-dom": "6.30.1",
     "react-scripts": "5.0.1",
-    "sass": "^1.86.3",
-    "sharp": "^0.34.1"
+    "sass": "1.90.0",
+    "sharp": "0.34.3"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -40,6 +40,6 @@
   },
   "devDependencies": {
     "jest": "^27.5.1",
-    "supertest": "^7.1.0"
+    "supertest": "7.1.4"
   }
 }
