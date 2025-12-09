@@ -1,4 +1,4 @@
-// ✅ Gallery.js corrigé (path au lieu de url)
+// ✅ Gallery.js avec console.log pour debugging
 
 import React, { useEffect, useState } from "react";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
@@ -21,9 +21,13 @@ const styleKeywords = {
 };
 
 const Gallery = () => {
+    console.log("🚀 COMPOSANT GALLERY CHARGÉ");
+
     const { style } = useParams();
     const location = useLocation();
     const navigate = useNavigate();
+
+    console.log("🚀 Params style:", style);
 
     const [media, setMedia] = useState([]);
     const [mediaByCategory, setMediaByCategory] = useState({});
@@ -31,8 +35,18 @@ const Gallery = () => {
     const [lightboxIndex, setLightboxIndex] = useState(null);
 
     const { categories = [] } = useCategories();
+    console.log("🔍 categories depuis useCategories:", categories);
+
     const filteredCategories = categories.filter((cat) => cat.toLowerCase() !== "flash");
+    console.log("🔍 filteredCategories:", filteredCategories);
+
     const galleryItems = style ? media : Object.values(mediaByCategory).flat();
+
+    console.log("🎯 apiBase:", apiBase);
+    console.log("🎯 style actuel:", style);
+    console.log("🎯 galleryItems:", galleryItems);
+    console.log("🎯 media:", media);
+    console.log("🎯 mediaByCategory:", mediaByCategory);
 
     const styleTitle = style ? `${style.charAt(0).toUpperCase() + style.slice(1)}` : "Tous les styles";
     const pageTitle = style
@@ -44,7 +58,8 @@ const Gallery = () => {
     const canonicalUrl = style
         ? `https://www.mystic-tattoo.fr/gallery/${style}`
         : `https://www.mystic-tattoo.fr/gallery`;
-    const firstImageUrl = galleryItems[0]?.path ? `${apiBase}${galleryItems[0].path}` : null;
+
+    const firstImageUrl = galleryItems[0]?.url ? `${apiBase}${galleryItems[0].url}` : null;
 
     const keywords = style
         ? `${SEO_KEYWORDS_BASE}, ${styleKeywords[style] || styleTitle + " Nancy, tatouage " + styleTitle.toLowerCase() + " Nancy"}`
@@ -92,20 +107,31 @@ const Gallery = () => {
                         navigate("/flash", { replace: true });
                         return;
                     }
+                    console.log("📡 Requête API pour style:", style);
                     const res = await api.get(`/media?style=${style}`);
+                    console.log("📸 Données reçues:", res.data);
+                    console.log("📸 Premier item:", res.data[0]);
+                    console.log("📸 Nombre d'items:", res.data.length);
                     setMedia(res.data);
                 } else {
+                    console.log("📡 Chargement de tous les styles");
                     const all = {};
                     await Promise.all(
                         filteredCategories.map(async (cat) => {
+                            console.log("📡 Requête pour catégorie:", cat);
                             const res = await api.get(`/media?style=${cat}`);
+                            console.log(`📸 ${cat}:`, res.data.length, "items");
+                            if (res.data[0]) {
+                                console.log(`📸 Premier item de ${cat}:`, res.data[0]);
+                            }
                             all[cat] = res.data;
                         })
                     );
+                    console.log("📸 Toutes les catégories chargées:", all);
                     setMediaByCategory(all);
                 }
             } catch (err) {
-                console.error("Erreur chargement médias", err);
+                console.error("❌ Erreur chargement médias", err);
             } finally {
                 setLoading(false);
             }
@@ -119,27 +145,48 @@ const Gallery = () => {
     const prev = () => setLightboxIndex((prev) => (prev === 0 ? galleryItems.length - 1 : prev - 1));
     const next = () => setLightboxIndex((prev) => (prev === galleryItems.length - 1 ? 0 : prev + 1));
 
-    const renderItem = (item, index) => (
-        <div key={index} className={styles.gallery__item}>
-            {item.type === "image" ? (
-                <img
-                    src={`${apiBase}${item.path}`}
-                    alt={`Tatouage ${styleTitle} à Nancy - Mystic Tattoo`}
-                    loading="lazy"
-                    onClick={() => openLightbox(index)}
-                />
-            ) : (
-                <video
-                    src={`${apiBase}${item.path}`}
-                    autoPlay
-                    muted
-                    loop
-                    playsInline
-                    onClick={() => openLightbox(index)}
-                />
-            )}
-        </div>
-    );
+    const renderItem = (item, index) => {
+        const imageUrl = `${apiBase}${item.url}`;
+        console.log(`🖼️ Rendu item ${index}:`, {
+            type: item.type,
+            url: item.url,
+            fullUrl: imageUrl,
+            filename: item.filename
+        });
+
+        return (
+            <div key={index} className={styles.gallery__item}>
+                {item.type === "image" ? (
+                    <img
+                        src={imageUrl}
+                        alt={`Tatouage ${styleTitle} à Nancy - Mystic Tattoo`}
+                        loading="lazy"
+                        onClick={() => openLightbox(index)}
+                        onError={(e) => {
+                            console.error("❌ Erreur chargement image:", imageUrl);
+                            console.error("❌ Item complet:", item);
+                        }}
+                        onLoad={() => {
+                            console.log("✅ Image chargée:", imageUrl);
+                        }}
+                    />
+                ) : (
+                    <video
+                        src={imageUrl}
+                        autoPlay
+                        muted
+                        loop
+                        playsInline
+                        onClick={() => openLightbox(index)}
+                        onError={(e) => {
+                            console.error("❌ Erreur chargement vidéo:", imageUrl);
+                            console.error("❌ Item complet:", item);
+                        }}
+                    />
+                )}
+            </div>
+        );
+    };
 
     return (
         <Layout>
@@ -210,9 +257,16 @@ const Gallery = () => {
                         <button onClick={(e) => { e.stopPropagation(); prev(); }} className={styles.leftArrow}>&#10094;</button>
                         <div onClick={(e) => e.stopPropagation()}>
                             {galleryItems[lightboxIndex].type === "image" ? (
-                                <img src={`${apiBase}${galleryItems[lightboxIndex].path}`} alt={`Tatouage ${styleTitle} à Nancy - Mystic Tattoo`} />
+                                <img
+                                    src={`${apiBase}${galleryItems[lightboxIndex].url}`}
+                                    alt={`Tatouage ${styleTitle} à Nancy - Mystic Tattoo`}
+                                />
                             ) : (
-                                <video src={`${apiBase}${galleryItems[lightboxIndex].path}`} autoPlay controls />
+                                <video
+                                    src={`${apiBase}${galleryItems[lightboxIndex].url}`}
+                                    autoPlay
+                                    controls
+                                />
                             )}
                         </div>
                         <button onClick={(e) => { e.stopPropagation(); next(); }} className={styles.rightArrow}>&#10095;</button>

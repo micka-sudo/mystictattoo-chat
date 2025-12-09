@@ -1,20 +1,63 @@
-import { useState, useEffect } from 'react';
-import api from '../lib/api';
+import { useState, useEffect } from "react";
+import api from "../lib/api";
 
 /**
- * Récupère les catégories contenant au moins un média image ou vidéo
+ * Hook pour récupérer les catégories disponibles
+ * - Source principale : /media/categories-with-content
+ * - Fallback       : /media (reconstruction des catégories)
  */
 const useCategories = () => {
     const [categories, setCategories] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
 
     const fetchCategories = async () => {
+        setLoading(true);
+        setError(null);
+
         try {
-            const res = await api.get('/media/categories-with-content');
-            const filtered = res.data.filter(c => c !== 'actus');
+            console.log("useCategories ▶️ Appel /media/categories-with-content");
+            const res = await api.get("/media/categories-with-content");
+
+            let raw = Array.isArray(res.data) ? res.data : [];
+
+            console.log(
+                "useCategories ▶️ Réponse brute de /media/categories-with-content :",
+                raw
+            );
+
+            // Si l’API renvoie un tableau vide → fallback sur /media
+            if (!raw.length) {
+                console.warn(
+                    "useCategories ⚠️ Tableau vide. Fallback sur /media."
+                );
+
+                const mediaRes = await api.get("/media");
+                const media = Array.isArray(mediaRes.data) ? mediaRes.data : [];
+
+                raw = [
+                    ...new Set(
+                        media
+                            .map((m) => m.category)
+                            .filter((c) => typeof c === "string" && c.trim().length > 0)
+                    ),
+                ];
+            }
+
+            // Retire ACTUS
+            const filtered = raw.filter(
+                (c) => c && typeof c === "string" && c.toLowerCase() !== "actus"
+            );
+
+            console.log("useCategories ✅ Catégories finales :", filtered);
+
             setCategories(filtered);
         } catch (err) {
-            console.error('Erreur chargement catégories', err);
+            console.error("useCategories ❌ Erreur chargement catégories :", err);
+            setError(err);
             setCategories([]);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -22,7 +65,12 @@ const useCategories = () => {
         fetchCategories();
     }, []);
 
-    return { categories, refreshCategories: fetchCategories };
+    return {
+        categories,
+        loading,
+        error,
+        refreshCategories: fetchCategories,
+    };
 };
 
 export default useCategories;
