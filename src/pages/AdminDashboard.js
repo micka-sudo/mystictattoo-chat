@@ -11,7 +11,12 @@ import api, { apiBase } from "../lib/api";
 const AdminDashboard = () => {
     const [media, setMedia] = useState([]);
     const [file, setFile] = useState(null);
-    const [category, setCategory] = useState("");
+
+    // 🔽 Catégorie choisie pour l'upload
+    const [selectedCategory, setSelectedCategory] = useState("");
+    // ✏️ Nouvelle catégorie (optionnelle)
+    const [customCategory, setCustomCategory] = useState("");
+
     const [filter, setFilter] = useState("all");
     const [moveToCategory, setMoveToCategory] = useState("");
     const [categories, setCategories] = useState([]);
@@ -40,7 +45,7 @@ const AdminDashboard = () => {
 
             const cats = Array.from(
                 new Set(items.map((m) => m.category).filter(Boolean))
-            );
+            ).sort((a, b) => a.localeCompare(b, "fr"));
             setCategories(cats);
         } catch (err) {
             console.error("Erreur chargement médias", formatAxiosError(err));
@@ -62,23 +67,55 @@ const AdminDashboard = () => {
     /**
      * Upload d'un nouveau média (image ou vidéo).
      * Utilise /media/upload côté backend.
+     *
+     * On prend en priorité la nouvelle catégorie saisie,
+     * sinon la catégorie existante sélectionnée dans la liste.
      */
     const handleUpload = async (e) => {
         e.preventDefault();
-        if (!file || !category) {
-            alert("Fichier et catégorie requis");
+        if (!file) {
+            alert("Fichier requis");
+            return;
+        }
+
+        const trimmedCustom = customCategory.trim();
+        const uploadCategory = trimmedCustom || selectedCategory;
+
+        if (!uploadCategory) {
+            alert(
+                "Merci de choisir une catégorie existante ou d'en saisir une nouvelle."
+            );
             return;
         }
 
         const formData = new FormData();
         formData.append("file", file);
-        formData.append("category", category);
+        formData.append("category", uploadCategory);
 
         try {
             const res = await api.post("/media/upload", formData);
-            setMedia((prev) => [...prev, res.data]);
+            const created = res.data;
+
+            // Mise à jour de la liste des médias
+            setMedia((prev) => [...prev, created]);
+
+            // Mise à jour de la liste des catégories (on ajoute si nouvelle)
+            setCategories((prevCats) => {
+                const next = new Set(prevCats);
+                if (created.category) {
+                    next.add(created.category);
+                } else if (uploadCategory) {
+                    next.add(uploadCategory);
+                }
+                return Array.from(next).sort((a, b) =>
+                    a.localeCompare(b, "fr")
+                );
+            });
+
+            // Reset du formulaire d'upload
             setFile(null);
-            setCategory("");
+            setSelectedCategory(uploadCategory); // on garde la dernière cat utilisée
+            setCustomCategory("");
         } catch (err) {
             console.error("Erreur upload", formatAxiosError(err));
             alert("Upload impossible");
@@ -131,6 +168,17 @@ const AdminDashboard = () => {
                 )
             );
             setMoveToCategory("");
+
+            // On s'assure que la nouvelle catégorie est dans la liste
+            setCategories((prevCats) => {
+                const next = new Set(prevCats);
+                if (updated.category) {
+                    next.add(updated.category);
+                }
+                return Array.from(next).sort((a, b) =>
+                    a.localeCompare(b, "fr")
+                );
+            });
         } catch (err) {
             console.error("Erreur déplacement", formatAxiosError(err));
             alert(`Déplacement impossible (${err.response?.status ?? "ERR"})`);
@@ -196,9 +244,7 @@ const AdminDashboard = () => {
      * Filtrage local des médias par catégorie.
      */
     const filteredMedia =
-        filter === "all"
-            ? media
-            : media.filter((m) => m.category === filter);
+        filter === "all" ? media : media.filter((m) => m.category === filter);
 
     /**
      * Construit l'URL d'affichage d'un média (image/vidéo) :
@@ -207,8 +253,7 @@ const AdminDashboard = () => {
      */
     const buildMediaSrc = (item) => {
         if (!item) return "";
-        const cloud =
-            item.cloudinaryUrl || item.cloudUrl || null;
+        const cloud = item.cloudinaryUrl || item.cloudUrl || null;
 
         if (cloud && typeof cloud === "string") {
             return cloud;
@@ -239,10 +284,7 @@ const AdminDashboard = () => {
                 <section className={styles.newsSection}>
                     <h3>📰 Gérer les actualités</h3>
 
-                    <form
-                        onSubmit={handleNewsSubmit}
-                        className={styles.uploadForm}
-                    >
+                    <form onSubmit={handleNewsSubmit} className={styles.uploadForm}>
                         <input
                             type="text"
                             placeholder="Titre"
@@ -260,9 +302,7 @@ const AdminDashboard = () => {
                         <input
                             type="file"
                             accept="image/*"
-                            onChange={(e) =>
-                                setNewsImage(e.target.files?.[0] || null)
-                            }
+                            onChange={(e) => setNewsImage(e.target.files?.[0] || null)}
                         />
                         <button type="submit">➕ Ajouter l’actualité</button>
                     </form>
@@ -275,9 +315,7 @@ const AdminDashboard = () => {
                             return (
                                 <div key={nid} className={styles.mediaItem}>
                                     <strong>{item.title}</strong>
-                                    {imgSrc ? (
-                                        <img src={imgSrc} alt={item.title} />
-                                    ) : null}
+                                    {imgSrc ? <img src={imgSrc} alt={item.title} /> : null}
                                     <p>{(item.content || "").slice(0, 100)}…</p>
                                     <button
                                         className={styles.deleteBtn}
@@ -287,9 +325,7 @@ const AdminDashboard = () => {
                                             handleDeleteNews(nid);
                                         }}
                                     >
-                                        {deletingId === nid
-                                            ? "Suppression…"
-                                            : "🗑 Supprimer"}
+                                        {deletingId === nid ? "Suppression…" : "🗑 Supprimer"}
                                     </button>
                                 </div>
                             );
@@ -301,27 +337,45 @@ const AdminDashboard = () => {
                 <section>
                     <h3>🖼 Gérer les médias</h3>
 
-                    <form
-                        onSubmit={handleUpload}
-                        className={styles.uploadForm}
-                    >
+                    {/* Formulaire d'upload avec liste déroulante + saisie libre */}
+                    <form onSubmit={handleUpload} className={styles.uploadForm}>
                         <input
                             type="file"
-                            onChange={(e) =>
-                                setFile(e.target.files?.[0] || null)
-                            }
+                            onChange={(e) => setFile(e.target.files?.[0] || null)}
                             required
                         />
-                        <input
-                            type="text"
-                            placeholder="Catégorie (ex: Tattoo noir et blanc)"
-                            value={category}
-                            onChange={(e) => setCategory(e.target.value)}
-                            required
-                        />
+
+                        <div className={styles.categoryPicker}>
+                            <div className={styles.categoryColumn}>
+                                <label>Catégorie existante</label>
+                                <select
+                                    value={selectedCategory}
+                                    onChange={(e) => setSelectedCategory(e.target.value)}
+                                >
+                                    <option value="">— Choisir —</option>
+                                    {categories.map((cat) => (
+                                        <option key={cat} value={cat}>
+                                            {cat}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            <div className={styles.categoryColumn}>
+                                <label>Ou nouvelle catégorie</label>
+                                <input
+                                    type="text"
+                                    placeholder="Ex : Tattoo noir et blanc"
+                                    value={customCategory}
+                                    onChange={(e) => setCustomCategory(e.target.value)}
+                                />
+                            </div>
+                        </div>
+
                         <button type="submit">➕ Ajouter</button>
                     </form>
 
+                    {/* Filtre par catégorie */}
                     <div className={styles.filterBar}>
                         <label>Filtrer :</label>
                         <select
@@ -337,6 +391,7 @@ const AdminDashboard = () => {
                         </select>
                     </div>
 
+                    {/* Grille de médias */}
                     <div className={styles.mediaGrid}>
                         {filteredMedia.map((item) => {
                             const mid = item._id || item.id;
@@ -350,34 +405,22 @@ const AdminDashboard = () => {
                             return (
                                 <div key={mid} className={styles.mediaItem}>
                                     {isImage ? (
-                                        <img
-                                            src={src}
-                                            alt={item.filename}
-                                        />
+                                        <img src={src} alt={item.filename} />
                                     ) : (
-                                        <video
-                                            src={src}
-                                            controls
-                                        />
+                                        <video src={src} controls />
                                     )}
 
                                     <div className={styles.meta}>
                                         <strong>{item.filename}</strong>
-                                        <span className={styles.badge}>
-                      {item.category}
-                    </span>
+                                        <span className={styles.badge}>{item.category}</span>
                                     </div>
 
                                     <div className={styles.moveSection}>
                                         <select
                                             value={moveToCategory}
-                                            onChange={(e) =>
-                                                setMoveToCategory(e.target.value)
-                                            }
+                                            onChange={(e) => setMoveToCategory(e.target.value)}
                                         >
-                                            <option value="">
-                                                Déplacer vers…
-                                            </option>
+                                            <option value="">Déplacer vers…</option>
                                             {categories
                                                 .filter((c) => c !== item.category)
                                                 .map((cat) => (
