@@ -1,12 +1,17 @@
 @import '../styles/variables';
 
+// Palette moderne
+$color-primary: #8B0000;
+$color-primary-light: #B22222;
+
 .header {
   position: sticky;
   top: 0;
   z-index: 1000;
-  background: var(--color-background);
-  border-bottom: 2px solid var(--color-accent);
-  backdrop-filter: blur(8px);
+  background: rgba(10, 10, 10, 0.95);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 
   &__container {
     display: flex;
@@ -14,35 +19,41 @@
     justify-content: space-between;
     max-width: 1400px;
     margin: 0 auto;
-    padding: 12px 20px;
+    padding: 10px 20px;
     gap: 20px;
   }
 
   &__brand {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
     text-decoration: none;
     color: var(--color-light);
+    transition: opacity 0.2s ease;
+
+    &:hover {
+      opacity: 0.85;
+    }
   }
 
   &__logo {
-    width: 50px;
-    height: 50px;
+    width: 42px;
+    height: 42px;
     object-fit: contain;
   }
 
   &__title {
     font-family: var(--font-holocene);
-    font-size: 1.8rem;
+    font-size: 1.5rem;
+    font-weight: 500;
     color: var(--color-light);
-    text-shadow: 0 0 8px var(--color-accent);
+    letter-spacing: 0.02em;
   }
 
   &__nav {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 4px;
 
     &--open {
       display: flex;
@@ -50,30 +61,57 @@
   }
 }
 
-// Navigation links
+// Navigation links - Style moderne minimaliste
 .nav__link {
+  position: relative;
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  padding: 8px 16px;
+  padding: 8px 14px;
   font-family: var(--font-holocene);
-  font-size: 1.2rem;
-  color: var(--color-light);
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.6);
   text-decoration: none;
   background: transparent;
-  border: 1px solid transparent;
+  border: none;
   border-radius: 6px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 4px;
+    left: 50%;
+    transform: translateX(-50%) scaleX(0);
+    width: 16px;
+    height: 2px;
+    background: $color-primary-light;
+    border-radius: 1px;
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
 
   &:hover {
-    background: rgba(255, 255, 255, 0.1);
-    border-color: var(--color-accent);
+    color: rgba(255, 255, 255, 0.95);
+    background: rgba(255, 255, 255, 0.05);
+
+    &::after {
+      transform: translateX(-50%) scaleX(1);
+    }
   }
 
   &--btn {
     background: none;
     border: none;
+  }
+
+  &--active {
+    color: white;
+
+    &::after {
+      transform: translateX(-50%) scaleX(1);
+    }
   }
 }
 
@@ -86,11 +124,13 @@
   }
 
   &__arrow {
-    font-size: 0.8rem;
-    transition: transform 0.2s ease;
+    font-size: 0.7rem;
+    opacity: 0.5;
+    transition: all 0.2s ease;
 
     &--open {
       transform: rotate(180deg);
+      opacity: 0.8;
     }
   }
 
@@ -99,17 +139,17 @@
     top: calc(100% + 8px);
     left: 0;
     min-width: 180px;
-    background: var(--color-background);
-    border: 1px solid var(--color-accent);
+    background: rgba(15, 15, 15, 0.98);
+    border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 8px;
-    padding: 8px 0;
+    padding: 6px;
     list-style: none;
     margin: 0;
     opacity: 0;
     visibility: hidden;
-    transform: translateY(-10px);
-    transition: all 0.2s ease;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    transform: translateY(-8px);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
     z-index: 100;
 
     &--open {
@@ -120,15 +160,17 @@
 
     li a {
       display: block;
-      padding: 10px 16px;
-      color: var(--color-light);
+      padding: 10px 14px;
+      color: rgba(255, 255, 255, 0.7);
       text-decoration: none;
       font-family: var(--font-holocene);
-      font-size: 1rem;
-      transition: background 0.2s ease;
+      font-size: 0.85rem;
+      border-radius: 6px;
+      transition: all 0.15s ease;
 
       &:hover {
-        background: var(--color-accent);
+        background: rgba(139, 0, 0, 0.2);
+        color: white;
       }
     }
   }
@@ -139,8 +181,8 @@
   display: none;
   flex-direction: column;
   justify-content: space-between;
-  width: 28px;
-  height: 20px;
+  width: 24px;
+  height: 18px;
   background: none;
   border: none;
   cursor: pointer;
@@ -150,18 +192,23 @@
   span {
     display: block;
     width: 100%;
-    height: 3px;
-    background: var(--color-light);
-    border-radius: 2px;
-    transition: all 0.3s ease;
+    height: 2px;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 1px;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  &:hover span {
+    background: white;
   }
 
   &--open {
     span:nth-child(1) {
-      transform: rotate(45deg) translate(6px, 6px);
+      transform: rotate(45deg) translate(5px, 5px);
     }
     span:nth-child(2) {
       opacity: 0;
+      transform: scaleX(0);
     }
     span:nth-child(3) {
       transform: rotate(-45deg) translate(6px, -6px);
@@ -173,7 +220,7 @@
 @media (max-width: 900px) {
   .header {
     &__title {
-      font-size: 1.4rem;
+      font-size: 1.3rem;
     }
 
     &__nav {
@@ -184,11 +231,11 @@
       height: 100vh;
       flex-direction: column;
       align-items: stretch;
-      padding: 80px 20px 20px;
-      background: var(--color-background);
-      border-left: 2px solid var(--color-accent);
-      transition: right 0.3s ease;
-      gap: 4px;
+      padding: 70px 16px 20px;
+      background: rgba(10, 10, 10, 0.98);
+      border-left: 1px solid rgba(255, 255, 255, 0.06);
+      transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      gap: 2px;
 
       &--open {
         right: 0;
@@ -198,9 +245,19 @@
 
   .nav__link {
     width: 100%;
-    padding: 12px 16px;
-    font-size: 1.1rem;
+    padding: 12px 14px;
+    font-size: 0.95rem;
     justify-content: flex-start;
+    border-radius: 8px;
+
+    &::after {
+      display: none;
+    }
+
+    &:hover,
+    &--active {
+      background: rgba(139, 0, 0, 0.15);
+    }
   }
 
   .dropdown {
@@ -214,21 +271,22 @@
     &__menu {
       position: static;
       width: 100%;
-      margin-top: 4px;
+      margin-top: 2px;
       border: none;
-      background: rgba(255, 255, 255, 0.05);
+      background: rgba(255, 255, 255, 0.03);
       box-shadow: none;
       padding: 0;
       max-height: 0;
       overflow: hidden;
+      border-radius: 8px;
 
       &--open {
         max-height: 500px;
-        padding: 8px 0;
+        padding: 6px;
       }
 
       li a {
-        padding-left: 32px;
+        padding-left: 28px;
       }
     }
   }
@@ -241,16 +299,16 @@
 @media (max-width: 480px) {
   .header {
     &__container {
-      padding: 10px 16px;
+      padding: 8px 14px;
     }
 
     &__title {
-      font-size: 1.2rem;
+      font-size: 1.15rem;
     }
 
     &__logo {
-      width: 40px;
-      height: 40px;
+      width: 36px;
+      height: 36px;
     }
   }
 }
