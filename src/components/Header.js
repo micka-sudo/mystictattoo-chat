@@ -1,5 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import styles from './Header.module.scss';
 import useCategories from '../hooks/useCategories';
 
@@ -8,18 +8,16 @@ const Header = () => {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
     const dropdownRef = useRef(null);
-    const dropdownMenuRef = useRef(null);
     const { categories = [] } = useCategories();
     const filteredCategories = categories.filter(cat => cat.toLowerCase() !== 'flash');
 
-    const location = useLocation();
     const navigate = useNavigate();
     const isAdminLoggedIn = Boolean(localStorage.getItem('admin_token'));
 
     const showReservation = false;
-    const showLogin = true; // 👉 affichage bouton Connexion
+    const showLogin = true;
 
-    // Ferme dropdown au clic extérieur
+    // Ferme dropdown et menu mobile au clic extérieur
     useEffect(() => {
         const handleClickOutside = (e) => {
             if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
@@ -30,6 +28,12 @@ const Header = () => {
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
+    // Ferme le menu mobile au changement de route
+    const closeMenus = useCallback(() => {
+        setMobileMenuOpen(false);
+        setDropdownOpen(false);
+    }, []);
+
     const handleLogout = () => {
         localStorage.removeItem('admin_token');
         navigate('/admin/login');
@@ -38,56 +42,43 @@ const Header = () => {
     return (
         <header className={styles.header}>
             <div className={styles.header__container}>
-                {/* Logo à gauche */}
-                <Link to="/" className={styles.header__left} onClick={() => setMobileMenuOpen(false)}>
-                    <img src="/logo.webp" alt="Logo Mystic Tattoo" className={styles.header__logo} width="74" height="74" />
-                    <span className={styles.header__brand}>Mystic Tattoo</span>
+                {/* Logo + Titre */}
+                <Link to="/" className={styles.header__brand} onClick={closeMenus}>
+                    <img
+                        src="/logo.webp"
+                        alt="Mystic Tattoo"
+                        className={styles.header__logo}
+                        width="50"
+                        height="50"
+                    />
+                    <span className={styles.header__title}>Mystic Tattoo</span>
                 </Link>
 
-                {/* NAVIGATION CENTRALE */}
-                <nav
-                    className={`${styles.header__nav} ${mobileMenuOpen ? styles.open : ''}`}
-                    onMouseLeave={() => setDropdownOpen(false)}
-                >
-                    <Link className={styles.nav__btn} to="/" onClick={() => setMobileMenuOpen(false)}>
+                {/* Navigation */}
+                <nav className={`${styles.header__nav} ${mobileMenuOpen ? styles['header__nav--open'] : ''}`}>
+                    <Link className={styles.nav__link} to="/" onClick={closeMenus}>
                         Accueil
                     </Link>
 
                     {/* Dropdown Galerie */}
                     <div className={styles.dropdown} ref={dropdownRef}>
                         <button
-                            className={`${styles.nav__btn} ${styles.dropdownToggle} ${dropdownOpen ? styles.open : ''}`}
+                            className={`${styles.nav__link} ${styles.dropdown__toggle}`}
                             onClick={() => setDropdownOpen(!dropdownOpen)}
                             aria-expanded={dropdownOpen}
+                            aria-haspopup="true"
                         >
                             Galerie
+                            <span className={`${styles.dropdown__arrow} ${dropdownOpen ? styles['dropdown__arrow--open'] : ''}`}>▾</span>
                         </button>
 
-                        <ul
-                            ref={dropdownMenuRef}
-                            className={`${styles.dropdown__menu} ${dropdownOpen ? styles.open : ''}`}
-                            style={{
-                                maxHeight: dropdownOpen && dropdownMenuRef.current
-                                    ? `${dropdownMenuRef.current.scrollHeight}px`
-                                    : '0px'
-                            }}
-                        >
+                        <ul className={`${styles.dropdown__menu} ${dropdownOpen ? styles['dropdown__menu--open'] : ''}`}>
                             <li>
-                                <Link to="/gallery" onClick={() => {
-                                    setDropdownOpen(false);
-                                    setMobileMenuOpen(false);
-                                }}>Tous</Link>
+                                <Link to="/gallery" onClick={closeMenus}>Tous les styles</Link>
                             </li>
-
                             {filteredCategories.map((cat) => (
                                 <li key={cat}>
-                                    <Link
-                                        to={`/gallery/${cat}`}
-                                        onClick={() => {
-                                            setDropdownOpen(false);
-                                            setMobileMenuOpen(false);
-                                        }}
-                                    >
+                                    <Link to={`/gallery/${cat}`} onClick={closeMenus}>
                                         {cat.charAt(0).toUpperCase() + cat.slice(1)}
                                     </Link>
                                 </li>
@@ -95,56 +86,48 @@ const Header = () => {
                         </ul>
                     </div>
 
-                    {/* Flash */}
-                    <Link className={styles.nav__btn} to="/flash" onClick={() => setMobileMenuOpen(false)}>
+                    <Link className={styles.nav__link} to="/flash" onClick={closeMenus}>
                         Flash
                     </Link>
 
-                    {/* Contact */}
-                    <Link className={styles.nav__btn} to="/contact" onClick={() => setMobileMenuOpen(false)}>
+                    <Link className={styles.nav__link} to="/contact" onClick={closeMenus}>
                         Contact
                     </Link>
 
-                    {/* Connexion (si non connecté) */}
                     {showLogin && !isAdminLoggedIn && (
-                        <Link className={styles.nav__btn} to="/admin/login" onClick={() => setMobileMenuOpen(false)}>
+                        <Link className={styles.nav__link} to="/admin/login" onClick={closeMenus}>
                             Connexion
                         </Link>
                     )}
 
-                    {/* Réservation (optionnel) */}
                     {showReservation && (
-                        <Link className={styles.nav__btn} to="/reservation" onClick={() => setMobileMenuOpen(false)}>
+                        <Link className={styles.nav__link} to="/reservation" onClick={closeMenus}>
                             Réserver
                         </Link>
                     )}
 
-                    {/* Admin (si connecté) */}
                     {isAdminLoggedIn && (
                         <>
-                            <Link className={styles.nav__btn} to="/admin/dashboard" onClick={() => setMobileMenuOpen(false)}>
+                            <Link className={styles.nav__link} to="/admin/dashboard" onClick={closeMenus}>
                                 Admin
                             </Link>
-                            <button className={styles.nav__btn} onClick={handleLogout}>
+                            <button className={`${styles.nav__link} ${styles['nav__link--btn']}`} onClick={handleLogout}>
                                 Déconnexion
                             </button>
                         </>
                     )}
                 </nav>
 
-                {/* Bloc droit (visible sur desktop seulement) */}
-                <Link to="/" className={styles.header__right} onClick={() => setMobileMenuOpen(false)}>
-                    <span className={styles.header__brand}>Mystic Tattoo</span>
-                    <img src="/logo.webp" alt="Logo" className={styles.header__logo} width="74" height="74" />
-                </Link>
-
                 {/* Menu burger (mobile) */}
                 <button
-                    className={styles.burgerBtn}
+                    className={`${styles.burger} ${mobileMenuOpen ? styles['burger--open'] : ''}`}
                     onClick={() => setMobileMenuOpen(prev => !prev)}
-                    aria-label="Menu mobile"
+                    aria-label="Menu"
+                    aria-expanded={mobileMenuOpen}
                 >
-                    ☰
+                    <span></span>
+                    <span></span>
+                    <span></span>
                 </button>
             </div>
         </header>
