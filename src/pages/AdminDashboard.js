@@ -70,11 +70,12 @@ const AdminDashboard = () => {
         }
     };
 
-    const syncCloudinary = async () => {
+    const syncCloudinary = async (force = false) => {
         setSyncing(true);
         setSyncResults(null);
         try {
-            const res = await api.post("/media/sync");
+            const url = force ? "/media/sync?force=true" : "/media/sync";
+            const res = await api.post(url);
             setSyncResults(res.data.results);
             showToast(`Synchronisation terminée: ${res.data.results.added} ajoutés`, "success");
             // Recharger les médias
@@ -471,17 +472,29 @@ const AdminDashboard = () => {
                                 <h4>Synchronisation Cloudinary</h4>
                                 <p>Importer les images existantes de Cloudinary vers la base de données</p>
                             </div>
-                            <button
-                                className={styles.btnSecondary}
-                                onClick={syncCloudinary}
-                                disabled={syncing}
-                            >
-                                {syncing ? "Synchronisation..." : "Synchroniser"}
-                            </button>
+                            <div className={styles.syncButtons}>
+                                <button
+                                    className={styles.btnSecondary}
+                                    onClick={() => syncCloudinary(false)}
+                                    disabled={syncing}
+                                >
+                                    {syncing ? "Sync..." : "Synchroniser"}
+                                </button>
+                                <button
+                                    className={styles.btnDanger}
+                                    onClick={() => {
+                                        if (window.confirm("Réimporter TOUTES les images de Cloudinary ?")) {
+                                            syncCloudinary(true);
+                                        }
+                                    }}
+                                    disabled={syncing}
+                                >
+                                    Forcer sync
+                                </button>
+                            </div>
                             {syncResults && (
                                 <div className={styles.syncResults}>
                                     <span className={styles.syncAdded}>+{syncResults.added} ajoutés</span>
-                                    <span className={styles.syncUpdated}>{syncResults.updated} mis à jour</span>
                                     <span className={styles.syncSkipped}>{syncResults.skipped} existants</span>
                                 </div>
                             )}

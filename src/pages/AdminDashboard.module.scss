@@ -1210,6 +1210,11 @@
   }
 }
 
+.syncButtons {
+  display: flex;
+  gap: 8px;
+}
+
 .syncResults {
   display: flex;
   gap: 12px;
