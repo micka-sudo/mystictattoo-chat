@@ -45,3 +45,32 @@ button {
   cursor: pointer;
   transition: all 0.3s ease;
 }
+
+// ♿ Accessibilité - Focus indicators visibles
+// Focus visible uniquement au clavier (pas au clic souris)
+:focus-visible {
+  outline: 3px solid var(--color-accent, #7c3aed);
+  outline-offset: 2px;
+}
+
+// Supprime l'outline par défaut pour le clic souris
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+// Focus spécifique pour les boutons et liens
+a:focus-visible,
+button:focus-visible {
+  outline: 3px solid var(--color-accent, #7c3aed);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+// Focus pour les inputs
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 3px solid var(--color-accent, #7c3aed);
+  outline-offset: 1px;
+  border-color: var(--color-accent, #7c3aed);
+}

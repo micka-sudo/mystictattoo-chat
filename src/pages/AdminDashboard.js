@@ -16,11 +16,13 @@ const AdminDashboard = () => {
 
     // Médias
     const [media, setMedia] = useState([]);
-    const [file, setFile] = useState(null);
+    const [files, setFiles] = useState([]);
     const [selectedCategory, setSelectedCategory] = useState("");
     const [customCategory, setCustomCategory] = useState("");
     const [categories, setCategories] = useState([]);
     const [expandedCategory, setExpandedCategory] = useState(null);
+    const [uploading, setUploading] = useState(false);
+    const [uploadProgress, setUploadProgress] = useState({ current: 0, total: 0, filename: "" });
 
     // Actualités
     const [news, setNews] = useState([]);
@@ -29,15 +31,39 @@ const AdminDashboard = () => {
     const [newsImage, setNewsImage] = useState(null);
     const [deletingId, setDeletingId] = useState(null);
 
+    // Statistiques
+    const [stats, setStats] = useState(null);
+    const [statsLoading, setStatsLoading] = useState(false);
+
     // Chargement initial
     useEffect(() => {
         loadData();
     }, []);
 
+    // Charger les stats quand on ouvre l'onglet
+    useEffect(() => {
+        if (activeTab === "stats" && !stats) {
+            fetchStats();
+        }
+    }, [activeTab]);
+
     const loadData = async () => {
         setLoading(true);
         await Promise.all([fetchMedia(), fetchNews()]);
         setLoading(false);
+    };
+
+    const fetchStats = async () => {
+        setStatsLoading(true);
+        try {
+            const res = await api.get("/stats");
+            setStats(res.data);
+        } catch (err) {
+            console.error("Erreur chargement stats", err);
+            showToast("Erreur chargement statistiques", "error");
+        } finally {
+            setStatsLoading(false);
+        }
     };
 
     const showToast = (message, type = "success") => {
@@ -62,7 +88,10 @@ const AdminDashboard = () => {
             const cats = Array.from(
                 new Set(items.map((m) => m.category).filter(Boolean))
             ).sort((a, b) => a.localeCompare(b, "fr"));
-            setCategories(cats);
+
+            // Toujours inclure "Accueil" en premier (pour la homepage)
+            const accueilFirst = ["Accueil", ...cats.filter((c) => c !== "Accueil")];
+            setCategories(accueilFirst);
         } catch (err) {
             console.error("Erreur chargement médias", err);
             showToast("Erreur chargement médias", "error");
@@ -71,8 +100,8 @@ const AdminDashboard = () => {
 
     const handleUpload = async (e) => {
         e.preventDefault();
-        if (!file) {
-            showToast("Sélectionnez un fichier", "error");
+        if (files.length === 0) {
+            showToast("Sélectionnez au moins un fichier", "error");
             return;
         }
 
@@ -82,33 +111,58 @@ const AdminDashboard = () => {
             return;
         }
 
-        const formData = new FormData();
-        formData.append("file", file);
-        formData.append("category", uploadCategory);
+        setUploading(true);
+        setUploadProgress({ current: 0, total: files.length, filename: "" });
 
-        try {
-            const res = await api.post("/media/upload", formData);
-            const created = res.data;
+        let successCount = 0;
+        let errorCount = 0;
 
-            setMedia((prev) => [...prev, created]);
-            setCategories((prevCats) => {
-                const next = new Set(prevCats);
-                next.add(created.category || uploadCategory);
-                return Array.from(next).sort((a, b) => a.localeCompare(b, "fr"));
-            });
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            setUploadProgress({ current: i + 1, total: files.length, filename: file.name });
 
-            setFile(null);
-            setSelectedCategory(uploadCategory);
-            setCustomCategory("");
-            if (fileInputRef.current) fileInputRef.current.value = "";
+            const formData = new FormData();
+            formData.append("file", file);
+            formData.append("category", uploadCategory);
 
-            // Ouvrir la catégorie où on vient d'ajouter
-            setExpandedCategory(uploadCategory);
-            showToast("Média uploadé avec succès");
-        } catch (err) {
-            console.error("Erreur upload", err);
-            showToast("Erreur lors de l'upload", "error");
+            try {
+                const res = await api.post("/media/upload", formData);
+                const created = res.data;
+
+                setMedia((prev) => [...prev, created]);
+                setCategories((prevCats) => {
+                    const next = new Set(prevCats);
+                    next.add(created.category || uploadCategory);
+                    return Array.from(next).sort((a, b) => a.localeCompare(b, "fr"));
+                });
+                successCount++;
+            } catch (err) {
+                console.error(`Erreur upload ${file.name}`, err);
+                errorCount++;
+            }
         }
+
+        // Reset form
+        setFiles([]);
+        setSelectedCategory(uploadCategory);
+        setCustomCategory("");
+        if (fileInputRef.current) fileInputRef.current.value = "";
+
+        // Ouvrir la catégorie où on vient d'ajouter
+        setExpandedCategory(uploadCategory);
+        setUploading(false);
+        setUploadProgress({ current: 0, total: 0, filename: "" });
+
+        // Message récapitulatif
+        if (errorCount === 0) {
+            showToast(`${successCount} fichier${successCount > 1 ? "s" : ""} uploadé${successCount > 1 ? "s" : ""} avec succès !`, "success");
+        } else {
+            showToast(`${successCount} réussi${successCount > 1 ? "s" : ""}, ${errorCount} erreur${errorCount > 1 ? "s" : ""}`, "error");
+        }
+    };
+
+    const removeFileFromList = (index) => {
+        setFiles((prev) => prev.filter((_, i) => i !== index));
     };
 
     const handleDelete = async (item) => {
@@ -280,6 +334,12 @@ const AdminDashboard = () => {
                         <span>Actualités</span>
                         <span className={styles.tabCount}>{news.length}</span>
                     </button>
+                    <button
+                        className={`${styles.tabBtn} ${activeTab === "stats" ? styles.active : ""}`}
+                        onClick={() => setActiveTab("stats")}
+                    >
+                        <span>Statistiques</span>
+                    </button>
                 </div>
 
                 {/* Section Médias */}
@@ -287,7 +347,7 @@ const AdminDashboard = () => {
                     <div className={styles.section}>
                         {/* Formulaire Upload */}
                         <form onSubmit={handleUpload} className={styles.uploadForm}>
-                            <h3>Ajouter un média</h3>
+                            <h3>Ajouter des médias</h3>
 
                             <div className={styles.fileInput}>
                                 <input
@@ -295,15 +355,39 @@ const AdminDashboard = () => {
                                     type="file"
                                     id="mediaFile"
                                     accept="image/*,video/*"
-                                    onChange={(e) => setFile(e.target.files?.[0] || null)}
+                                    multiple
+                                    onChange={(e) => {
+                                        const newFiles = Array.from(e.target.files || []);
+                                        setFiles((prev) => [...prev, ...newFiles]);
+                                    }}
                                 />
                                 <label
                                     htmlFor="mediaFile"
-                                    className={`${styles.fileLabel} ${file ? styles.hasFile : ""}`}
+                                    className={`${styles.fileLabel} ${files.length > 0 ? styles.hasFile : ""}`}
                                 >
-                                    {file ? `${file.name}` : "Choisir un fichier"}
+                                    {files.length > 0
+                                        ? `${files.length} fichier${files.length > 1 ? "s" : ""} sélectionné${files.length > 1 ? "s" : ""}`
+                                        : "Choisir des fichiers"}
                                 </label>
                             </div>
+
+                            {/* Liste des fichiers sélectionnés */}
+                            {files.length > 0 && (
+                                <div className={styles.fileList}>
+                                    {files.map((f, idx) => (
+                                        <div key={`${f.name}-${idx}`} className={styles.fileListItem}>
+                                            <span className={styles.fileName}>{f.name}</span>
+                                            <button
+                                                type="button"
+                                                className={styles.removeFileBtn}
+                                                onClick={() => removeFileFromList(idx)}
+                                            >
+                                                ✕
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
 
                             <div className={styles.categoryPicker}>
                                 <div className={styles.categoryColumn}>
@@ -334,9 +418,30 @@ const AdminDashboard = () => {
                                 </div>
                             </div>
 
-                            <button type="submit" className={styles.btnPrimary}>
-                                Ajouter le média
+                            <button
+                                type="submit"
+                                className={styles.btnPrimary}
+                                disabled={uploading || files.length === 0}
+                            >
+                                {uploading
+                                    ? `Upload ${uploadProgress.current}/${uploadProgress.total}...`
+                                    : `Ajouter ${files.length > 0 ? files.length : "les"} média${files.length > 1 ? "s" : ""}`}
                             </button>
+
+                            {/* Barre de progression */}
+                            {uploading && uploadProgress.total > 0 && (
+                                <div className={styles.uploadProgressContainer}>
+                                    <div className={styles.uploadProgressBar}>
+                                        <div
+                                            className={styles.uploadProgressFill}
+                                            style={{ width: `${(uploadProgress.current / uploadProgress.total) * 100}%` }}
+                                        />
+                                    </div>
+                                    <span className={styles.uploadProgressText}>
+                                        {uploadProgress.filename}
+                                    </span>
+                                </div>
+                            )}
                         </form>
 
                         {/* Liste des catégories en accordéon */}
@@ -368,9 +473,15 @@ const AdminDashboard = () => {
                                                     )}
                                                 </div>
                                                 <div className={styles.categoryInfo}>
-                                                    <span className={styles.categoryName}>{cat}</span>
+                                                    <span className={styles.categoryName}>
+                                                        {cat}
+                                                        {cat === "Accueil" && (
+                                                            <span className={styles.categoryBadge}>Page d'accueil</span>
+                                                        )}
+                                                    </span>
                                                     <span className={styles.categoryCount}>
                                                         {catMedia.length} média{catMedia.length > 1 ? "s" : ""}
+                                                        {cat === "Accueil" && catMedia.length === 0 && " - Ajoutez des images ici"}
                                                     </span>
                                                 </div>
                                                 <span className={styles.chevron}>
@@ -515,6 +626,132 @@ const AdminDashboard = () => {
                                         </div>
                                     );
                                 })}
+                            </div>
+                        )}
+                    </div>
+                )}
+
+                {/* Section Statistiques */}
+                {activeTab === "stats" && (
+                    <div className={styles.section}>
+                        <div className={styles.statsHeader}>
+                            <h3>Statistiques de fréquentation</h3>
+                            <button
+                                className={styles.btnSecondary}
+                                onClick={fetchStats}
+                                disabled={statsLoading}
+                            >
+                                {statsLoading ? "Chargement..." : "Actualiser"}
+                            </button>
+                        </div>
+
+                        {statsLoading && !stats ? (
+                            <div className={styles.loading}>
+                                <div className={styles.spinner}></div>
+                            </div>
+                        ) : stats ? (
+                            <>
+                                {/* Résumé */}
+                                <div className={styles.statsGrid}>
+                                    <div className={styles.statCard}>
+                                        <div className={styles.statValue}>{stats.summary.today}</div>
+                                        <div className={styles.statLabel}>Aujourd'hui</div>
+                                    </div>
+                                    <div className={styles.statCard}>
+                                        <div className={styles.statValue}>{stats.summary.week}</div>
+                                        <div className={styles.statLabel}>Cette semaine</div>
+                                    </div>
+                                    <div className={styles.statCard}>
+                                        <div className={styles.statValue}>{stats.summary.month}</div>
+                                        <div className={styles.statLabel}>Ce mois</div>
+                                    </div>
+                                    <div className={styles.statCard}>
+                                        <div className={styles.statValue}>{stats.summary.uniqueVisitors}</div>
+                                        <div className={styles.statLabel}>Visiteurs uniques</div>
+                                    </div>
+                                    <div className={styles.statCard}>
+                                        <div className={styles.statValue}>{stats.summary.total}</div>
+                                        <div className={styles.statLabel}>Total visites</div>
+                                    </div>
+                                </div>
+
+                                {/* Pages les plus visitées */}
+                                <div className={styles.statsSection}>
+                                    <h4>Pages les plus visitées</h4>
+                                    {stats.topPages.length === 0 ? (
+                                        <p className={styles.noData}>Aucune donnée</p>
+                                    ) : (
+                                        <div className={styles.topPagesList}>
+                                            {stats.topPages.map((page, idx) => (
+                                                <div key={page._id} className={styles.topPageItem}>
+                                                    <span className={styles.pageRank}>#{idx + 1}</span>
+                                                    <span className={styles.pagePath}>{page._id}</span>
+                                                    <span className={styles.pageCount}>{page.count} visites</span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* Répartition par appareil */}
+                                <div className={styles.statsSection}>
+                                    <h4>Appareils</h4>
+                                    <div className={styles.deviceStats}>
+                                        {stats.deviceStats.map((device) => (
+                                            <div key={device._id} className={styles.deviceItem}>
+                                                <span className={styles.deviceIcon}>
+                                                    {device._id === 'mobile' ? '📱' : device._id === 'tablet' ? '📲' : '💻'}
+                                                </span>
+                                                <span className={styles.deviceName}>
+                                                    {device._id === 'mobile' ? 'Mobile' : device._id === 'tablet' ? 'Tablette' : 'Desktop'}
+                                                </span>
+                                                <span className={styles.deviceCount}>{device.count}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* Répartition par navigateur */}
+                                <div className={styles.statsSection}>
+                                    <h4>Navigateurs</h4>
+                                    <div className={styles.browserStats}>
+                                        {stats.browserStats.map((browser) => (
+                                            <div key={browser._id} className={styles.browserItem}>
+                                                <span className={styles.browserName}>{browser._id || 'Inconnu'}</span>
+                                                <span className={styles.browserCount}>{browser.count}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* Graphique des visites par jour */}
+                                <div className={styles.statsSection}>
+                                    <h4>Visites par jour (30 derniers jours)</h4>
+                                    {stats.dailyVisits.length === 0 ? (
+                                        <p className={styles.noData}>Aucune donnée</p>
+                                    ) : (
+                                        <div className={styles.dailyChart}>
+                                            {stats.dailyVisits.map((day) => {
+                                                const maxCount = Math.max(...stats.dailyVisits.map(d => d.count));
+                                                const height = maxCount > 0 ? (day.count / maxCount) * 100 : 0;
+                                                return (
+                                                    <div key={day._id} className={styles.dailyBar} title={`${day._id}: ${day.count} visites`}>
+                                                        <div
+                                                            className={styles.dailyBarFill}
+                                                            style={{ height: `${height}%` }}
+                                                        />
+                                                        <span className={styles.dailyDate}>{day._id.slice(-2)}</span>
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    )}
+                                </div>
+                            </>
+                        ) : (
+                            <div className={styles.emptyState}>
+                                <div className={styles.emptyIcon}>📊</div>
+                                <p>Aucune statistique disponible</p>
                             </div>
                         )}
                     </div>

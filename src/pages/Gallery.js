@@ -169,6 +169,15 @@ const Gallery = () => {
     const prev = () => setLightboxIndex((prev) => (prev === 0 ? galleryItems.length - 1 : prev - 1));
     const next = () => setLightboxIndex((prev) => (prev === galleryItems.length - 1 ? 0 : prev + 1));
 
+    // Skeleton loader component
+    const SkeletonGrid = ({ count = 16 }) => (
+        <div className={styles.gallery__skeleton}>
+            {Array.from({ length: count }).map((_, i) => (
+                <div key={i} className={styles.gallery__skeletonItem} />
+            ))}
+        </div>
+    );
+
     const renderItem = (item, index) => {
         const imageUrl = buildMediaSrc(item);
         console.log(`🖼️ Rendu item ${index}:`, {
@@ -259,7 +268,7 @@ const Gallery = () => {
                 </div>
 
                 {loading ? (
-                    <p>Chargement...</p>
+                    <SkeletonGrid count={16} />
                 ) : style ? (
                     <div className={styles.gallery__grid}>
                         {media.length > 0 ? media.map((item, idx) => renderItem(item, idx)) : <p>Aucun média trouvé dans cette catégorie.</p>}

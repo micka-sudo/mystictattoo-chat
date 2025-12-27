@@ -58,6 +58,41 @@
       animation: kenBurnsZoom 12s ease-in-out infinite;
       border-radius: 12px;
       transform-origin: center center;
+      transition: opacity 0.5s ease-in-out;
+      opacity: 1;
+
+      &--transitioning {
+        opacity: 0;
+      }
+
+      &--loading {
+        background: linear-gradient(
+          90deg,
+          var(--color-background) 0%,
+          rgba(255, 255, 255, 0.1) 50%,
+          var(--color-background) 100%
+        );
+        background-size: 200% 100%;
+        animation: shimmer 1.5s infinite;
+      }
+    }
+  }
+
+  &__noMedia {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(124, 58, 237, 0.2), rgba(168, 85, 247, 0.1));
+    border: 2px dashed rgba(168, 85, 247, 0.5);
+    border-radius: 12px;
+
+    p {
+      color: var(--color-light);
+      font-size: 1rem;
+      text-align: center;
+      padding: 20px;
+      opacity: 0.8;
     }
   }
 
@@ -157,6 +192,15 @@
     }
     100% {
       transform: scale(1) translate(0, 0);
+    }
+  }
+
+  @keyframes shimmer {
+    0% {
+      background-position: -200% 0;
+    }
+    100% {
+      background-position: 200% 0;
     }
   }
 
