@@ -211,7 +211,6 @@ const Home = () => {
                     {/* 📰 Bloc actualités */}
                     {showNews && (
                         <section className={styles.home__content}>
-                            <h2>Actualité</h2>
                             {news.length === 0 ? (
                                 <p>Aucune actualité pour le moment.</p>
                             ) : (

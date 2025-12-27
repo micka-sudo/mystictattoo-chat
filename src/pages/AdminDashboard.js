@@ -39,6 +39,11 @@ const AdminDashboard = () => {
     const [syncing, setSyncing] = useState(false);
     const [syncResults, setSyncResults] = useState(null);
 
+    // Sélection multiple
+    const [selectedItems, setSelectedItems] = useState(new Set());
+    const [bulkDeleting, setBulkDeleting] = useState(false);
+    const [bulkCopying, setBulkCopying] = useState(false);
+
     // Chargement initial
     useEffect(() => {
         loadData();
@@ -231,12 +236,151 @@ const AdminDashboard = () => {
         }
     };
 
+    // Copier un média vers une autre catégorie (sans supprimer l'original)
+    const handleCopy = async (item, targetCategory) => {
+        const id = item._id || item.id;
+        if (!id || !targetCategory) return;
+
+        try {
+            const res = await api.post(`/media/${encodeURIComponent(id)}/copy`, {
+                targetCategory,
+            });
+            const newMedia = res.data;
+
+            // Ajouter le nouveau média à la liste
+            setMedia((prev) => [...prev, newMedia]);
+
+            setCategories((prevCats) => {
+                const next = new Set(prevCats);
+                if (newMedia.category) next.add(newMedia.category);
+                return Array.from(next).sort((a, b) => a.localeCompare(b, "fr"));
+            });
+
+            showToast(`Copié vers ${targetCategory}`);
+        } catch (err) {
+            console.error("Erreur copie", err);
+            showToast("Erreur lors de la copie", "error");
+        }
+    };
+
     const toggleCategory = (cat) => {
         setExpandedCategory(expandedCategory === cat ? null : cat);
     };
 
     const getMediaByCategory = (cat) => {
         return media.filter((m) => m.category === cat);
+    };
+
+    // ============================================================================
+    // SÉLECTION MULTIPLE
+    // ============================================================================
+    const toggleItemSelection = (itemId) => {
+        setSelectedItems((prev) => {
+            const next = new Set(prev);
+            if (next.has(itemId)) {
+                next.delete(itemId);
+            } else {
+                next.add(itemId);
+            }
+            return next;
+        });
+    };
+
+    const toggleSelectAllInCategory = (cat) => {
+        const catMedia = getMediaByCategory(cat);
+        const catIds = catMedia.map((m) => m._id || m.id);
+        const allSelected = catIds.every((id) => selectedItems.has(id));
+
+        setSelectedItems((prev) => {
+            const next = new Set(prev);
+            if (allSelected) {
+                // Tout désélectionner
+                catIds.forEach((id) => next.delete(id));
+            } else {
+                // Tout sélectionner
+                catIds.forEach((id) => next.add(id));
+            }
+            return next;
+        });
+    };
+
+    const clearSelection = () => {
+        setSelectedItems(new Set());
+    };
+
+    const handleBulkDelete = async () => {
+        if (selectedItems.size === 0) return;
+        if (!window.confirm(`Supprimer ${selectedItems.size} média(s) sélectionné(s) ?`)) return;
+
+        setBulkDeleting(true);
+        let successCount = 0;
+        let errorCount = 0;
+
+        for (const id of selectedItems) {
+            try {
+                await api.delete(`/media/${encodeURIComponent(id)}`);
+                successCount++;
+            } catch (err) {
+                console.error(`Erreur suppression ${id}`, err);
+                errorCount++;
+            }
+        }
+
+        // Mettre à jour la liste
+        setMedia((prev) => prev.filter((m) => !selectedItems.has(m._id || m.id)));
+        setSelectedItems(new Set());
+        setBulkDeleting(false);
+
+        if (errorCount === 0) {
+            showToast(`${successCount} média(s) supprimé(s)`);
+        } else {
+            showToast(`${successCount} supprimé(s), ${errorCount} erreur(s)`, "error");
+        }
+    };
+
+    const handleCopyToAccueil = async () => {
+        if (selectedItems.size === 0) return;
+
+        // Filtrer les items déjà dans Accueil
+        const itemsToCopy = Array.from(selectedItems).filter((id) => {
+            const item = media.find((m) => (m._id || m.id) === id);
+            return item && item.category !== "Accueil";
+        });
+
+        if (itemsToCopy.length === 0) {
+            showToast("Tous les éléments sont déjà dans Accueil", "error");
+            return;
+        }
+
+        if (!window.confirm(`Copier ${itemsToCopy.length} média(s) vers Accueil ?`)) return;
+
+        setBulkCopying(true);
+        let successCount = 0;
+        let errorCount = 0;
+
+        for (const id of itemsToCopy) {
+            try {
+                const res = await api.post(`/media/${encodeURIComponent(id)}/copy`, {
+                    targetCategory: "Accueil",
+                });
+                const newMedia = res.data;
+                // Ajouter le nouveau média copié à la liste
+                setMedia((prev) => [...prev, newMedia]);
+                successCount++;
+            } catch (err) {
+                console.error(`Erreur copie ${id}`, err);
+                errorCount++;
+            }
+        }
+
+        setSelectedItems(new Set());
+        setBulkCopying(false);
+
+        if (errorCount === 0) {
+            showToast(`${successCount} média(s) copié(s) vers Accueil`);
+        } else {
+            showToast(`${successCount} copié(s), ${errorCount} erreur(s)`, "error");
+        }
     };
 
     // ============================================================================
@@ -314,6 +458,32 @@ const AdminDashboard = () => {
     const isImage = (item) =>
         item.type === "image" ||
         /\.(png|jpe?g|webp|gif|avif)$/i.test(item.path || item.url || "");
+
+    // Formater les chemins de pages pour l'affichage
+    const formatPagePath = (path) => {
+        if (!path || path === "/") return { icon: "🏠", name: "Accueil", color: "#10b981" };
+
+        const lower = path.toLowerCase();
+
+        if (lower.includes("/gallery")) {
+            const match = path.match(/\/gallery\/(.+)/i);
+            const category = match ? match[1].replace(/-/g, " ") : "Galerie";
+            return { icon: "🎨", name: `Galerie › ${category}`, color: "#8b5cf6" };
+        }
+        if (lower.includes("/contact")) return { icon: "✉️", name: "Contact", color: "#3b82f6" };
+        if (lower.includes("/flash")) return { icon: "⚡", name: "Flash Tattoo", color: "#f59e0b" };
+        if (lower.includes("/reservation")) return { icon: "📅", name: "Réservation", color: "#ef4444" };
+        if (lower.includes("/admin")) return { icon: "⚙️", name: "Admin", color: "#64748b" };
+        if (lower.includes("/style")) {
+            const match = path.match(/\/style\/(.+)/i);
+            const style = match ? match[1].replace(/-/g, " ") : "Style";
+            return { icon: "🖌️", name: `Style › ${style}`, color: "#ec4899" };
+        }
+
+        // Fallback : nettoyer le path
+        const cleanName = path.replace(/^\//, "").replace(/-/g, " ").replace(/\//g, " › ");
+        return { icon: "📄", name: cleanName || path, color: "#64748b" };
+    };
 
     // ============================================================================
     // RENDER
@@ -501,6 +671,37 @@ const AdminDashboard = () => {
                             )}
                         </div>
 
+                        {/* Barre d'actions sélection multiple */}
+                        {selectedItems.size > 0 && (
+                            <div className={styles.bulkActions}>
+                                <span className={styles.bulkCount}>
+                                    {selectedItems.size} sélectionné(s)
+                                </span>
+                                <div className={styles.bulkButtons}>
+                                    <button
+                                        className={styles.btnCopyAccueil}
+                                        onClick={handleCopyToAccueil}
+                                        disabled={bulkCopying || bulkDeleting}
+                                    >
+                                        {bulkCopying ? "Copie..." : "Copier vers Accueil"}
+                                    </button>
+                                    <button
+                                        className={styles.btnBulkDelete}
+                                        onClick={handleBulkDelete}
+                                        disabled={bulkDeleting || bulkCopying}
+                                    >
+                                        {bulkDeleting ? "Suppression..." : "Supprimer"}
+                                    </button>
+                                    <button
+                                        className={styles.btnClearSelection}
+                                        onClick={clearSelection}
+                                    >
+                                        Annuler
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+
                         {/* Liste des catégories en accordéon */}
                         <div className={styles.categoryList}>
                             {categories.length === 0 ? (
@@ -549,14 +750,33 @@ const AdminDashboard = () => {
                                             {/* Contenu déplié */}
                                             {isExpanded && (
                                                 <div className={styles.categoryContent}>
+                                                    {/* Barre de sélection catégorie */}
+                                                    <div className={styles.categoryActions}>
+                                                        <label className={styles.selectAllLabel}>
+                                                            <input
+                                                                type="checkbox"
+                                                                checked={catMedia.length > 0 && catMedia.every((m) => selectedItems.has(m._id || m.id))}
+                                                                onChange={() => toggleSelectAllInCategory(cat)}
+                                                            />
+                                                            <span>Tout sélectionner ({catMedia.length})</span>
+                                                        </label>
+                                                    </div>
                                                     <div className={styles.mediaGrid}>
                                                         {catMedia.map((item) => {
                                                             const mid = item._id || item.id;
                                                             const src = buildMediaSrc(item);
+                                                            const isSelected = selectedItems.has(mid);
 
                                                             return (
-                                                                <div key={mid} className={styles.mediaItem}>
-                                                                    <div className={styles.mediaPreview}>
+                                                                <div key={mid} className={`${styles.mediaItem} ${isSelected ? styles.mediaItemSelected : ""}`}>
+                                                                    <div className={styles.mediaCheckbox}>
+                                                                        <input
+                                                                            type="checkbox"
+                                                                            checked={isSelected}
+                                                                            onChange={() => toggleItemSelection(mid)}
+                                                                        />
+                                                                    </div>
+                                                                    <div className={styles.mediaPreview} onClick={() => toggleItemSelection(mid)}>
                                                                         {isImage(item) ? (
                                                                             <img src={src} alt={item.filename} loading="lazy" />
                                                                         ) : (
@@ -570,7 +790,19 @@ const AdminDashboard = () => {
                                                                         </div>
 
                                                                         <div className={styles.mediaActions}>
-                                                                            <div className={styles.moveSection}>
+                                                                            {/* Bouton Copier vers Accueil - visible pour toutes les catégories sauf Accueil */}
+                                                                            {item.category !== "Accueil" && (
+                                                                                <button
+                                                                                    className={styles.btnCopyToAccueil}
+                                                                                    onClick={() => handleCopy(item, "Accueil")}
+                                                                                >
+                                                                                    ⭐ Copier vers Accueil
+                                                                                </button>
+                                                                            )}
+
+                                                                            {/* Déplacer vers */}
+                                                                            <div className={styles.actionRow}>
+                                                                                <label>Déplacer vers</label>
                                                                                 <select
                                                                                     defaultValue=""
                                                                                     onChange={(e) => {
@@ -580,7 +812,7 @@ const AdminDashboard = () => {
                                                                                         }
                                                                                     }}
                                                                                 >
-                                                                                    <option value="">Déplacer...</option>
+                                                                                    <option value="">Choisir...</option>
                                                                                     {categories
                                                                                         .filter((c) => c !== item.category)
                                                                                         .map((c) => (
@@ -739,13 +971,19 @@ const AdminDashboard = () => {
                                         <p className={styles.noData}>Aucune donnée</p>
                                     ) : (
                                         <div className={styles.topPagesList}>
-                                            {stats.topPages.map((page, idx) => (
-                                                <div key={page._id} className={styles.topPageItem}>
-                                                    <span className={styles.pageRank}>#{idx + 1}</span>
-                                                    <span className={styles.pagePath}>{page._id}</span>
-                                                    <span className={styles.pageCount}>{page.count} visites</span>
-                                                </div>
-                                            ))}
+                                            {stats.topPages.map((page, idx) => {
+                                                const formatted = formatPagePath(page._id);
+                                                return (
+                                                    <div key={page._id} className={styles.topPageItem}>
+                                                        <span className={styles.pageRank}>#{idx + 1}</span>
+                                                        <span className={styles.pageIcon}>{formatted.icon}</span>
+                                                        <span className={styles.pageName} style={{ color: formatted.color }}>
+                                                            {formatted.name}
+                                                        </span>
+                                                        <span className={styles.pageCount}>{page.count} visites</span>
+                                                    </div>
+                                                );
+                                            })}
                                         </div>
                                     )}
                                 </div>
