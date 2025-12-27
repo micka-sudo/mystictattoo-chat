@@ -103,8 +103,9 @@ const AdminDashboard = () => {
     // ============================================================================
     const fetchMedia = async () => {
         try {
-            const res = await api.get("/media");
-            const items = Array.isArray(res.data) ? res.data : [];
+            // Charger tous les médias (limit=1000 pour éviter la pagination)
+            const res = await api.get("/media?limit=1000");
+            const items = Array.isArray(res.data) ? res.data : (res.data.data || []);
             setMedia(items);
 
             const cats = Array.from(
