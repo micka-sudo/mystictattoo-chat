@@ -40,7 +40,7 @@ const Header = () => {
             <div className={styles.header__container}>
                 {/* Logo à gauche */}
                 <Link to="/" className={styles.header__left} onClick={() => setMobileMenuOpen(false)}>
-                    <img src="/logo.png" alt="Logo Mystic Tattoo" className={styles.header__logo} />
+                    <img src="/logo.webp" alt="Logo Mystic Tattoo" className={styles.header__logo} width="74" height="74" />
                     <span className={styles.header__brand}>Mystic Tattoo</span>
                 </Link>
 
@@ -135,7 +135,7 @@ const Header = () => {
                 {/* Bloc droit (visible sur desktop seulement) */}
                 <Link to="/" className={styles.header__right} onClick={() => setMobileMenuOpen(false)}>
                     <span className={styles.header__brand}>Mystic Tattoo</span>
-                    <img src="/logo.png" alt="Logo" className={styles.header__logo} />
+                    <img src="/logo.webp" alt="Logo" className={styles.header__logo} width="74" height="74" />
                 </Link>
 
                 {/* Menu burger (mobile) */}

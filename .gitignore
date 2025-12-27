@@ -27,3 +27,8 @@ __tests__/
 # 👉 Configuration JetBrains / VSCode
 .vscode/
 .idea/
+
+# 👉 Documentation locale (ne pas commiter)
+TODO.md
+TODO-*.md
+DEPLOY-WORKFLOW.md

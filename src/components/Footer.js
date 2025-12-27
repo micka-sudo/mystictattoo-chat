@@ -43,14 +43,14 @@ const Footer = () => {
                         target="_blank"
                         rel="noopener noreferrer"
                     >
-                        <img src="/icons/instagram.png" alt="Instagram" width="28" height="28" />
+                        <img src="/icons/instagram.webp" alt="Instagram" width="28" height="28" />
                     </a>
                     <a
                         href="https://www.facebook.com/p/Mystic-Tattoo-Nancy-100057617876652/?locale=fr_FR"
                         target="_blank"
                         rel="noopener noreferrer"
                     >
-                        <img src="/icons/facebook.png" alt="Facebook" width="28" height="28" />
+                        <img src="/icons/facebook.webp" alt="Facebook" width="28" height="28" />
                     </a>
                 </div>
             </div>
