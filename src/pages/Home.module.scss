@@ -78,6 +78,54 @@
     }
   }
 
+  // Container pour l'image hero (LCP optimisé)
+  &__heroContainer {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    border-radius: 12px;
+  }
+
+  // Image hero optimisée (remplace background-image)
+  &__heroImage {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    animation: kenBurnsZoom 12s ease-in-out infinite;
+    transform-origin: center center;
+    transition: opacity 0.5s ease-in-out;
+    opacity: 1;
+
+    &--transitioning {
+      opacity: 0;
+    }
+
+    &--next {
+      z-index: 1;
+      opacity: 1;
+    }
+  }
+
+  // Skeleton loading pour hero
+  &__heroSkeleton {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      90deg,
+      var(--color-background) 0%,
+      rgba(255, 255, 255, 0.1) 50%,
+      var(--color-background) 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: 12px;
+  }
+
   &__noMedia {
     display: flex;
     align-items: center;

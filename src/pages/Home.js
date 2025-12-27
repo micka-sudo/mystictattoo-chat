@@ -184,7 +184,7 @@ const Home = () => {
                         showNews ? styles.home__main : styles.home__singleColumn
                     }
                 >
-                    {/* 🎨 Image d'accueil */}
+                    {/* 🎨 Image d'accueil - Optimisé LCP */}
                     <div
                         className={
                             showNews ? styles.home__hero : styles.home__heroFull
@@ -195,16 +195,36 @@ const Home = () => {
                                 <p>Ajoutez des images dans la catégorie "Accueil" depuis l'admin.</p>
                             </div>
                         ) : (
-                            <div
-                                className={`${styles.home__heroBg}${
-                                    isTransitioning ? ` ${styles["home__heroBg--transitioning"]}` : ""
-                                }${isLoading ? ` ${styles["home__heroBg--loading"]}` : ""}`}
-                                style={
-                                    backgroundUrl
-                                        ? { backgroundImage: `url('${backgroundUrl}')` }
-                                        : {}
-                                }
-                            ></div>
+                            <div className={styles.home__heroContainer}>
+                                {/* Image principale (LCP) */}
+                                {backgroundUrl && (
+                                    <img
+                                        src={backgroundUrl}
+                                        alt="Tatouage artistique Mystic Tattoo Nancy"
+                                        className={`${styles.home__heroImage}${
+                                            isTransitioning ? ` ${styles["home__heroImage--transitioning"]}` : ""
+                                        }`}
+                                        fetchpriority="high"
+                                        loading="eager"
+                                        decoding="async"
+                                    />
+                                )}
+                                {/* Image de transition (préchargée) */}
+                                {nextImageUrl && (
+                                    <img
+                                        src={nextImageUrl}
+                                        alt=""
+                                        className={`${styles.home__heroImage} ${styles["home__heroImage--next"]}`}
+                                        loading="eager"
+                                        decoding="async"
+                                        aria-hidden="true"
+                                    />
+                                )}
+                                {/* Skeleton loading */}
+                                {isLoading && (
+                                    <div className={styles.home__heroSkeleton}></div>
+                                )}
+                            </div>
                         )}
                     </div>
 
