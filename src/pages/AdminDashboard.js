@@ -35,6 +35,10 @@ const AdminDashboard = () => {
     const [stats, setStats] = useState(null);
     const [statsLoading, setStatsLoading] = useState(false);
 
+    // Synchronisation Cloudinary
+    const [syncing, setSyncing] = useState(false);
+    const [syncResults, setSyncResults] = useState(null);
+
     // Chargement initial
     useEffect(() => {
         loadData();
@@ -63,6 +67,23 @@ const AdminDashboard = () => {
             showToast("Erreur chargement statistiques", "error");
         } finally {
             setStatsLoading(false);
+        }
+    };
+
+    const syncCloudinary = async () => {
+        setSyncing(true);
+        setSyncResults(null);
+        try {
+            const res = await api.post("/media/sync");
+            setSyncResults(res.data.results);
+            showToast(`Synchronisation terminée: ${res.data.results.added} ajoutés`, "success");
+            // Recharger les médias
+            await fetchMedia();
+        } catch (err) {
+            console.error("Erreur synchronisation", err);
+            showToast("Erreur synchronisation Cloudinary", "error");
+        } finally {
+            setSyncing(false);
         }
     };
 
@@ -443,6 +464,28 @@ const AdminDashboard = () => {
                                 </div>
                             )}
                         </form>
+
+                        {/* Synchronisation Cloudinary */}
+                        <div className={styles.syncSection}>
+                            <div className={styles.syncInfo}>
+                                <h4>Synchronisation Cloudinary</h4>
+                                <p>Importer les images existantes de Cloudinary vers la base de données</p>
+                            </div>
+                            <button
+                                className={styles.btnSecondary}
+                                onClick={syncCloudinary}
+                                disabled={syncing}
+                            >
+                                {syncing ? "Synchronisation..." : "Synchroniser"}
+                            </button>
+                            {syncResults && (
+                                <div className={styles.syncResults}>
+                                    <span className={styles.syncAdded}>+{syncResults.added} ajoutés</span>
+                                    <span className={styles.syncUpdated}>{syncResults.updated} mis à jour</span>
+                                    <span className={styles.syncSkipped}>{syncResults.skipped} existants</span>
+                                </div>
+                            )}
+                        </div>
 
                         {/* Liste des catégories en accordéon */}
                         <div className={styles.categoryList}>

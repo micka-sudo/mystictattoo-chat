@@ -1177,3 +1177,63 @@
   color: var(--color-secondary);
   margin-top: 6px;
 }
+
+// ============================================================================
+// SYNCHRONISATION CLOUDINARY
+// ============================================================================
+.syncSection {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 20px;
+  margin-bottom: 24px;
+  background: var(--color-dark);
+  border-radius: 12px;
+  border: 1px dashed rgba(255,255,255,0.2);
+}
+
+.syncInfo {
+  flex: 1;
+  min-width: 200px;
+
+  h4 {
+    margin: 0 0 4px 0;
+    font-size: 1rem;
+    color: var(--color-light);
+  }
+
+  p {
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--color-secondary);
+  }
+}
+
+.syncResults {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+
+  span {
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+}
+
+.syncAdded {
+  background: rgba(40, 167, 69, 0.2);
+  color: #28a745;
+}
+
+.syncUpdated {
+  background: rgba(23, 162, 184, 0.2);
+  color: #17a2b8;
+}
+
+.syncSkipped {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--color-secondary);
+}
