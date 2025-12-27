@@ -1,6 +1,4 @@
-// ✅ Gallery.js avec console.log pour debugging
-
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo, useCallback } from "react";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
 import api, { apiBase } from "../lib/api";
 import Layout from "../layouts/Layout";
@@ -20,38 +18,36 @@ const styleKeywords = {
     blackwork: "tatouage blackwork Nancy, tatoueur blackwork Nancy, style blackwork"
 };
 
-/**
- * Ajoute un "/" au début du chemin si absent.
- */
 function ensureLeadingSlash(p = "") {
     return p.startsWith("/") ? p : `/${p}`;
 }
 
-/**
- * Construit l'URL d'affichage d'un média (image/vidéo) :
- * - priorité à Cloudinary (cloudinaryUrl ou cloudUrl)
- * - sinon fallback sur apiBase + path/url
- */
 function buildMediaSrc(item) {
     if (!item) return "";
     const cloud = item.cloudinaryUrl || item.cloudUrl || null;
-
-    if (cloud && typeof cloud === "string") {
-        return cloud;
-    }
-
+    if (cloud && typeof cloud === "string") return cloud;
     const p = ensureLeadingSlash(item.path || item.url || "");
     return `${apiBase}${p}`;
 }
 
-const Gallery = () => {
-    console.log("🚀 COMPOSANT GALLERY CHARGÉ");
+function capitalizeFirst(str) {
+    if (!str) return "";
+    return str.charAt(0).toUpperCase() + str.slice(1);
+}
 
+// Icone zoom SVG
+const ZoomIcon = () => (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <circle cx="11" cy="11" r="8"/>
+        <path d="M21 21l-4.35-4.35"/>
+        <path d="M11 8v6M8 11h6"/>
+    </svg>
+);
+
+const Gallery = () => {
     const { style } = useParams();
     const location = useLocation();
     const navigate = useNavigate();
-
-    console.log("🚀 Params style:", style);
 
     const [media, setMedia] = useState([]);
     const [mediaByCategory, setMediaByCategory] = useState({});
@@ -59,34 +55,35 @@ const Gallery = () => {
     const [lightboxIndex, setLightboxIndex] = useState(null);
 
     const { categories = [] } = useCategories();
-    console.log("🔍 categories depuis useCategories:", categories);
+    const filteredCategories = useMemo(() =>
+        categories.filter((cat) => cat.toLowerCase() !== "flash"),
+        [categories]
+    );
 
-    const filteredCategories = categories.filter((cat) => cat.toLowerCase() !== "flash");
-    console.log("🔍 filteredCategories:", filteredCategories);
+    // Tous les items pour la galerie
+    const galleryItems = useMemo(() => {
+        if (style) return media;
+        return Object.values(mediaByCategory).flat();
+    }, [style, media, mediaByCategory]);
 
-    const galleryItems = style ? media : Object.values(mediaByCategory).flat();
+    // Stats
+    const totalCount = galleryItems.length;
+    const categoriesCount = filteredCategories.length;
 
-    console.log("🎯 apiBase:", apiBase);
-    console.log("🎯 style actuel:", style);
-    console.log("🎯 galleryItems:", galleryItems);
-    console.log("🎯 media:", media);
-    console.log("🎯 mediaByCategory:", mediaByCategory);
-
-    const styleTitle = style ? `${style.charAt(0).toUpperCase() + style.slice(1)}` : "Tous les styles";
+    // SEO
+    const styleTitle = style ? capitalizeFirst(style) : "Tous les styles";
     const pageTitle = style
         ? `Tatouage ${styleTitle} Nancy - Galerie Mystic Tattoo`
         : `Galerie de tatouages - Mystic Tattoo Nancy`;
     const pageDescription = style
-        ? `Découvrez nos tatouages de style ${styleTitle} réalisés à Nancy par Mystic Tattoo. Tatoueur spécialisé en ${styleTitle}, prise de rendez-vous en ligne, galerie, inspiration.`
-        : `Explorez tous les styles de tatouage proposés par Mystic Tattoo à Nancy : japonais, réaliste, graphique, oldschool, minimaliste... Réservez votre séance.`;
+        ? `Découvrez nos tatouages de style ${styleTitle} réalisés à Nancy par Mystic Tattoo. Tatoueur spécialisé en ${styleTitle}, prise de rendez-vous en ligne.`
+        : `Explorez tous les styles de tatouage proposés par Mystic Tattoo à Nancy : japonais, réaliste, graphique, oldschool, minimaliste...`;
     const canonicalUrl = style
         ? `https://www.mystic-tattoo.fr/gallery/${style}`
         : `https://www.mystic-tattoo.fr/gallery`;
-
     const firstImageUrl = galleryItems[0] ? buildMediaSrc(galleryItems[0]) : null;
-
     const keywords = style
-        ? `${SEO_KEYWORDS_BASE}, ${styleKeywords[style] || styleTitle + " Nancy, tatouage " + styleTitle.toLowerCase() + " Nancy"}`
+        ? `${SEO_KEYWORDS_BASE}, ${styleKeywords[style] || styleTitle + " Nancy"}`
         : SEO_KEYWORDS_BASE;
 
     const SCHEMA_ORG = {
@@ -101,27 +98,18 @@ const Gallery = () => {
             "postalCode": "54000",
             "addressCountry": "FR"
         },
-        "geo": {
-            "@type": "GeoCoordinates",
-            "latitude": 48.6921,
-            "longitude": 6.1844
-        },
         "telephone": "+33688862646",
-        "url": `https://www.mystic-tattoo.fr/gallery${style ? `/${style}` : ''}`,
-        "sameAs": [
-            "https://www.instagram.com/directory.nancy.tattoo.artists/p/CvKA3RAri-q/?locale=ne_NP",
-            "https://www.facebook.com/p/Mystic-Tattoo-Nancy-100057617876652/?locale=fr_FR"
-        ]
+        "url": canonicalUrl
     };
 
+    // Redirect ancien format
     useEffect(() => {
         const query = new URLSearchParams(location.search);
         const oldStyle = query.get("style");
-        if (oldStyle) {
-            navigate(`/gallery/${oldStyle}`, { replace: true });
-        }
+        if (oldStyle) navigate(`/gallery/${oldStyle}`, { replace: true });
     }, [location.search, navigate]);
 
+    // Fetch media
     useEffect(() => {
         const fetchMedia = async () => {
             setLoading(true);
@@ -131,96 +119,114 @@ const Gallery = () => {
                         navigate("/flash", { replace: true });
                         return;
                     }
-                    console.log("📡 Requête API pour style:", style);
                     const res = await api.get(`/media?style=${style}`);
-                    console.log("📸 Données reçues:", res.data);
-                    console.log("📸 Premier item:", res.data[0]);
-                    console.log("📸 Nombre d'items:", res.data.length);
                     setMedia(res.data);
                 } else {
-                    console.log("📡 Chargement de tous les styles");
                     const all = {};
                     await Promise.all(
                         filteredCategories.map(async (cat) => {
-                            console.log("📡 Requête pour catégorie:", cat);
                             const res = await api.get(`/media?style=${cat}`);
-                            console.log(`📸 ${cat}:`, res.data.length, "items");
-                            if (res.data[0]) {
-                                console.log(`📸 Premier item de ${cat}:`, res.data[0]);
-                            }
                             all[cat] = res.data;
                         })
                     );
-                    console.log("📸 Toutes les catégories chargées:", all);
                     setMediaByCategory(all);
                 }
             } catch (err) {
-                console.error("❌ Erreur chargement médias", err);
+                console.error("Erreur chargement médias", err);
             } finally {
                 setLoading(false);
             }
         };
 
         if (categories.length > 0) fetchMedia();
-    }, [categories, style]);
+    }, [categories, style, navigate, filteredCategories]);
 
-    const openLightbox = (index) => setLightboxIndex(index);
-    const closeLightbox = () => setLightboxIndex(null);
-    const prev = () => setLightboxIndex((prev) => (prev === 0 ? galleryItems.length - 1 : prev - 1));
-    const next = () => setLightboxIndex((prev) => (prev === galleryItems.length - 1 ? 0 : prev + 1));
+    // Lightbox handlers
+    const openLightbox = useCallback((index) => setLightboxIndex(index), []);
+    const closeLightbox = useCallback(() => setLightboxIndex(null), []);
+    const prev = useCallback(() => {
+        setLightboxIndex((p) => (p === 0 ? galleryItems.length - 1 : p - 1));
+    }, [galleryItems.length]);
+    const next = useCallback(() => {
+        setLightboxIndex((p) => (p === galleryItems.length - 1 ? 0 : p + 1));
+    }, [galleryItems.length]);
 
-    // Skeleton loader component
-    const SkeletonGrid = ({ count = 16 }) => (
-        <div className={styles.gallery__skeleton}>
+    // Keyboard navigation
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            if (lightboxIndex === null) return;
+            if (e.key === "Escape") closeLightbox();
+            if (e.key === "ArrowLeft") prev();
+            if (e.key === "ArrowRight") next();
+        };
+        window.addEventListener("keydown", handleKeyDown);
+        return () => window.removeEventListener("keydown", handleKeyDown);
+    }, [lightboxIndex, closeLightbox, prev, next]);
+
+    // Skeleton loader
+    const SkeletonGrid = ({ count = 12 }) => (
+        <div className={styles.skeleton}>
             {Array.from({ length: count }).map((_, i) => (
-                <div key={i} className={styles.gallery__skeletonItem} />
+                <div key={i} className={styles.skeleton__item} />
             ))}
         </div>
     );
 
-    const renderItem = (item, index) => {
+    // Card component
+    const TattooCard = ({ item, index, category, featured = false }) => {
         const imageUrl = buildMediaSrc(item);
-        console.log(`🖼️ Rendu item ${index}:`, {
-            type: item.type,
-            url: item.url,
-            path: item.path,
-            cloudinaryUrl: item.cloudinaryUrl,
-            fullUrl: imageUrl,
-            filename: item.filename
-        });
+        const isVideo = item.type === "video";
 
         return (
-            <div key={index} className={styles.gallery__item}>
-                {item.type === "image" ? (
-                    <img
-                        src={imageUrl}
-                        alt={`Tatouage ${styleTitle} à Nancy - Mystic Tattoo`}
-                        loading="lazy"
-                        onClick={() => openLightbox(index)}
-                        onError={(e) => {
-                            console.error("❌ Erreur chargement image:", imageUrl);
-                            console.error("❌ Item complet:", item);
-                        }}
-                        onLoad={() => {
-                            console.log("✅ Image chargée:", imageUrl);
-                        }}
-                    />
-                ) : (
+            <article
+                className={`${styles.card} ${featured ? styles["card--featured"] : ""}`}
+                onClick={() => openLightbox(index)}
+            >
+                {isVideo ? (
                     <video
                         src={imageUrl}
+                        className={styles.card__image}
                         autoPlay
                         muted
                         loop
                         playsInline
-                        onClick={() => openLightbox(index)}
-                        onError={(e) => {
-                            console.error("❌ Erreur chargement vidéo:", imageUrl);
-                            console.error("❌ Item complet:", item);
-                        }}
+                    />
+                ) : (
+                    <img
+                        src={imageUrl}
+                        alt={`Tatouage ${category || styleTitle} - Mystic Tattoo Nancy`}
+                        className={styles.card__image}
+                        loading="lazy"
                     />
                 )}
-            </div>
+
+                <div className={styles.card__overlay}>
+                    {category && (
+                        <span className={styles.card__category}>{capitalizeFirst(category)}</span>
+                    )}
+                    <span className={styles.card__title}>Voir en grand</span>
+                </div>
+
+                <div className={styles.card__zoom}>
+                    <ZoomIcon />
+                </div>
+            </article>
         );
+    };
+
+    // Current item category for lightbox
+    const getCurrentCategory = () => {
+        if (style) return style;
+        if (lightboxIndex === null) return "";
+
+        let count = 0;
+        for (const [cat, items] of Object.entries(mediaByCategory)) {
+            if (lightboxIndex < count + items.length) {
+                return cat;
+            }
+            count += items.length;
+        }
+        return "";
     };
 
     return (
@@ -239,72 +245,182 @@ const Gallery = () => {
             />
 
             <div className={styles.gallery}>
-                <div className={styles.gallery__header}>
-                    <h1 className={styles.gallery__title}>
-                        Galerie {style && `- ${style.charAt(0).toUpperCase() + style.slice(1)}`}
+                {/* Hero Section */}
+                <section className={styles.hero}>
+                    <span className={styles.hero__badge}>Galerie</span>
+                    <h1 className={styles.hero__title}>
+                        {style ? (
+                            <>Tatouages <span>{styleTitle}</span></>
+                        ) : (
+                            <>Mes <span>Créations</span></>
+                        )}
                     </h1>
-                    {style && (
-                        <p style={{ textAlign: "center", color: "white", fontSize: "1.1rem", marginBottom: "20px" }}>
-                            Découvrez nos créations de tatouages <strong>{styleTitle.toLowerCase()}</strong> réalisées à Nancy.
-                            Un style {styleTitle.toLowerCase()} unique, dessiné avec passion par Mystic Tattoo.
-                        </p>
+                    <p className={styles.hero__subtitle}>
+                        {style
+                            ? `Découvrez mes réalisations de tatouages ${styleTitle.toLowerCase()}. Chaque pièce est unique et réalisée avec passion.`
+                            : `Explorez l'ensemble de mes créations. Du réaliste au japonais, chaque style raconte une histoire unique.`
+                        }
+                    </p>
+
+                    {!loading && (
+                        <div className={styles.hero__stats}>
+                            <div className={styles.hero__stat}>
+                                <span className={styles.hero__statNumber}>{totalCount}</span>
+                                <span className={styles.hero__statLabel}>Créations</span>
+                            </div>
+                            <div className={styles.hero__stat}>
+                                <span className={styles.hero__statNumber}>{categoriesCount}</span>
+                                <span className={styles.hero__statLabel}>Styles</span>
+                            </div>
+                            <div className={styles.hero__stat}>
+                                <span className={styles.hero__statNumber}>18+</span>
+                                <span className={styles.hero__statLabel}>Années</span>
+                            </div>
+                        </div>
                     )}
-                    <div className={styles.gallery__categories}>
-                        <button className={`${styles.gallery__categoryBtn} ${!style ? styles.active : ""}`} onClick={() => navigate("/gallery")}>Tous</button>
+                </section>
+
+                {/* Sticky Filters */}
+                <nav className={styles.filters}>
+                    <div className={styles.filters__container}>
+                        <button
+                            className={`${styles.filters__btn} ${!style ? styles["filters__btn--active"] : ""}`}
+                            onClick={() => navigate("/gallery")}
+                        >
+                            Tous
+                            {!loading && <span className={styles.filters__btnCount}>{totalCount}</span>}
+                        </button>
+
                         {filteredCategories.map((cat) => {
-                            const hasMedia = mediaByCategory[cat]?.length > 0;
-                            if (!style && !hasMedia) return null;
+                            const count = mediaByCategory[cat]?.length || 0;
+                            if (!style && count === 0) return null;
+
                             return (
                                 <button
                                     key={cat}
-                                    className={`${styles.gallery__categoryBtn} ${style === cat ? styles.active : ""}`}
+                                    className={`${styles.filters__btn} ${style === cat ? styles["filters__btn--active"] : ""}`}
                                     onClick={() => navigate(`/gallery/${cat}`)}
                                 >
-                                    {cat.charAt(0).toUpperCase() + cat.slice(1)}
+                                    {capitalizeFirst(cat)}
+                                    {!loading && count > 0 && (
+                                        <span className={styles.filters__btnCount}>{count}</span>
+                                    )}
                                 </button>
                             );
                         })}
                     </div>
-                </div>
+                </nav>
 
-                {loading ? (
-                    <SkeletonGrid count={16} />
-                ) : style ? (
-                    <div className={styles.gallery__grid}>
-                        {media.length > 0 ? media.map((item, idx) => renderItem(item, idx)) : <p>Aucun média trouvé dans cette catégorie.</p>}
-                    </div>
-                ) : (
-                    Object.entries(mediaByCategory).map(([cat, items]) => {
-                        if (!items || items.length === 0) return null;
-                        return (
-                            <section key={cat}>
-                                <h2 className={styles.gallery__title}>{cat.charAt(0).toUpperCase() + cat.slice(1)}</h2>
-                                <div className={styles.gallery__grid}>
-                                    {items.map((item, idx) => renderItem(item, galleryItems.indexOf(item)))}
+                {/* Content */}
+                <main className={styles.content}>
+                    {loading ? (
+                        <SkeletonGrid count={12} />
+                    ) : style ? (
+                        // Single category view
+                        <>
+                            {media.length > 0 ? (
+                                <div className={styles.grid}>
+                                    {media.map((item, idx) => (
+                                        <TattooCard
+                                            key={idx}
+                                            item={item}
+                                            index={idx}
+                                            category={style}
+                                            featured={idx === 0}
+                                        />
+                                    ))}
                                 </div>
-                            </section>
-                        );
-                    })
-                )}
-
-                {lightboxIndex !== null && (
-                    <div className={styles.gallery__overlay} onClick={closeLightbox}>
-                        <button onClick={(e) => { e.stopPropagation(); prev(); }} className={styles.leftArrow}>&#10094;</button>
-                        <div onClick={(e) => e.stopPropagation()}>
-                            {galleryItems[lightboxIndex].type === "image" ? (
-                                <img
-                                    src={buildMediaSrc(galleryItems[lightboxIndex])}
-                                    alt={`Tatouage ${styleTitle} à Nancy - Mystic Tattoo`}
-                                />
                             ) : (
+                                <div className={styles.empty}>
+                                    <div className={styles.empty__icon}>🎨</div>
+                                    <p className={styles.empty__text}>
+                                        Aucun tatouage dans cette catégorie pour le moment.
+                                    </p>
+                                </div>
+                            )}
+                        </>
+                    ) : (
+                        // All categories view
+                        Object.entries(mediaByCategory).map(([cat, items]) => {
+                            if (!items || items.length === 0) return null;
+
+                            const startIndex = Object.entries(mediaByCategory)
+                                .slice(0, Object.keys(mediaByCategory).indexOf(cat))
+                                .reduce((acc, [, arr]) => acc + arr.length, 0);
+
+                            return (
+                                <section key={cat}>
+                                    <div className={styles.sectionHeader}>
+                                        <h2 className={styles.sectionHeader__title}>
+                                            {capitalizeFirst(cat)}
+                                        </h2>
+                                        <span className={styles.sectionHeader__count}>
+                                            {items.length} création{items.length > 1 ? "s" : ""}
+                                        </span>
+                                    </div>
+
+                                    <div className={styles.grid}>
+                                        {items.map((item, idx) => (
+                                            <TattooCard
+                                                key={idx}
+                                                item={item}
+                                                index={startIndex + idx}
+                                                category={cat}
+                                                featured={idx === 0}
+                                            />
+                                        ))}
+                                    </div>
+                                </section>
+                            );
+                        })
+                    )}
+                </main>
+
+                {/* Lightbox */}
+                {lightboxIndex !== null && galleryItems[lightboxIndex] && (
+                    <div className={styles.lightbox} onClick={closeLightbox}>
+                        <button className={styles.lightbox__close} onClick={closeLightbox} />
+
+                        <button
+                            className={`${styles.lightbox__nav} ${styles["lightbox__nav--prev"]}`}
+                            onClick={(e) => { e.stopPropagation(); prev(); }}
+                        >
+                            &#10094;
+                        </button>
+
+                        <div className={styles.lightbox__content} onClick={(e) => e.stopPropagation()}>
+                            {galleryItems[lightboxIndex].type === "video" ? (
                                 <video
                                     src={buildMediaSrc(galleryItems[lightboxIndex])}
+                                    className={styles.lightbox__media}
                                     autoPlay
                                     controls
                                 />
+                            ) : (
+                                <img
+                                    src={buildMediaSrc(galleryItems[lightboxIndex])}
+                                    alt={`Tatouage ${getCurrentCategory()} - Mystic Tattoo`}
+                                    className={styles.lightbox__media}
+                                />
                             )}
                         </div>
-                        <button onClick={(e) => { e.stopPropagation(); next(); }} className={styles.rightArrow}>&#10095;</button>
+
+                        <button
+                            className={`${styles.lightbox__nav} ${styles["lightbox__nav--next"]}`}
+                            onClick={(e) => { e.stopPropagation(); next(); }}
+                        >
+                            &#10095;
+                        </button>
+
+                        <div className={styles.lightbox__counter}>
+                            {lightboxIndex + 1} / {galleryItems.length}
+                        </div>
+
+                        {getCurrentCategory() && (
+                            <div className={styles.lightbox__info}>
+                                {capitalizeFirst(getCurrentCategory())}
+                            </div>
+                        )}
                     </div>
                 )}
             </div>
