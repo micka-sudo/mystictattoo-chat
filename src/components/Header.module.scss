@@ -1,15 +1,11 @@
 @import '../styles/variables';
 
-// Palette moderne
-$color-primary: #8B0000;
-$color-primary-light: #B22222;
-
 .header {
   position: sticky;
   top: 0;
-  z-index: 1000;
+  z-index: var(--z-header);
   background: rgba(10, 10, 10, 0.95);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid var(--color-border);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
 
@@ -19,17 +15,17 @@ $color-primary-light: #B22222;
     justify-content: space-between;
     max-width: 1400px;
     margin: 0 auto;
-    padding: 10px 20px;
-    gap: 20px;
+    padding: var(--space-sm) var(--space-lg);
+    gap: var(--space-lg);
   }
 
   &__brand {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: var(--space-sm);
     text-decoration: none;
     color: var(--color-light);
-    transition: opacity 0.2s ease;
+    transition: opacity var(--transition-base);
 
     &:hover {
       opacity: 0.85;
@@ -43,17 +39,17 @@ $color-primary-light: #B22222;
   }
 
   &__title {
-    font-family: var(--font-holocene);
-    font-size: 1.5rem;
-    font-weight: 500;
+    font-family: var(--font-display);
+    font-size: var(--text-2xl);
+    font-weight: 400;
     color: var(--color-light);
-    letter-spacing: 0.02em;
+    letter-spacing: 0.05em;
   }
 
   &__nav {
     display: flex;
     align-items: center;
-    gap: 4px;
+    gap: var(--space-xs);
 
     &--open {
       display: flex;
@@ -61,23 +57,22 @@ $color-primary-light: #B22222;
   }
 }
 
-// Navigation links - Style moderne minimaliste
 .nav__link {
   position: relative;
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  padding: 8px 14px;
-  font-family: var(--font-holocene);
-  font-size: 0.9rem;
+  gap: var(--space-xs);
+  padding: var(--space-sm) var(--space-md);
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
   font-weight: 500;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--color-text-muted);
   text-decoration: none;
   background: transparent;
   border: none;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all var(--transition-base);
 
   &::after {
     content: '';
@@ -87,9 +82,9 @@ $color-primary-light: #B22222;
     transform: translateX(-50%) scaleX(0);
     width: 16px;
     height: 2px;
-    background: $color-primary-light;
+    background: var(--color-primary-light);
     border-radius: 1px;
-    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: transform var(--transition-base);
   }
 
   &:hover {
@@ -115,7 +110,6 @@ $color-primary-light: #B22222;
   }
 }
 
-// Dropdown
 .dropdown {
   position: relative;
 
@@ -124,9 +118,9 @@ $color-primary-light: #B22222;
   }
 
   &__arrow {
-    font-size: 0.7rem;
+    font-size: var(--text-xs);
     opacity: 0.5;
-    transition: all 0.2s ease;
+    transition: all var(--transition-base);
 
     &--open {
       transform: rotate(180deg);
@@ -136,21 +130,21 @@ $color-primary-light: #B22222;
 
   &__menu {
     position: absolute;
-    top: calc(100% + 8px);
+    top: calc(100% + var(--space-sm));
     left: 0;
     min-width: 180px;
     background: rgba(15, 15, 15, 0.98);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 8px;
-    padding: 6px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-xs);
     list-style: none;
     margin: 0;
     opacity: 0;
     visibility: hidden;
     transform: translateY(-8px);
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
-    z-index: 100;
+    transition: all var(--transition-base);
+    box-shadow: var(--shadow-lg);
+    z-index: var(--z-dropdown);
 
     &--open {
       opacity: 1;
@@ -160,13 +154,13 @@ $color-primary-light: #B22222;
 
     li a {
       display: block;
-      padding: 10px 14px;
-      color: rgba(255, 255, 255, 0.7);
+      padding: var(--space-sm) var(--space-md);
+      color: var(--color-text-secondary);
       text-decoration: none;
-      font-family: var(--font-holocene);
-      font-size: 0.85rem;
-      border-radius: 6px;
-      transition: all 0.15s ease;
+      font-family: var(--font-body);
+      font-size: var(--text-sm);
+      border-radius: var(--radius-sm);
+      transition: all var(--transition-fast);
 
       &:hover {
         background: rgba(139, 0, 0, 0.2);
@@ -176,7 +170,6 @@ $color-primary-light: #B22222;
   }
 }
 
-// Burger menu
 .burger {
   display: none;
   flex-direction: column;
@@ -195,7 +188,7 @@ $color-primary-light: #B22222;
     height: 2px;
     background: rgba(255, 255, 255, 0.8);
     border-radius: 1px;
-    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all var(--transition-base);
   }
 
   &:hover span {
@@ -216,11 +209,10 @@ $color-primary-light: #B22222;
   }
 }
 
-// Responsive
 @media (max-width: 900px) {
   .header {
     &__title {
-      font-size: 1.3rem;
+      font-size: var(--text-xl);
     }
 
     &__nav {
@@ -231,10 +223,10 @@ $color-primary-light: #B22222;
       height: 100vh;
       flex-direction: column;
       align-items: stretch;
-      padding: 70px 16px 20px;
+      padding: 70px var(--space-md) var(--space-lg);
       background: rgba(10, 10, 10, 0.98);
-      border-left: 1px solid rgba(255, 255, 255, 0.06);
-      transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      border-left: 1px solid var(--color-border);
+      transition: right var(--transition-slow);
       gap: 2px;
 
       &--open {
@@ -245,10 +237,10 @@ $color-primary-light: #B22222;
 
   .nav__link {
     width: 100%;
-    padding: 12px 14px;
-    font-size: 0.95rem;
+    padding: var(--space-sm) var(--space-md);
+    font-size: var(--text-sm);
     justify-content: flex-start;
-    border-radius: 8px;
+    border-radius: var(--radius-md);
 
     &::after {
       display: none;
@@ -278,11 +270,11 @@ $color-primary-light: #B22222;
       padding: 0;
       max-height: 0;
       overflow: hidden;
-      border-radius: 8px;
+      border-radius: var(--radius-md);
 
       &--open {
         max-height: 500px;
-        padding: 6px;
+        padding: var(--space-xs);
       }
 
       li a {
@@ -299,11 +291,11 @@ $color-primary-light: #B22222;
 @media (max-width: 480px) {
   .header {
     &__container {
-      padding: 8px 14px;
+      padding: var(--space-sm) var(--space-md);
     }
 
     &__title {
-      font-size: 1.15rem;
+      font-size: var(--text-lg);
     }
 
     &__logo {

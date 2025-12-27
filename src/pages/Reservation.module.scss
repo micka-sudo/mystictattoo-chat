@@ -1,25 +1,20 @@
 @import '../styles/variables';
 
-// Palette rouge/noir Mystic Tattoo
-$color-primary: #8B0000;
-$color-primary-light: #B22222;
-$color-accent: #CC0000;
-$color-gradient: linear-gradient(135deg, $color-primary 0%, $color-primary-light 50%, $color-accent 100%);
-
 .reservation {
-  padding: 60px 20px 100px;
+  padding: var(--space-3xl) var(--space-lg) 100px;
   max-width: 600px;
   margin: 0 auto;
 
   h2 {
     text-align: center;
-    font-family: var(--font-holocene);
+    font-family: var(--font-display);
     font-size: clamp(1.8rem, 5vw, 2.5rem);
     color: var(--color-light);
-    margin-bottom: 15px;
+    margin-bottom: var(--space-md);
     position: relative;
     display: inline-block;
     width: 100%;
+    letter-spacing: 0.05em;
 
     &::after {
       content: '';
@@ -29,51 +24,52 @@ $color-gradient: linear-gradient(135deg, $color-primary 0%, $color-primary-light
       transform: translateX(-50%);
       width: 80px;
       height: 3px;
-      background: $color-gradient;
+      background: linear-gradient(90deg, var(--color-primary), var(--color-primary-light));
       border-radius: 2px;
     }
   }
 
   .subtitle {
     text-align: center;
-    color: rgba(255, 255, 255, 0.7);
-    margin-bottom: 40px;
-    font-size: 1rem;
+    font-family: var(--font-body);
+    color: var(--color-text-secondary);
+    margin-bottom: var(--space-2xl);
+    font-size: var(--text-base);
   }
 
   .form {
     display: flex;
     flex-direction: column;
-    gap: 20px;
-    background: linear-gradient(135deg, rgba(139, 0, 0, 0.1), rgba(30, 30, 30, 0.9));
-    border: 2px solid rgba(139, 0, 0, 0.2);
-    border-radius: 20px;
-    padding: 40px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    gap: var(--space-lg);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    padding: var(--space-2xl);
+    box-shadow: var(--shadow-lg);
 
     input, textarea {
-      padding: 16px 20px;
-      border: 2px solid rgba(139, 0, 0, 0.2);
-      border-radius: 12px;
-      font-size: 1rem;
-      background: rgba(255, 255, 255, 0.05);
+      padding: var(--space-md) var(--space-lg);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      font-family: var(--font-body);
+      font-size: var(--text-base);
+      background: var(--color-background);
       color: var(--color-light);
-      transition: all 0.3s ease;
-      font-family: inherit;
+      transition: all var(--transition-base);
 
       &::placeholder {
-        color: rgba(255, 255, 255, 0.5);
+        color: var(--color-text-muted);
       }
 
       &:focus {
         outline: none;
-        border-color: $color-primary-light;
-        background: rgba(139, 0, 0, 0.1);
-        box-shadow: 0 0 20px rgba(139, 0, 0, 0.2);
+        border-color: var(--color-primary-light);
+        background: rgba(139, 0, 0, 0.05);
+        box-shadow: 0 0 0 3px rgba(139, 0, 0, 0.1);
       }
 
       &:hover {
-        border-color: rgba(139, 0, 0, 0.4);
+        border-color: var(--color-border-hover);
       }
     }
 
@@ -82,7 +78,6 @@ $color-gradient: linear-gradient(135deg, $color-primary 0%, $color-primary-light
       min-height: 120px;
     }
 
-    // Style pour les champs date et time
     input[type="date"],
     input[type="time"] {
       color-scheme: dark;
@@ -94,17 +89,18 @@ $color-gradient: linear-gradient(135deg, $color-primary 0%, $color-primary-light
     }
 
     button {
-      background: $color-gradient;
+      background: linear-gradient(135deg, var(--color-primary), var(--color-primary-light));
       color: white;
-      padding: 16px 40px;
+      padding: var(--space-md) var(--space-2xl);
       border: none;
-      border-radius: 30px;
-      font-size: 1.1rem;
+      border-radius: var(--radius-full);
+      font-family: var(--font-body);
+      font-size: var(--text-lg);
       font-weight: 600;
       cursor: pointer;
-      transition: all 0.3s ease;
-      box-shadow: 0 4px 20px rgba(139, 0, 0, 0.4);
-      margin-top: 10px;
+      transition: all var(--transition-base);
+      box-shadow: var(--shadow-glow);
+      margin-top: var(--space-sm);
 
       &:hover {
         transform: translateY(-3px);
@@ -118,31 +114,31 @@ $color-gradient: linear-gradient(135deg, $color-primary 0%, $color-primary-light
   }
 
   .status {
-    margin-top: 25px;
+    margin-top: var(--space-lg);
     text-align: center;
+    font-family: var(--font-body);
     font-weight: 600;
-    font-size: 1.1rem;
-    padding: 15px;
-    border-radius: 12px;
+    font-size: var(--text-lg);
+    padding: var(--space-md);
+    border-radius: var(--radius-lg);
 
-    // Style selon le contenu
     &:not(:empty) {
       background: rgba(139, 0, 0, 0.1);
-      border: 1px solid rgba(139, 0, 0, 0.2);
+      border: 1px solid var(--color-border);
     }
   }
 
-  // Info box
   .infoBox {
-    margin-top: 30px;
-    padding: 20px;
+    margin-top: var(--space-xl);
+    padding: var(--space-lg);
     background: rgba(139, 0, 0, 0.08);
-    border: 1px solid rgba(139, 0, 0, 0.15);
-    border-radius: 12px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
     text-align: center;
-    color: rgba(255, 255, 255, 0.8);
-    font-size: 0.9rem;
-    line-height: 1.6;
+    font-family: var(--font-body);
+    color: var(--color-text-secondary);
+    font-size: var(--text-sm);
+    line-height: 1.7;
 
     strong {
       color: var(--color-light);
@@ -150,21 +146,20 @@ $color-gradient: linear-gradient(135deg, $color-primary 0%, $color-primary-light
   }
 }
 
-// Responsive
 @media (max-width: 768px) {
   .reservation {
-    padding: 40px 15px 80px;
+    padding: var(--space-2xl) var(--space-md) var(--space-3xl);
 
     .form {
-      padding: 25px 20px;
-      gap: 15px;
+      padding: var(--space-lg);
+      gap: var(--space-md);
 
       input, textarea {
-        padding: 14px 16px;
+        padding: var(--space-md);
       }
 
       button {
-        padding: 14px 30px;
+        padding: var(--space-md) var(--space-xl);
       }
     }
   }

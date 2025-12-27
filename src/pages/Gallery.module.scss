@@ -1,11 +1,5 @@
 @import '../styles/variables';
 
-// Palette rouge/noir Mystic Tattoo
-$color-primary: #8B0000;
-$color-primary-light: #B22222;
-$color-accent: #CC0000;
-$color-gradient: linear-gradient(135deg, $color-primary 0%, $color-primary-light 50%, $color-accent 100%);
-
 .gallery {
   width: 100%;
   min-height: 100vh;
@@ -21,34 +15,36 @@ $color-gradient: linear-gradient(135deg, $color-primary 0%, $color-primary-light
 // =============================================================================
 .hero {
   position: relative;
-  padding: 50px 20px 25px;
+  padding: var(--space-2xl) var(--space-lg) var(--space-lg);
   text-align: center;
   z-index: 1;
 
   &__badge {
     display: inline-block;
     padding: 6px 18px;
-    background: $color-gradient;
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 50%, #CC0000 100%);
     color: white;
-    font-size: 0.7rem;
+    font-family: var(--font-body);
+    font-size: var(--text-xs);
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 2px;
-    border-radius: 20px;
-    margin-bottom: 15px;
-    box-shadow: 0 3px 15px rgba(139, 0, 0, 0.3);
+    letter-spacing: 0.15em;
+    border-radius: var(--radius-full);
+    margin-bottom: var(--space-md);
+    box-shadow: var(--shadow-glow);
   }
 
   &__title {
     font-size: clamp(2rem, 6vw, 3rem);
-    font-family: var(--font-holocene);
+    font-family: var(--font-display);
     color: var(--color-light);
-    margin-bottom: 10px;
+    margin-bottom: var(--space-sm);
     line-height: 1.1;
+    letter-spacing: 0.05em;
 
     span {
       display: inline;
-      background: $color-gradient;
+      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 50%, #CC0000 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
@@ -56,11 +52,12 @@ $color-gradient: linear-gradient(135deg, $color-primary 0%, $color-primary-light
   }
 
   &__subtitle {
-    font-size: 1rem;
-    color: rgba(255, 255, 255, 0.7);
+    font-family: var(--font-body);
+    font-size: var(--text-base);
+    color: var(--color-text-secondary);
     max-width: 550px;
-    margin: 0 auto 15px;
-    line-height: 1.5;
+    margin: 0 auto var(--space-md);
+    line-height: 1.6;
   }
 
   &__stats {
@@ -68,36 +65,38 @@ $color-gradient: linear-gradient(135deg, $color-primary 0%, $color-primary-light
     justify-content: center;
     align-items: center;
     gap: 0;
-    margin-top: 15px;
-    padding: 10px 25px;
+    margin-top: var(--space-md);
+    padding: var(--space-sm) var(--space-lg);
     background: rgba(139, 0, 0, 0.1);
-    border: 1px solid rgba(139, 0, 0, 0.2);
-    border-radius: 30px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-full);
   }
 
   &__stat {
     display: flex;
     align-items: center;
     gap: 6px;
-    padding: 0 20px;
-    border-right: 1px solid rgba(255, 255, 255, 0.15);
+    padding: 0 var(--space-lg);
+    border-right: 1px solid var(--color-border-light);
 
     &:last-child {
       border-right: none;
     }
 
     &Number {
-      font-size: 1.4rem;
+      font-size: var(--text-xl);
       font-weight: 700;
-      color: $color-primary-light;
-      font-family: var(--font-holocene);
+      color: var(--color-primary-light);
+      font-family: var(--font-display);
+      letter-spacing: 0.02em;
     }
 
     &Label {
-      font-size: 0.75rem;
-      color: rgba(255, 255, 255, 0.6);
+      font-family: var(--font-body);
+      font-size: var(--text-xs);
+      color: var(--color-text-muted);
       text-transform: uppercase;
-      letter-spacing: 0.5px;
+      letter-spacing: 0.05em;
     }
   }
 }
@@ -109,15 +108,16 @@ $color-gradient: linear-gradient(135deg, $color-primary 0%, $color-primary-light
   position: sticky;
   top: 0;
   z-index: 100;
-  padding: 15px 20px;
+  padding: var(--space-md) var(--space-lg);
   background: rgba(10, 10, 10, 0.95);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--color-border);
 
   &__container {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 8px;
+    gap: var(--space-sm);
     flex-wrap: wrap;
     max-width: 1200px;
     margin: 0 auto;
@@ -126,16 +126,16 @@ $color-gradient: linear-gradient(135deg, $color-primary 0%, $color-primary-light
   &__btn {
     position: relative;
     background: transparent;
-    color: rgba(255, 255, 255, 0.5);
+    color: var(--color-text-muted);
     border: none;
-    border-radius: 8px;
-    padding: 10px 20px;
+    border-radius: var(--radius-md);
+    padding: var(--space-sm) var(--space-lg);
     font-weight: 500;
-    font-size: 0.9rem;
-    font-family: var(--font-holocene);
-    letter-spacing: 0.3px;
+    font-size: var(--text-sm);
+    font-family: var(--font-body);
+    letter-spacing: 0.02em;
     cursor: pointer;
-    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all var(--transition-base);
 
     &::after {
       content: '';
@@ -145,9 +145,9 @@ $color-gradient: linear-gradient(135deg, $color-primary 0%, $color-primary-light
       transform: translateX(-50%) scaleX(0);
       width: 20px;
       height: 2px;
-      background: $color-primary-light;
+      background: var(--color-primary-light);
       border-radius: 1px;
-      transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: transform var(--transition-base);
     }
 
     &:hover {
@@ -177,8 +177,8 @@ $color-gradient: linear-gradient(135deg, $color-primary 0%, $color-primary-light
       height: 20px;
       padding: 0 6px;
       background: rgba(139, 0, 0, 0.3);
-      border-radius: 10px;
-      font-size: 0.7rem;
+      border-radius: var(--radius-full);
+      font-size: var(--text-xs);
       font-weight: 600;
     }
   }
@@ -190,7 +190,7 @@ $color-gradient: linear-gradient(135deg, $color-primary 0%, $color-primary-light
 .content {
   position: relative;
   z-index: 1;
-  padding: 40px 20px 150px;
+  padding: var(--space-2xl) var(--space-lg) 150px;
   max-width: 1800px;
   margin: 0 auto;
   width: 100%;
@@ -200,44 +200,46 @@ $color-gradient: linear-gradient(135deg, $color-primary 0%, $color-primary-light
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin: 60px 0 30px;
-  padding-bottom: 15px;
-  border-bottom: 1px solid rgba(139, 0, 0, 0.2);
+  margin: var(--space-3xl) 0 var(--space-xl);
+  padding-bottom: var(--space-md);
+  border-bottom: 1px solid var(--color-border);
 
   &:first-child {
-    margin-top: 20px;
+    margin-top: var(--space-lg);
   }
 
   &__title {
-    font-size: 1.8rem;
-    font-family: var(--font-holocene);
+    font-size: var(--text-3xl);
+    font-family: var(--font-display);
     color: var(--color-light);
     display: flex;
     align-items: center;
-    gap: 15px;
+    gap: var(--space-md);
+    letter-spacing: 0.03em;
 
     &::before {
       content: '';
       width: 4px;
       height: 30px;
-      background: $color-gradient;
+      background: linear-gradient(180deg, var(--color-primary), var(--color-primary-light));
       border-radius: 2px;
     }
   }
 
   &__count {
-    font-size: 0.95rem;
-    color: rgba(255, 255, 255, 0.5);
-    padding: 6px 16px;
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+    padding: 6px var(--space-md);
     background: rgba(139, 0, 0, 0.1);
-    border-radius: 20px;
+    border-radius: var(--radius-full);
   }
 }
 
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 20px;
+  gap: var(--space-lg);
 
   @media (min-width: 1400px) {
     grid-template-columns: repeat(5, 1fr);
@@ -254,33 +256,17 @@ $color-gradient: linear-gradient(135deg, $color-primary 0%, $color-primary-light
 .card {
   position: relative;
   aspect-ratio: 1 / 1;
-  border-radius: 16px;
+  border-radius: var(--radius-lg);
   overflow: hidden;
   cursor: pointer;
-  background: rgba(20, 20, 20, 0.8);
-
-  // Effet de bordure au hover
-  &::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: 16px;
-    padding: 2px;
-    background: linear-gradient(135deg, transparent 0%, rgba(139, 0, 0, 0.5) 50%, transparent 100%);
-    -webkit-mask:
-      linear-gradient(#fff 0 0) content-box,
-      linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    opacity: 0;
-    transition: opacity 0.4s ease;
-    z-index: 2;
-  }
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  transition: all var(--transition-slow);
 
   &:hover {
-    &::before {
-      opacity: 1;
-    }
+    border-color: var(--color-primary-light);
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg);
 
     .card__image {
       transform: scale(1.1);
@@ -296,7 +282,6 @@ $color-gradient: linear-gradient(135deg, $color-primary 0%, $color-primary-light
     }
   }
 
-  // Featured card (plus grande)
   &--featured {
     grid-column: span 2;
     grid-row: span 2;
@@ -326,30 +311,32 @@ $color-gradient: linear-gradient(135deg, $color-primary 0%, $color-primary-light
       transparent 100%
     );
     opacity: 0;
-    transition: opacity 0.4s ease;
+    transition: opacity var(--transition-slow);
     z-index: 1;
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
-    padding: 20px;
+    padding: var(--space-lg);
   }
 
   &__category {
     display: inline-block;
     padding: 4px 12px;
-    background: $color-gradient;
+    background: linear-gradient(135deg, var(--color-primary), var(--color-primary-light));
     color: white;
-    font-size: 0.7rem;
+    font-family: var(--font-body);
+    font-size: var(--text-xs);
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 1px;
-    border-radius: 15px;
-    margin-bottom: 8px;
+    letter-spacing: 0.08em;
+    border-radius: var(--radius-full);
+    margin-bottom: var(--space-sm);
     width: fit-content;
   }
 
   &__title {
-    font-size: 1rem;
+    font-family: var(--font-body);
+    font-size: var(--text-base);
     color: white;
     font-weight: 500;
   }
@@ -361,15 +348,15 @@ $color-gradient: linear-gradient(135deg, $color-primary 0%, $color-primary-light
     transform: translate(-50%, -50%) scale(0.8);
     width: 60px;
     height: 60px;
-    background: $color-gradient;
+    background: linear-gradient(135deg, var(--color-primary), var(--color-primary-light));
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     opacity: 0;
-    transition: all 0.4s ease;
+    transition: all var(--transition-slow);
     z-index: 3;
-    box-shadow: 0 4px 25px rgba(139, 0, 0, 0.5);
+    box-shadow: var(--shadow-glow);
 
     svg {
       width: 24px;
@@ -405,7 +392,7 @@ $color-gradient: linear-gradient(135deg, $color-primary 0%, $color-primary-light
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.3s ease;
+    transition: all var(--transition-base);
     z-index: 10;
 
     &::before,
@@ -427,7 +414,7 @@ $color-gradient: linear-gradient(135deg, $color-primary 0%, $color-primary-light
     }
 
     &:hover {
-      background: $color-primary;
+      background: var(--color-primary);
       transform: rotate(90deg);
     }
   }
@@ -445,8 +432,8 @@ $color-gradient: linear-gradient(135deg, $color-primary 0%, $color-primary-light
     max-width: 100%;
     max-height: 85vh;
     object-fit: contain;
-    border-radius: 8px;
-    box-shadow: 0 0 60px rgba(139, 0, 0, 0.3);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-glow);
     animation: lightboxZoomIn 0.4s ease;
   }
 
@@ -456,20 +443,20 @@ $color-gradient: linear-gradient(135deg, $color-primary 0%, $color-primary-light
     transform: translateY(-50%);
     width: 60px;
     height: 60px;
-    background: rgba(139, 0, 0, 0.8);
+    background: var(--color-primary);
     border: none;
     border-radius: 50%;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.3s ease;
+    transition: all var(--transition-base);
     color: white;
-    font-size: 1.5rem;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    font-size: var(--text-2xl);
+    box-shadow: var(--shadow-md);
 
     &:hover {
-      background: $color-primary-light;
+      background: var(--color-primary-light);
       transform: translateY(-50%) scale(1.1);
     }
 
@@ -487,12 +474,13 @@ $color-gradient: linear-gradient(135deg, $color-primary 0%, $color-primary-light
     bottom: 30px;
     left: 50%;
     transform: translateX(-50%);
-    padding: 10px 25px;
+    padding: var(--space-sm) var(--space-lg);
     background: rgba(0, 0, 0, 0.7);
-    border: 1px solid rgba(139, 0, 0, 0.3);
-    border-radius: 30px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-full);
     color: white;
-    font-size: 0.95rem;
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
     font-weight: 500;
   }
 
@@ -500,14 +488,15 @@ $color-gradient: linear-gradient(135deg, $color-primary 0%, $color-primary-light
     position: absolute;
     bottom: 30px;
     right: 30px;
-    padding: 12px 20px;
-    background: $color-gradient;
-    border-radius: 25px;
+    padding: 12px var(--space-lg);
+    background: linear-gradient(135deg, var(--color-primary), var(--color-primary-light));
+    border-radius: var(--radius-full);
     color: white;
-    font-size: 0.9rem;
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 0.08em;
   }
 }
 
@@ -533,7 +522,7 @@ $color-gradient: linear-gradient(135deg, $color-primary 0%, $color-primary-light
 .skeleton {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 20px;
+  gap: var(--space-lg);
 
   @media (min-width: 1400px) {
     grid-template-columns: repeat(5, 1fr);
@@ -549,8 +538,8 @@ $color-gradient: linear-gradient(135deg, $color-primary 0%, $color-primary-light
     );
     background-size: 200% 100%;
     animation: skeletonShimmer 1.5s ease-in-out infinite;
-    border-radius: 16px;
-    border: 1px solid rgba(139, 0, 0, 0.1);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--color-border);
   }
 }
 
@@ -564,17 +553,18 @@ $color-gradient: linear-gradient(135deg, $color-primary 0%, $color-primary-light
 // =============================================================================
 .empty {
   text-align: center;
-  padding: 80px 20px;
+  padding: var(--space-3xl) var(--space-lg);
 
   &__icon {
     font-size: 4rem;
-    margin-bottom: 20px;
+    margin-bottom: var(--space-lg);
     opacity: 0.5;
   }
 
   &__text {
-    font-size: 1.2rem;
-    color: rgba(255, 255, 255, 0.6);
+    font-family: var(--font-body);
+    font-size: var(--text-lg);
+    color: var(--color-text-muted);
   }
 }
 
@@ -583,7 +573,7 @@ $color-gradient: linear-gradient(135deg, $color-primary 0%, $color-primary-light
 // =============================================================================
 @media (max-width: 1024px) {
   .hero {
-    padding: 45px 20px 20px;
+    padding: 45px var(--space-lg) var(--space-lg);
   }
 
   .grid {
@@ -593,34 +583,34 @@ $color-gradient: linear-gradient(135deg, $color-primary 0%, $color-primary-light
 
 @media (max-width: 768px) {
   .hero {
-    padding: 40px 15px 15px;
+    padding: var(--space-2xl) var(--space-md) var(--space-md);
 
     &__badge {
       padding: 5px 14px;
       font-size: 0.65rem;
-      margin-bottom: 10px;
+      margin-bottom: var(--space-sm);
     }
 
     &__title {
       font-size: clamp(1.6rem, 5vw, 2.2rem);
-      margin-bottom: 8px;
+      margin-bottom: var(--space-sm);
     }
 
     &__subtitle {
-      font-size: 0.9rem;
-      margin-bottom: 10px;
+      font-size: var(--text-sm);
+      margin-bottom: var(--space-sm);
     }
 
     &__stats {
-      padding: 8px 15px;
+      padding: var(--space-sm) var(--space-md);
     }
 
     &__stat {
-      padding: 0 12px;
+      padding: 0 var(--space-sm);
       gap: 4px;
 
       &Number {
-        font-size: 1.1rem;
+        font-size: var(--text-lg);
       }
 
       &Label {
@@ -630,12 +620,12 @@ $color-gradient: linear-gradient(135deg, $color-primary 0%, $color-primary-light
   }
 
   .filters {
-    padding: 12px 10px;
+    padding: var(--space-sm) var(--space-sm);
 
     &__btn {
-      padding: 8px 14px;
-      font-size: 0.8rem;
-      border-radius: 6px;
+      padding: var(--space-sm) var(--space-md);
+      font-size: var(--text-xs);
+      border-radius: var(--radius-sm);
 
       &::after {
         bottom: 4px;
@@ -649,16 +639,16 @@ $color-gradient: linear-gradient(135deg, $color-primary 0%, $color-primary-light
   }
 
   .content {
-    padding: 20px 10px 120px;
+    padding: var(--space-lg) var(--space-sm) 120px;
   }
 
   .grid {
     grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
+    gap: var(--space-sm);
   }
 
   .card {
-    border-radius: 10px;
+    border-radius: var(--radius-md);
 
     &__overlay {
       opacity: 1;
@@ -667,7 +657,7 @@ $color-gradient: linear-gradient(135deg, $color-primary 0%, $color-primary-light
         rgba(0, 0, 0, 0.7) 0%,
         transparent 60%
       );
-      padding: 12px;
+      padding: var(--space-sm);
     }
 
     &__zoom {
@@ -680,15 +670,15 @@ $color-gradient: linear-gradient(135deg, $color-primary 0%, $color-primary-light
     }
 
     &__title {
-      font-size: 0.85rem;
+      font-size: var(--text-sm);
     }
   }
 
   .sectionHeader {
-    margin: 40px 0 20px;
+    margin: var(--space-2xl) 0 var(--space-lg);
 
     &__title {
-      font-size: 1.4rem;
+      font-size: var(--text-xl);
 
       &::before {
         height: 24px;
@@ -697,7 +687,7 @@ $color-gradient: linear-gradient(135deg, $color-primary 0%, $color-primary-light
     }
 
     &__count {
-      font-size: 0.85rem;
+      font-size: var(--text-xs);
       padding: 4px 12px;
     }
   }
@@ -706,7 +696,7 @@ $color-gradient: linear-gradient(135deg, $color-primary 0%, $color-primary-light
     &__nav {
       width: 45px;
       height: 45px;
-      font-size: 1.2rem;
+      font-size: var(--text-lg);
 
       &--prev {
         left: 10px;
@@ -726,8 +716,8 @@ $color-gradient: linear-gradient(135deg, $color-primary 0%, $color-primary-light
 
     &__counter {
       bottom: 15px;
-      padding: 8px 18px;
-      font-size: 0.85rem;
+      padding: var(--space-sm) var(--space-md);
+      font-size: var(--text-xs);
     }
 
     &__info {
@@ -738,7 +728,7 @@ $color-gradient: linear-gradient(135deg, $color-primary 0%, $color-primary-light
 
 @media (max-width: 480px) {
   .hero {
-    padding: 35px 10px 12px;
+    padding: var(--space-xl) var(--space-sm) var(--space-sm);
 
     &__subtitle {
       display: none;
@@ -747,22 +737,22 @@ $color-gradient: linear-gradient(135deg, $color-primary 0%, $color-primary-light
     &__stats {
       flex-wrap: wrap;
       justify-content: center;
-      padding: 6px 10px;
+      padding: 6px var(--space-sm);
       gap: 5px;
     }
 
     &__stat {
-      padding: 0 10px;
+      padding: 0 var(--space-sm);
       border-right: none;
 
       &:not(:last-child)::after {
         content: '•';
-        margin-left: 10px;
-        color: rgba(255, 255, 255, 0.3);
+        margin-left: var(--space-sm);
+        color: var(--color-text-muted);
       }
 
       &Number {
-        font-size: 1rem;
+        font-size: var(--text-base);
       }
 
       &Label {
@@ -773,7 +763,7 @@ $color-gradient: linear-gradient(135deg, $color-primary 0%, $color-primary-light
 
   .grid {
     grid-template-columns: 1fr;
-    gap: 15px;
+    gap: var(--space-md);
   }
 
   .card {

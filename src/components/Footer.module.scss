@@ -1,11 +1,9 @@
-// Palette moderne
-$color-primary: #8B0000;
-$color-primary-light: #B22222;
+@import '../styles/variables';
 
 .footer {
   background: rgba(10, 10, 10, 0.98);
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
-  padding: 14px 20px;
+  border-top: 1px solid var(--color-border);
+  padding: var(--space-md) var(--space-lg);
 
   &__container {
     display: flex;
@@ -13,18 +11,18 @@ $color-primary-light: #B22222;
     justify-content: space-between;
     max-width: 1400px;
     margin: 0 auto;
-    gap: 20px;
+    gap: var(--space-lg);
   }
 
   &__address {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
-    color: rgba(255, 255, 255, 0.5);
+    gap: var(--space-sm);
+    color: var(--color-text-muted);
     text-decoration: none;
-    font-family: var(--font-holocene);
-    font-size: 0.85rem;
-    transition: color 0.2s ease;
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    transition: color var(--transition-base);
 
     svg {
       flex-shrink: 0;
@@ -50,12 +48,12 @@ $color-primary-light: #B22222;
   &__phone {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    color: rgba(255, 255, 255, 0.7);
+    gap: var(--space-xs);
+    color: var(--color-text-secondary);
     text-decoration: none;
-    font-family: var(--font-holocene);
-    font-size: 0.9rem;
-    transition: color 0.2s ease;
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    transition: color var(--transition-base);
 
     svg {
       flex-shrink: 0;
@@ -72,14 +70,14 @@ $color-primary-light: #B22222;
   }
 
   &__copyright {
-    font-size: 0.75rem;
-    color: rgba(255, 255, 255, 0.35);
-    font-family: var(--font-holocene);
+    font-family: var(--font-body);
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
   }
 
   &__social {
     display: flex;
-    gap: 10px;
+    gap: var(--space-sm);
 
     a {
       display: flex;
@@ -87,14 +85,14 @@ $color-primary-light: #B22222;
       justify-content: center;
       width: 34px;
       height: 34px;
-      border-radius: 8px;
+      border-radius: var(--radius-md);
       background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      border: 1px solid var(--color-border);
+      transition: all var(--transition-base);
 
       &:hover {
         background: rgba(139, 0, 0, 0.3);
-        border-color: rgba(139, 0, 0, 0.4);
+        border-color: var(--color-primary-light);
         transform: translateY(-2px);
       }
 
@@ -103,7 +101,7 @@ $color-primary-light: #B22222;
         height: 18px;
         object-fit: contain;
         opacity: 0.7;
-        transition: opacity 0.2s ease;
+        transition: opacity var(--transition-base);
       }
 
       &:hover img {
@@ -113,19 +111,18 @@ $color-primary-light: #B22222;
   }
 }
 
-// Responsive
 @media (max-width: 768px) {
   .footer {
-    padding: 18px 14px;
+    padding: var(--space-md);
 
     &__container {
       flex-direction: column;
       text-align: center;
-      gap: 14px;
+      gap: var(--space-md);
     }
 
     &__address {
-      font-size: 0.8rem;
+      font-size: var(--text-xs);
     }
 
     &__center {
@@ -133,7 +130,7 @@ $color-primary-light: #B22222;
     }
 
     &__social {
-      gap: 12px;
+      gap: var(--space-sm);
 
       a {
         width: 38px;
@@ -147,7 +144,7 @@ $color-primary-light: #B22222;
   .footer {
     &__address {
       flex-direction: column;
-      gap: 4px;
+      gap: var(--space-xs);
 
       svg {
         display: none;
