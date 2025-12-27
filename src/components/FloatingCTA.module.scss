@@ -1,0 +1,44 @@
+@import '../styles/variables';
+
+.floatingCta {
+  // Visible uniquement sur mobile
+  display: none;
+
+  @media (max-width: 768px) {
+    display: flex;
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+
+    background: linear-gradient(135deg, var(--color-accent, #7c3aed) 0%, #9333ea 100%);
+    color: #fff;
+    padding: 14px 32px;
+    border-radius: 50px;
+    text-decoration: none;
+    font-family: var(--font-holocene, sans-serif);
+    font-weight: 600;
+    font-size: 1rem;
+    letter-spacing: 0.5px;
+
+    box-shadow: 0 4px 20px rgba(124, 58, 237, 0.4);
+    transition: all 0.3s ease;
+
+    &:hover,
+    &:focus {
+      transform: translateX(-50%) scale(1.05);
+      box-shadow: 0 6px 25px rgba(124, 58, 237, 0.6);
+    }
+
+    &:active {
+      transform: translateX(-50%) scale(0.98);
+    }
+  }
+
+  &__text {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+}

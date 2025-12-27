@@ -75,42 +75,55 @@ const buildNewsImageUrl = (image) => {
 
 const Home = () => {
     const [backgroundUrl, setBackgroundUrl] = useState("");
+    const [nextImageUrl, setNextImageUrl] = useState("");
+    const [isTransitioning, setIsTransitioning] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
+    const [noAccueilMedia, setNoAccueilMedia] = useState(false);
     const [news, setNews] = useState([]);
-    const [showNews, setShowNews] = useState(true); // à terme : valeur venant du backend / admin
+    const [showNews, setShowNews] = useState(true);
 
-    // 🔁 Image d'accueil aléatoire
-    const fetchRandomImage = async () => {
+    // 🔁 Image d'accueil aléatoire avec préchargement
+    const fetchRandomImage = async (isInitial = false) => {
         try {
-            console.log("Home ▶️ Appel /media/random");
-            const res = await api.get("/media/random");
-
-            // Selon le backend, res.data peut être :
-            // - directement un objet media
-            // - ou { media: {...} }
-            const media =
-                res.data && res.data.media
-                    ? res.data.media
-                    : Array.isArray(res.data)
-                        ? res.data[0]
-                        : res.data;
-
-            console.log("Home ▶️ media random reçu :", media);
-
+            // Ajout d'un timestamp pour éviter le cache navigateur
+            const res = await api.get(`/media/random?t=${Date.now()}`);
+            const media = res.data;
             const url = buildMediaUrl(media);
-            console.log("Home ▶️ URL fond calculée :", url);
-            setBackgroundUrl(url);
+
+            setNoAccueilMedia(false);
+
+            if (isInitial || !backgroundUrl) {
+                // Premier chargement : afficher directement
+                setBackgroundUrl(url);
+                setIsLoading(false);
+            } else {
+                // Changement d'image : précharger puis transition
+                setNextImageUrl(url);
+                const img = new Image();
+                img.onload = () => {
+                    setIsTransitioning(true);
+                    setTimeout(() => {
+                        setBackgroundUrl(url);
+                        setIsTransitioning(false);
+                        setNextImageUrl("");
+                    }, 500);
+                };
+                img.src = url;
+            }
         } catch (err) {
-            console.error("Erreur chargement image d’accueil", err);
-            setBackgroundUrl("");
+            console.error("Erreur chargement image d'accueil", err);
+            // Si 404 = pas de médias dans Accueil
+            if (err.response?.status === 404) {
+                setNoAccueilMedia(true);
+            }
+            setIsLoading(false);
         }
     };
 
     // 🔁 Dernières actualités (3 max)
     const fetchNews = async () => {
         try {
-            console.log("Home ▶️ Appel /news");
             const res = await api.get("/news");
-            console.log("Home ▶️ News reçues :", res.data);
             setNews(Array.isArray(res.data) ? res.data : []);
         } catch (err) {
             console.error("Erreur chargement actualités", err);
@@ -120,10 +133,10 @@ const Home = () => {
 
     // ⏱ Initialisation
     useEffect(() => {
-        fetchRandomImage();
+        fetchRandomImage(true);
         fetchNews();
 
-        const interval = setInterval(fetchRandomImage, 5000);
+        const interval = setInterval(() => fetchRandomImage(false), 10000);
         return () => clearInterval(interval);
     }, []);
 
@@ -177,14 +190,22 @@ const Home = () => {
                             showNews ? styles.home__hero : styles.home__heroFull
                         }
                     >
-                        <div
-                            className={styles.home__heroBg}
-                            style={
-                                backgroundUrl
-                                    ? { backgroundImage: `url('${backgroundUrl}')` }
-                                    : {}
-                            }
-                        ></div>
+                        {noAccueilMedia ? (
+                            <div className={styles.home__noMedia}>
+                                <p>Ajoutez des images dans la catégorie "Accueil" depuis l'admin.</p>
+                            </div>
+                        ) : (
+                            <div
+                                className={`${styles.home__heroBg}${
+                                    isTransitioning ? ` ${styles["home__heroBg--transitioning"]}` : ""
+                                }${isLoading ? ` ${styles["home__heroBg--loading"]}` : ""}`}
+                                style={
+                                    backgroundUrl
+                                        ? { backgroundImage: `url('${backgroundUrl}')` }
+                                        : {}
+                                }
+                            ></div>
+                        )}
                     </div>
 
                     {/* 📰 Bloc actualités */}

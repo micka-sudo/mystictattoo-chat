@@ -8,7 +8,33 @@
   color: var(--color-light);
 }
 
+// Skip to main content - Accessibilité
+.skipLink {
+  position: absolute;
+  top: -100px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--color-accent, #7c3aed);
+  color: #fff;
+  padding: 12px 24px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  z-index: 10000;
+  transition: top 0.2s ease;
+
+  &:focus {
+    top: 10px;
+    outline: 3px solid #fff;
+    outline-offset: 2px;
+  }
+}
+
 .main {
   flex-grow: 1;
   margin-bottom: 40px;
+
+  &:focus {
+    outline: none; // Le main n'a pas besoin d'outline visible
+  }
 }
