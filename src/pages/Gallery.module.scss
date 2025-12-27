@@ -17,37 +17,37 @@ $color-gradient: linear-gradient(135deg, $color-primary 0%, $color-primary-light
 }
 
 // =============================================================================
-// HERO SECTION
+// HERO SECTION - Version compacte
 // =============================================================================
 .hero {
   position: relative;
-  padding: 80px 20px 60px;
+  padding: 50px 20px 25px;
   text-align: center;
   z-index: 1;
 
   &__badge {
     display: inline-block;
-    padding: 8px 24px;
+    padding: 6px 18px;
     background: $color-gradient;
     color: white;
-    font-size: 0.8rem;
+    font-size: 0.7rem;
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 3px;
-    border-radius: 30px;
-    margin-bottom: 25px;
-    box-shadow: 0 4px 20px rgba(139, 0, 0, 0.4);
+    letter-spacing: 2px;
+    border-radius: 20px;
+    margin-bottom: 15px;
+    box-shadow: 0 3px 15px rgba(139, 0, 0, 0.3);
   }
 
   &__title {
-    font-size: clamp(2.5rem, 8vw, 4.5rem);
+    font-size: clamp(2rem, 6vw, 3rem);
     font-family: var(--font-holocene);
     color: var(--color-light);
-    margin-bottom: 20px;
+    margin-bottom: 10px;
     line-height: 1.1;
 
     span {
-      display: block;
+      display: inline;
       background: $color-gradient;
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
@@ -56,36 +56,48 @@ $color-gradient: linear-gradient(135deg, $color-primary 0%, $color-primary-light
   }
 
   &__subtitle {
-    font-size: 1.2rem;
-    color: rgba(255, 255, 255, 0.75);
-    max-width: 600px;
-    margin: 0 auto 30px;
-    line-height: 1.7;
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.7);
+    max-width: 550px;
+    margin: 0 auto 15px;
+    line-height: 1.5;
   }
 
   &__stats {
-    display: flex;
+    display: inline-flex;
     justify-content: center;
-    gap: 50px;
-    margin-top: 40px;
+    align-items: center;
+    gap: 0;
+    margin-top: 15px;
+    padding: 10px 25px;
+    background: rgba(139, 0, 0, 0.1);
+    border: 1px solid rgba(139, 0, 0, 0.2);
+    border-radius: 30px;
   }
 
   &__stat {
-    text-align: center;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0 20px;
+    border-right: 1px solid rgba(255, 255, 255, 0.15);
+
+    &:last-child {
+      border-right: none;
+    }
 
     &Number {
-      display: block;
-      font-size: 2.5rem;
+      font-size: 1.4rem;
       font-weight: 700;
       color: $color-primary-light;
       font-family: var(--font-holocene);
     }
 
     &Label {
-      font-size: 0.9rem;
+      font-size: 0.75rem;
       color: rgba(255, 255, 255, 0.6);
       text-transform: uppercase;
-      letter-spacing: 1px;
+      letter-spacing: 0.5px;
     }
   }
 }
@@ -572,15 +584,7 @@ $color-gradient: linear-gradient(135deg, $color-primary 0%, $color-primary-light
 // =============================================================================
 @media (max-width: 1024px) {
   .hero {
-    padding: 60px 20px 40px;
-
-    &__stats {
-      gap: 30px;
-    }
-
-    &__statNumber {
-      font-size: 2rem;
-    }
+    padding: 45px 20px 20px;
   }
 
   .grid {
@@ -590,22 +594,39 @@ $color-gradient: linear-gradient(135deg, $color-primary 0%, $color-primary-light
 
 @media (max-width: 768px) {
   .hero {
-    padding: 50px 15px 30px;
+    padding: 40px 15px 15px;
+
+    &__badge {
+      padding: 5px 14px;
+      font-size: 0.65rem;
+      margin-bottom: 10px;
+    }
+
+    &__title {
+      font-size: clamp(1.6rem, 5vw, 2.2rem);
+      margin-bottom: 8px;
+    }
 
     &__subtitle {
-      font-size: 1rem;
+      font-size: 0.9rem;
+      margin-bottom: 10px;
     }
 
     &__stats {
-      gap: 25px;
+      padding: 8px 15px;
     }
 
-    &__statNumber {
-      font-size: 1.8rem;
-    }
+    &__stat {
+      padding: 0 12px;
+      gap: 4px;
 
-    &__statLabel {
-      font-size: 0.8rem;
+      &Number {
+        font-size: 1.1rem;
+      }
+
+      &Label {
+        font-size: 0.65rem;
+      }
     }
   }
 
@@ -711,9 +732,38 @@ $color-gradient: linear-gradient(135deg, $color-primary 0%, $color-primary-light
 }
 
 @media (max-width: 480px) {
-  .hero__stats {
-    flex-direction: column;
-    gap: 15px;
+  .hero {
+    padding: 35px 10px 12px;
+
+    &__subtitle {
+      display: none;
+    }
+
+    &__stats {
+      flex-wrap: wrap;
+      justify-content: center;
+      padding: 6px 10px;
+      gap: 5px;
+    }
+
+    &__stat {
+      padding: 0 10px;
+      border-right: none;
+
+      &:not(:last-child)::after {
+        content: '•';
+        margin-left: 10px;
+        color: rgba(255, 255, 255, 0.3);
+      }
+
+      &Number {
+        font-size: 1rem;
+      }
+
+      &Label {
+        font-size: 0.6rem;
+      }
+    }
   }
 
   .grid {
