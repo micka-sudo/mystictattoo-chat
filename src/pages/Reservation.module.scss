@@ -1,39 +1,171 @@
+@import '../styles/variables';
+
+// Palette rouge/noir Mystic Tattoo
+$color-primary: #8B0000;
+$color-primary-light: #B22222;
+$color-accent: #CC0000;
+$color-gradient: linear-gradient(135deg, $color-primary 0%, $color-primary-light 50%, $color-accent 100%);
+
 .reservation {
-  padding: 2rem;
+  padding: 60px 20px 100px;
   max-width: 600px;
   margin: 0 auto;
 
   h2 {
     text-align: center;
-    margin-bottom: 1.5rem;
+    font-family: var(--font-holocene);
+    font-size: clamp(1.8rem, 5vw, 2.5rem);
+    color: var(--color-light);
+    margin-bottom: 15px;
+    position: relative;
+    display: inline-block;
+    width: 100%;
+
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80px;
+      height: 3px;
+      background: $color-gradient;
+      border-radius: 2px;
+    }
+  }
+
+  .subtitle {
+    text-align: center;
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 40px;
+    font-size: 1rem;
   }
 
   .form {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 20px;
+    background: linear-gradient(135deg, rgba(139, 0, 0, 0.1), rgba(30, 30, 30, 0.9));
+    border: 2px solid rgba(139, 0, 0, 0.2);
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
 
     input, textarea {
-      padding: 0.8rem;
-      border: 1px solid #ccc;
-      border-radius: 6px;
+      padding: 16px 20px;
+      border: 2px solid rgba(139, 0, 0, 0.2);
+      border-radius: 12px;
       font-size: 1rem;
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--color-light);
+      transition: all 0.3s ease;
+      font-family: inherit;
+
+      &::placeholder {
+        color: rgba(255, 255, 255, 0.5);
+      }
+
+      &:focus {
+        outline: none;
+        border-color: $color-primary-light;
+        background: rgba(139, 0, 0, 0.1);
+        box-shadow: 0 0 20px rgba(139, 0, 0, 0.2);
+      }
+
+      &:hover {
+        border-color: rgba(139, 0, 0, 0.4);
+      }
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 120px;
+    }
+
+    // Style pour les champs date et time
+    input[type="date"],
+    input[type="time"] {
+      color-scheme: dark;
+
+      &::-webkit-calendar-picker-indicator {
+        filter: invert(1);
+        cursor: pointer;
+      }
     }
 
     button {
-      background: #875c94;
+      background: $color-gradient;
       color: white;
-      padding: 0.8rem;
+      padding: 16px 40px;
       border: none;
-      border-radius: 6px;
-      font-size: 1rem;
+      border-radius: 30px;
+      font-size: 1.1rem;
+      font-weight: 600;
       cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 20px rgba(139, 0, 0, 0.4);
+      margin-top: 10px;
+
+      &:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 30px rgba(139, 0, 0, 0.6);
+      }
+
+      &:active {
+        transform: translateY(-1px);
+      }
     }
   }
 
   .status {
-    margin-top: 1rem;
+    margin-top: 25px;
     text-align: center;
-    font-weight: bold;
+    font-weight: 600;
+    font-size: 1.1rem;
+    padding: 15px;
+    border-radius: 12px;
+
+    // Style selon le contenu
+    &:not(:empty) {
+      background: rgba(139, 0, 0, 0.1);
+      border: 1px solid rgba(139, 0, 0, 0.2);
+    }
+  }
+
+  // Info box
+  .infoBox {
+    margin-top: 30px;
+    padding: 20px;
+    background: rgba(139, 0, 0, 0.08);
+    border: 1px solid rgba(139, 0, 0, 0.15);
+    border-radius: 12px;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.9rem;
+    line-height: 1.6;
+
+    strong {
+      color: var(--color-light);
+    }
+  }
+}
+
+// Responsive
+@media (max-width: 768px) {
+  .reservation {
+    padding: 40px 15px 80px;
+
+    .form {
+      padding: 25px 20px;
+      gap: 15px;
+
+      input, textarea {
+        padding: 14px 16px;
+      }
+
+      button {
+        padding: 14px 30px;
+      }
+    }
   }
 }

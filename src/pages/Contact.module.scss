@@ -1,44 +1,87 @@
+@import '../styles/variables';
+
+// Palette rouge/noir Mystic Tattoo
+$color-primary: #8B0000;
+$color-primary-light: #B22222;
+$color-accent: #CC0000;
+$color-gradient: linear-gradient(135deg, $color-primary 0%, $color-primary-light 50%, $color-accent 100%);
+
 .imageWrapper {
   width: 100%;
   overflow: hidden;
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 100px;
+    background: linear-gradient(to top, var(--color-background), transparent);
+  }
 
   .bannerImage {
     width: 100%;
     height: auto;
-    max-height: 400px; // tu peux ajuster selon besoin
-    object-fit: contain;
+    max-height: 350px;
+    object-fit: cover;
     display: block;
-
+    filter: brightness(0.9);
   }
 }
 
 .contact {
   max-width: 900px;
   margin: 0 auto;
-  padding: 40px 20px;
+  padding: 40px 20px 80px;
   text-align: center;
 
   .title {
-    font-size: 2.5rem;
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-family: var(--font-holocene);
     font-weight: bold;
     color: var(--color-light);
-    margin-bottom: 40px;
+    margin-bottom: 30px;
+    position: relative;
+    display: inline-block;
+
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80px;
+      height: 3px;
+      background: $color-gradient;
+      border-radius: 2px;
+    }
   }
 
   .intro {
-    font-size: 1rem;
+    font-size: 1.2rem;
     color: var(--color-light);
-    margin-bottom: 30px;
+    margin-bottom: 20px;
+    line-height: 1.6;
   }
 
   .card {
-    background-color: var(--color-background);
+    background: linear-gradient(135deg, rgba(139, 0, 0, 0.1), rgba(30, 30, 30, 0.9));
+    border: 2px solid rgba(139, 0, 0, 0.2);
     border-radius: 20px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-    padding: 30px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    padding: 40px;
     display: flex;
     flex-direction: column;
-    gap: 30px;
+    gap: 40px;
+    margin-top: 30px;
+    transition: all 0.3s ease;
+
+    &:hover {
+      border-color: rgba(139, 0, 0, 0.4);
+      box-shadow: 0 15px 50px rgba(139, 0, 0, 0.2);
+    }
 
     @media (min-width: 768px) {
       flex-direction: row;
@@ -53,22 +96,36 @@
     .infoItem {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 15px;
       font-size: 1.1rem;
-      color: #333333;
-      margin-bottom: 15px;
+      color: var(--color-light);
+      margin-bottom: 20px;
+      padding: 15px 20px;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 12px;
+      border: 1px solid rgba(139, 0, 0, 0.15);
+      transition: all 0.3s ease;
+
+      &:hover {
+        background: rgba(139, 0, 0, 0.1);
+        border-color: $color-primary-light;
+        transform: translateX(5px);
+      }
 
       img {
-        width: 28px;
-        height: 28px;
+        width: 32px;
+        height: 32px;
+        filter: brightness(0) invert(1);
       }
 
       a {
         color: var(--color-light);
         text-decoration: none;
+        font-weight: 500;
+        transition: color 0.3s ease;
 
         &:hover {
-          text-decoration: underline;
+          color: $color-accent;
         }
       }
     }
@@ -77,27 +134,82 @@
   .socials {
     flex: 1;
     text-align: center;
+    padding: 30px;
+    background: rgba(139, 0, 0, 0.08);
+    border-radius: 16px;
+    border: 1px solid rgba(139, 0, 0, 0.15);
 
     h2 {
-      font-size: 1.4rem;
-      margin-bottom: 10px;
+      font-size: 1.5rem;
+      font-family: var(--font-holocene);
+      margin-bottom: 25px;
       color: var(--color-light);
     }
 
     .socialLinks {
       display: flex;
       justify-content: center;
-      gap: 20px;
+      gap: 25px;
 
-      a img {
-        width: 36px;
-        height: 36px;
-        transition: transform 0.2s ease;
+      a {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(135deg, $color-primary, $color-primary-light);
+        border-radius: 50%;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(139, 0, 0, 0.3);
 
         &:hover {
-          transform: scale(1.1);
+          transform: translateY(-5px) scale(1.1);
+          box-shadow: 0 8px 25px rgba(139, 0, 0, 0.5);
+        }
+
+        img {
+          width: 28px;
+          height: 28px;
+          filter: brightness(0) invert(1);
         }
       }
+    }
+  }
+}
+
+// CTA Section ajoutée
+.ctaSection {
+  margin-top: 50px;
+  padding: 40px;
+  background: $color-gradient;
+  border-radius: 20px;
+  text-align: center;
+
+  h3 {
+    font-family: var(--font-holocene);
+    font-size: 1.5rem;
+    color: white;
+    margin-bottom: 15px;
+  }
+
+  p {
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 25px;
+  }
+
+  .ctaButton {
+    display: inline-block;
+    padding: 14px 40px;
+    background: white;
+    color: $color-primary;
+    text-decoration: none;
+    font-weight: 700;
+    border-radius: 30px;
+    transition: all 0.3s ease;
+
+    &:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
     }
   }
 }
