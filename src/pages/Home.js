@@ -34,6 +34,13 @@ const SCHEMA_ORG = {
 };
 
 /**
+ * Ajoute un "/" au début du chemin si absent.
+ */
+function ensureLeadingSlash(p = "") {
+    return p.startsWith("/") ? p : `/${p}`;
+}
+
+/**
  * Construit l'URL complète d'une image backend.
  * - Si `cloudinaryUrl` existe → priorité.
  * - Sinon `path` → apiBase + path
@@ -51,7 +58,7 @@ const buildMediaUrl = (media) => {
         return filePath;
     }
 
-    return `${apiBase}${filePath}`;
+    return `${apiBase}${ensureLeadingSlash(filePath)}`;
 };
 
 /**
@@ -63,7 +70,7 @@ const buildNewsImageUrl = (image) => {
     if (typeof image === "string" && image.startsWith("http")) {
         return image;
     }
-    return `${apiBase}${image}`;
+    return `${apiBase}${ensureLeadingSlash(image)}`;
 };
 
 const Home = () => {
