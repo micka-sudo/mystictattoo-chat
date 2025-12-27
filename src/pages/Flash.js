@@ -4,6 +4,30 @@ import SEO from "../components/SEO";
 import styles from "./Gallery.module.scss"; // réutilisation du style galerie
 import api, { apiBase } from "../lib/api";
 
+/**
+ * Ajoute un "/" au début du chemin si absent.
+ */
+function ensureLeadingSlash(p = "") {
+    return p.startsWith("/") ? p : `/${p}`;
+}
+
+/**
+ * Construit l'URL d'affichage d'un média (image/vidéo) :
+ * - priorité à Cloudinary (cloudinaryUrl ou cloudUrl)
+ * - sinon fallback sur apiBase + path/url
+ */
+function buildMediaSrc(item) {
+    if (!item) return "";
+    const cloud = item.cloudinaryUrl || item.cloudUrl || null;
+
+    if (cloud && typeof cloud === "string") {
+        return cloud;
+    }
+
+    const p = ensureLeadingSlash(item.path || item.url || "");
+    return `${apiBase}${p}`;
+}
+
 const SCHEMA_ORG = {
     "@context": "https://schema.org",
     "@type": "TattooParlor",
@@ -54,7 +78,7 @@ const Flash = () => {
     const prev = () => setLightboxIndex((prev) => (prev === 0 ? media.length - 1 : prev - 1));
     const next = () => setLightboxIndex((prev) => (prev === media.length - 1 ? 0 : prev + 1));
 
-    const firstImageUrl = media[0]?.url ? `${apiBase}${media[0].url}` : null;
+    const firstImageUrl = media[0] ? buildMediaSrc(media[0]) : null;
 
     return (
         <Layout>
@@ -95,14 +119,14 @@ const Flash = () => {
                             <div key={index} className={styles.gallery__item}>
                                 {item.type === "image" ? (
                                     <img
-                                        src={`${apiBase}${item.url}`}
+                                        src={buildMediaSrc(item)}
                                         alt="Flash tattoo Mystic Tattoo"
                                         loading="lazy"
                                         onClick={() => openLightbox(index)}
                                     />
                                 ) : (
                                     <video
-                                        src={`${apiBase}${item.url}`}
+                                        src={buildMediaSrc(item)}
                                         autoPlay
                                         muted
                                         loop
@@ -125,12 +149,12 @@ const Flash = () => {
                         <div onClick={(e) => e.stopPropagation()}>
                             {media[lightboxIndex].type === "image" ? (
                                 <img
-                                    src={`${apiBase}${media[lightboxIndex].url}`}
+                                    src={buildMediaSrc(media[lightboxIndex])}
                                     alt="Flash tattoo Mystic Tattoo"
                                 />
                             ) : (
                                 <video
-                                    src={`${apiBase}${media[lightboxIndex].url}`}
+                                    src={buildMediaSrc(media[lightboxIndex])}
                                     autoPlay
                                     controls
                                 />

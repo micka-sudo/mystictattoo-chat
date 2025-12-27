@@ -20,6 +20,30 @@ const styleKeywords = {
     blackwork: "tatouage blackwork Nancy, tatoueur blackwork Nancy, style blackwork"
 };
 
+/**
+ * Ajoute un "/" au début du chemin si absent.
+ */
+function ensureLeadingSlash(p = "") {
+    return p.startsWith("/") ? p : `/${p}`;
+}
+
+/**
+ * Construit l'URL d'affichage d'un média (image/vidéo) :
+ * - priorité à Cloudinary (cloudinaryUrl ou cloudUrl)
+ * - sinon fallback sur apiBase + path/url
+ */
+function buildMediaSrc(item) {
+    if (!item) return "";
+    const cloud = item.cloudinaryUrl || item.cloudUrl || null;
+
+    if (cloud && typeof cloud === "string") {
+        return cloud;
+    }
+
+    const p = ensureLeadingSlash(item.path || item.url || "");
+    return `${apiBase}${p}`;
+}
+
 const Gallery = () => {
     console.log("🚀 COMPOSANT GALLERY CHARGÉ");
 
@@ -59,7 +83,7 @@ const Gallery = () => {
         ? `https://www.mystic-tattoo.fr/gallery/${style}`
         : `https://www.mystic-tattoo.fr/gallery`;
 
-    const firstImageUrl = galleryItems[0]?.url ? `${apiBase}${galleryItems[0].url}` : null;
+    const firstImageUrl = galleryItems[0] ? buildMediaSrc(galleryItems[0]) : null;
 
     const keywords = style
         ? `${SEO_KEYWORDS_BASE}, ${styleKeywords[style] || styleTitle + " Nancy, tatouage " + styleTitle.toLowerCase() + " Nancy"}`
@@ -146,10 +170,12 @@ const Gallery = () => {
     const next = () => setLightboxIndex((prev) => (prev === galleryItems.length - 1 ? 0 : prev + 1));
 
     const renderItem = (item, index) => {
-        const imageUrl = `${apiBase}${item.url}`;
+        const imageUrl = buildMediaSrc(item);
         console.log(`🖼️ Rendu item ${index}:`, {
             type: item.type,
             url: item.url,
+            path: item.path,
+            cloudinaryUrl: item.cloudinaryUrl,
             fullUrl: imageUrl,
             filename: item.filename
         });
@@ -258,12 +284,12 @@ const Gallery = () => {
                         <div onClick={(e) => e.stopPropagation()}>
                             {galleryItems[lightboxIndex].type === "image" ? (
                                 <img
-                                    src={`${apiBase}${galleryItems[lightboxIndex].url}`}
+                                    src={buildMediaSrc(galleryItems[lightboxIndex])}
                                     alt={`Tatouage ${styleTitle} à Nancy - Mystic Tattoo`}
                                 />
                             ) : (
                                 <video
-                                    src={`${apiBase}${galleryItems[lightboxIndex].url}`}
+                                    src={buildMediaSrc(galleryItems[lightboxIndex])}
                                     autoPlay
                                     controls
                                 />

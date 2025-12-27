@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { jwtDecode } from 'jwt-decode';
 import Layout from '../layouts/Layout';
 import styles from './AdminLogin.module.scss';
 import api from '../lib/api';
@@ -9,11 +10,25 @@ const AdminLogin = () => {
     const [status, setStatus] = useState('');
     const navigate = useNavigate();
 
-    // ✅ Redirection automatique si déjà connecté
+    // ✅ Redirection automatique si déjà connecté avec token valide
     useEffect(() => {
         const token = localStorage.getItem('admin_token');
         if (token) {
-            navigate('/admin/dashboard');
+            try {
+                const decoded = jwtDecode(token);
+                const exp = decoded.exp * 1000;
+                if (exp > Date.now()) {
+                    // Token valide, rediriger
+                    navigate('/admin/dashboard');
+                } else {
+                    // Token expiré, le supprimer
+                    localStorage.removeItem('admin_token');
+                }
+            } catch (err) {
+                // Token invalide, le supprimer
+                console.error('Token invalide:', err);
+                localStorage.removeItem('admin_token');
+            }
         }
     }, [navigate]);
 
