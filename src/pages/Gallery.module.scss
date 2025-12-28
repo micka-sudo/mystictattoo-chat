@@ -693,31 +693,68 @@
   }
 
   .lightbox {
+    // Fullscreen optimisé pour mobile
+    background: rgba(0, 0, 0, 1);
+    // Fix hauteur mobile (barre d'adresse iOS/Android)
+    height: 100vh;
+    height: 100dvh;
+    height: -webkit-fill-available;
+
+    &__content {
+      position: absolute;
+      top: 50px;
+      left: 0;
+      right: 0;
+      bottom: 45px;
+      padding: 0 5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    &__media {
+      max-width: calc(100vw - 10px);
+      max-height: 100%;
+      width: auto;
+      height: auto;
+      object-fit: contain;
+      border-radius: var(--radius-sm);
+      touch-action: pinch-zoom;
+    }
+
     &__nav {
-      width: 45px;
-      height: 45px;
-      font-size: var(--text-lg);
+      width: 36px;
+      height: 36px;
+      font-size: var(--text-sm);
+      background: rgba(139, 0, 0, 0.9);
 
       &--prev {
-        left: 10px;
+        left: 5px;
       }
 
       &--next {
-        right: 10px;
+        right: 5px;
       }
     }
 
     &__close {
-      top: 15px;
-      right: 15px;
+      top: 8px;
+      right: 8px;
       width: 40px;
       height: 40px;
+      background: rgba(255, 255, 255, 0.2);
+
+      &::before,
+      &::after {
+        width: 18px;
+      }
     }
 
     &__counter {
-      bottom: 15px;
-      padding: var(--space-sm) var(--space-md);
+      bottom: 10px;
+      padding: 6px 14px;
       font-size: var(--text-xs);
+      background: rgba(0, 0, 0, 0.8);
     }
 
     &__info {
