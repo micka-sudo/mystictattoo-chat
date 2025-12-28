@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useMemo, useCallback } from "react";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
 import api, { apiBase } from "../lib/api";
+import { thumbnailImageProps, optimizeCloudinaryUrl } from "../lib/cloudinary";
 import Layout from "../layouts/Layout";
 import styles from "./Gallery.module.scss";
 import useCategories from "../hooks/useCategories";
@@ -176,6 +177,7 @@ const Gallery = () => {
     const TattooCard = ({ item, index, category, featured = false }) => {
         const imageUrl = buildMediaSrc(item);
         const isVideo = item.type === "video";
+        const thumbSize = featured ? 600 : 400;
 
         return (
             <article
@@ -193,7 +195,7 @@ const Gallery = () => {
                     />
                 ) : (
                     <img
-                        src={imageUrl}
+                        {...thumbnailImageProps(imageUrl, thumbSize)}
                         alt={`Tatouage ${category || styleTitle} - Mystic Tattoo Nancy`}
                         className={styles.card__image}
                         loading="lazy"
@@ -398,7 +400,10 @@ const Gallery = () => {
                                 />
                             ) : (
                                 <img
-                                    src={buildMediaSrc(galleryItems[lightboxIndex])}
+                                    src={optimizeCloudinaryUrl(buildMediaSrc(galleryItems[lightboxIndex]), {
+                                        width: 1600,
+                                        quality: 'auto:good'
+                                    })}
                                     alt={`Tatouage ${getCurrentCategory()} - Mystic Tattoo`}
                                     className={styles.lightbox__media}
                                 />

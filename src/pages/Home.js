@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import Layout from "../layouts/Layout";
 import styles from "./Home.module.scss";
 import api, { apiBase } from "../lib/api";
+import { heroImageProps, articleImageProps } from "../lib/cloudinary";
 import SEO from "../components/SEO";
 
 const SEO_KEYWORDS =
@@ -182,7 +183,7 @@ const Home = () => {
                             <>
                                 {backgroundUrl && (
                                     <img
-                                        src={backgroundUrl}
+                                        {...heroImageProps(backgroundUrl)}
                                         alt="Tatouage artistique Mystic Tattoo Nancy"
                                         className={`${styles.hero__image}${
                                             isTransitioning ? ` ${styles["hero__image--transitioning"]}` : ""
@@ -194,7 +195,7 @@ const Home = () => {
                                 )}
                                 {nextImageUrl && (
                                     <img
-                                        src={nextImageUrl}
+                                        {...heroImageProps(nextImageUrl)}
                                         alt=""
                                         className={`${styles.hero__image} ${styles["hero__image--next"]}`}
                                         loading="eager"
@@ -301,9 +302,10 @@ const Home = () => {
                                     {item.image && (
                                         <div className={styles.newsSection__imageWrapper}>
                                             <img
-                                                src={buildNewsImageUrl(item.image)}
+                                                {...articleImageProps(buildNewsImageUrl(item.image))}
                                                 alt={`Actualité : ${item.title}`}
                                                 className={styles.newsSection__image}
+                                                loading="lazy"
                                             />
                                             <div className={styles.newsSection__imageOverlay}></div>
                                         </div>

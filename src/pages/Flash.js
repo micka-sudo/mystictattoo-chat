@@ -4,6 +4,7 @@ import Layout from "../layouts/Layout";
 import SEO from "../components/SEO";
 import styles from "./Flash.module.scss";
 import api, { apiBase } from "../lib/api";
+import { thumbnailImageProps, optimizeCloudinaryUrl } from "../lib/cloudinary";
 
 function ensureLeadingSlash(p = "") {
     return p.startsWith("/") ? p : `/${p}`;
@@ -169,7 +170,7 @@ const Flash = () => {
                                         />
                                     ) : (
                                         <img
-                                            src={buildMediaSrc(item)}
+                                            {...thumbnailImageProps(buildMediaSrc(item), 400)}
                                             alt="Flash tattoo disponible - Mystic Tattoo Nancy"
                                             className={styles.card__image}
                                             loading="lazy"
@@ -219,7 +220,10 @@ const Flash = () => {
                                 />
                             ) : (
                                 <img
-                                    src={buildMediaSrc(media[lightboxIndex])}
+                                    src={optimizeCloudinaryUrl(buildMediaSrc(media[lightboxIndex]), {
+                                        width: 1600,
+                                        quality: 'auto:good'
+                                    })}
                                     alt="Flash tattoo - Mystic Tattoo Nancy"
                                     className={styles.lightbox__media}
                                 />
