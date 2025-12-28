@@ -34,13 +34,13 @@
 
   // ─── TYPOGRAPHIE ───────────────────────────────────────────────
 
-  // Police principale (titres) - Bebas Neue: moderne, bold, impactant
-  --font-display: 'Bebas Neue', 'Arial Black', sans-serif;
-  --font-holocene: 'Bebas Neue', 'Arial Black', sans-serif;
+  // Police principale (titres) - System fonts pour performance
+  --font-display: 'Holocene', 'Arial Black', 'Helvetica Neue', sans-serif;
+  --font-holocene: 'Holocene', 'Arial Black', 'Helvetica Neue', sans-serif;
 
-  // Police de corps (texte) - Inter: très lisible, moderne
-  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  --font-default: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  // Police de corps (texte) - System fonts natifs (ultra rapide)
+  --font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-default: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 
   // Polices décoratives (conservées pour usage spécial)
   --font-gothic: 'American Text', cursive;

@@ -15,15 +15,15 @@
   <meta name="robots" content="index, follow" />
   <meta name="google-site-verification" content="jfeivP39cdpVR5f6H8K5c6SWcdOnAdwkoHrp38FtfcA" />
 
-  <!-- Préchargement polices -->
-  <link rel="preload" href="/fonts/holocene-latin.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="/fonts/AmericanText.woff2" as="font" type="font/woff2" crossorigin>
-
-  <!-- Preconnect API & CDN -->
-  <link rel="preconnect" href="https://mystictattoo-api.onrender.com" crossorigin>
+  <!-- Preconnect prioritaires (ordre important) -->
   <link rel="preconnect" href="https://res.cloudinary.com" crossorigin>
-  <link rel="dns-prefetch" href="https://mystictattoo-api.onrender.com">
+  <link rel="preconnect" href="https://mystictattoo-api.onrender.com" crossorigin>
   <link rel="dns-prefetch" href="https://res.cloudinary.com">
+  <link rel="dns-prefetch" href="https://mystictattoo-api.onrender.com">
+
+  <!-- Préchargement polices critiques -->
+  <link rel="preload" href="/fonts/KGHolocene.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/fonts/AmericanText.woff2" as="font" type="font/woff2" crossorigin>
 
 
   <!-- ✅ Canonical URL (pour les moteurs de recherche) -->
@@ -49,12 +49,8 @@
   <link rel="preload" href="%PUBLIC_URL%/fonts.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
   <noscript><link rel="stylesheet" href="%PUBLIC_URL%/fonts.css"></noscript>
 
-  <!-- ✅ Google Fonts (async - non bloquant) -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&display=swap">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&display=swap" media="print" onload="this.media='all'">
-  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&display=swap"></noscript>
+  <!-- Fonts système optimisées (pas de requête externe) -->
+  <!-- Inter et Bebas Neue remplacés par fonts système + fallbacks -->
 
   <!-- ✅ Couleur pour mobile -->
   <meta name="theme-color" content="#875c94" />
