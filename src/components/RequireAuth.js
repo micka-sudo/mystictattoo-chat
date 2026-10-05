@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
-import { jwtDecode } from 'jwt-decode';
 import api from '../lib/api';
+import { decodeUsableToken, clearAdminToken } from '../lib/auth';
 
 const RequireAuth = ({ children }) => {
     const [isValid, setIsValid] = useState(null); // null = chargement
@@ -15,15 +15,16 @@ const RequireAuth = ({ children }) => {
             }
 
             try {
-                const decoded = jwtDecode(token);
-                const exp = decoded.exp * 1000;
-                const now = Date.now();
-
-                if (exp < now) {
-                    console.warn('⛔ Token expiré');
+                const decoded = decodeUsableToken(token);
+                if (!decoded) {
+                    console.warn('⛔ Token expiré ou invalide');
+                    clearAdminToken();
                     setIsValid(false);
                     return;
                 }
+
+                const exp = decoded.exp * 1000;
+                const now = Date.now();
 
                 // ⏱ Rafraîchir si moins de 10 minutes restantes
                 if (exp - now < 10 * 60 * 1000) {
@@ -39,7 +40,8 @@ const RequireAuth = ({ children }) => {
 
                 setIsValid(true);
             } catch (err) {
-                console.error('❌ Erreur décodage ou rafraîchissement token :', err);
+                console.error('❌ Erreur décodage ou rafraîchissement token :', err?.message);
+                clearAdminToken();
                 setIsValid(false);
             }
         };

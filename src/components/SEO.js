@@ -1,13 +1,14 @@
 // src/components/SEO.js
 import React from 'react';
 import { Helmet, HelmetProvider } from 'react-helmet-async';
+import { useConsent, isAdminSession } from '../lib/consent';
 
 /**
  * SEO
  * Composant centralisé pour gérer les balises <head> :
  * - Title, meta description, keywords, canonical
  * - Open Graph / Twitter Cards
- * - (Optionnel) Google Ads gtag.js via googleAdsIds
+ * - (Optionnel) Google Ads gtag.js via googleAdsIds, chargé seulement après consentement
  *
  * @param {string}  title        - Balise <title> de la page
  * @param {string}  description  - Balise meta description
@@ -32,10 +33,16 @@ const SEO = ({
                  noindex = false,
                  googleAdsIds = 'AW-11430070412', // ✅ Par défaut, ton ID Google Ads fourni
              }) => {
-    // Normalise: autoriser string OU array pour googleAdsIds
-    const adsIds = Array.isArray(googleAdsIds)
-        ? googleAdsIds.filter(Boolean)
-        : (googleAdsIds ? [googleAdsIds] : []);
+    const consent = useConsent();
+
+    // Normalise: autoriser string OU array pour googleAdsIds.
+    // Aucun traceur sans consentement, ni pendant une session admin.
+    const trackingAllowed = consent === 'granted' && !isAdminSession();
+    const adsIds = !trackingAllowed
+        ? []
+        : Array.isArray(googleAdsIds)
+            ? googleAdsIds.filter(Boolean)
+            : (googleAdsIds ? [googleAdsIds] : []);
 
     // Génère les scripts gtag.js + config pour chaque ID
     const renderGtagScripts = () => {

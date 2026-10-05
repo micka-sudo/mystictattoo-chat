@@ -2,6 +2,7 @@ import React from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import FloatingCTA from '../components/FloatingCTA';
+import CookieConsent from '../components/CookieConsent';
 import '../styles/main.scss'; // ✅ Import global
 import styles from './Layout.module.scss'; // ton style spécifique
 
@@ -18,6 +19,7 @@ const Layout = ({ children }) => {
             </main>
             <Footer />
             <FloatingCTA />
+            <CookieConsent />
         </div>
     );
 };

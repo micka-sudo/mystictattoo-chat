@@ -16,7 +16,8 @@ const Header = () => {
 
     const showReservation = false;
     const showFlash = false;
-    const showLogin = true;
+    // Lien de connexion masqué : l'admin se connecte via /admin/login
+    const showLogin = false;
 
     // Ferme dropdown et menu mobile au clic extérieur
     useEffect(() => {

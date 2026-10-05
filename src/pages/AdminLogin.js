@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { jwtDecode } from 'jwt-decode';
 import Layout from '../layouts/Layout';
+import SEO from '../components/SEO';
+import { decodeUsableToken, clearAdminToken } from '../lib/auth';
 import styles from './AdminLogin.module.scss';
 import api from '../lib/api';
 
@@ -14,20 +15,12 @@ const AdminLogin = () => {
     useEffect(() => {
         const token = localStorage.getItem('admin_token');
         if (token) {
-            try {
-                const decoded = jwtDecode(token);
-                const exp = decoded.exp * 1000;
-                if (exp > Date.now()) {
-                    // Token valide, rediriger
-                    navigate('/admin/dashboard');
-                } else {
-                    // Token expiré, le supprimer
-                    localStorage.removeItem('admin_token');
-                }
-            } catch (err) {
-                // Token invalide, le supprimer
-                console.error('Token invalide:', err);
-                localStorage.removeItem('admin_token');
+            if (decodeUsableToken(token)) {
+                // Token valide, rediriger
+                navigate('/admin/dashboard');
+            } else {
+                // Token expiré ou ancien format, le supprimer
+                clearAdminToken();
             }
         }
     }, [navigate]);
@@ -48,8 +41,16 @@ const AdminLogin = () => {
                 setStatus('❌ Mot de passe incorrect');
             }
         } catch (err) {
-            console.error('Erreur de connexion :', err);
-            setStatus('❌ Erreur serveur');
+            // Ne pas journaliser l'objet d'erreur complet : il contient le mot de passe envoyé
+            const code = err?.response?.status;
+            if (code === 401) {
+                setStatus('❌ Mot de passe incorrect');
+            } else if (code === 429) {
+                setStatus('❌ Trop de tentatives, réessayez dans 15 minutes');
+            } else {
+                console.error('Erreur de connexion :', err?.message);
+                setStatus('❌ Erreur serveur');
+            }
         }
     };
 
@@ -69,7 +70,7 @@ const AdminLogin = () => {
                     navigate('/admin/login');
                 }
             } catch (err) {
-                console.error('Erreur de rafraîchissement du token :', err);
+                console.error('Erreur de rafraîchissement du token :', err?.message);
                 localStorage.removeItem('admin_token');
                 navigate('/admin/login');
             }
@@ -81,6 +82,7 @@ const AdminLogin = () => {
 
     return (
         <Layout>
+            <SEO title="Connexion admin - Mystic Tattoo" url="https://www.mystic-tattoo.fr/admin/login" noindex />
             <div className={styles.adminLogin}>
                 <h2>Connexion Admin</h2>
                 <form onSubmit={handleLogin}>

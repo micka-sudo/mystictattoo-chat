@@ -319,22 +319,32 @@
 
 @media (max-width: 900px) {
   .header {
+    // Un backdrop-filter fait du header le bloc conteneur du menu en position: fixed :
+    // le menu fermé débordait alors de la page (largeur doublée, page dézoomée sur mobile)
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+
     &__title {
       font-size: var(--text-xl);
     }
 
+    // Menu fermé : hors écran par translation, masqué (et non focusable) via visibility
     &__nav {
       position: fixed;
       top: 0;
-      right: -100%;
+      right: 0;
       width: 300px;
+      max-width: 85vw;
       height: 100vh;
+      height: 100dvh;
+      transform: translateX(100%);
+      visibility: hidden;
       flex-direction: column;
       align-items: stretch;
       padding: 80px var(--space-lg) var(--space-xl);
       background: linear-gradient(180deg, rgba(12, 12, 12, 0.99) 0%, rgba(8, 8, 8, 0.99) 100%);
       border-left: 1px solid rgba(139, 0, 0, 0.2);
-      transition: right var(--transition-slow);
+      transition: transform var(--transition-slow), visibility 0s linear 0.4s;
       gap: 4px;
       box-shadow: -10px 0 40px rgba(0, 0, 0, 0.5);
       backdrop-filter: blur(20px);
@@ -359,7 +369,9 @@
       }
 
       &--open {
-        right: 0;
+        transform: translateX(0);
+        visibility: visible;
+        transition: transform var(--transition-slow), visibility 0s;
       }
     }
   }

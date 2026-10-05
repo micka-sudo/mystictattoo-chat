@@ -1,6 +1,5 @@
 # 👉 Node
 node_modules/
-package-lock.json
 
 # 👉 React / Vite / Webpack builds
 /build/
@@ -15,14 +14,16 @@ Thumbs.db
 # 👉 Environnement
 .env
 .env.local
+.env.*.local
+
+# 👉 Rapports d'audit locaux
+audit.json
 
 # 👉 Uploads (backend)
 server/uploads/
 
 # 👉 Test et coverage
 coverage/
-*.test.js
-__tests__/
 
 # 👉 Configuration JetBrains / VSCode
 .vscode/

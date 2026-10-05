@@ -1,13 +1,23 @@
 // Service Worker pour Mystic Tattoo PWA
-const CACHE_NAME = 'mystic-tattoo-v1';
+// Changer la version vide les anciens caches à l'activation
+const CACHE_NAME = 'mystic-tattoo-v2';
+// Uniquement des fichiers présents dans public/ (sinon l'installation échoue)
 const STATIC_ASSETS = [
   '/',
   '/index.html',
   '/manifest.json',
-  '/favicon.ico',
-  '/logo192.png',
-  '/logo512.png'
+  '/logo.webp'
 ];
+// Nombre maximal d'entrées dynamiques gardées en cache
+const MAX_CACHE_ENTRIES = 60;
+
+const trimCache = async () => {
+  const cache = await caches.open(CACHE_NAME);
+  const keys = await cache.keys();
+  if (keys.length > MAX_CACHE_ENTRIES) {
+    await Promise.all(keys.slice(0, keys.length - MAX_CACHE_ENTRIES).map((key) => cache.delete(key)));
+  }
+};
 
 // Installation - Cache les assets statiques
 self.addEventListener('install', (event) => {
@@ -41,15 +51,21 @@ self.addEventListener('fetch', (event) => {
   // Ignore les requetes API (toujours reseau)
   if (event.request.url.includes('/api/')) return;
 
+  // Ne met en cache que les fichiers du site (pas Cloudinary, l'API ou Google)
+  if (new URL(event.request.url).origin !== self.location.origin) return;
+
+  // Pages admin : jamais servies depuis le cache
+  if (new URL(event.request.url).pathname.startsWith('/admin')) return;
+
   event.respondWith(
     fetch(event.request)
       .then((response) => {
         // Clone et cache la reponse
         if (response.status === 200) {
           const responseClone = response.clone();
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(event.request, responseClone);
-          });
+          caches.open(CACHE_NAME)
+            .then((cache) => cache.put(event.request, responseClone))
+            .then(trimCache);
         }
         return response;
       })

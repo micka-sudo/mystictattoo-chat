@@ -24,6 +24,24 @@ api.interceptors.request.use(
     (error) => Promise.reject(error)
 );
 
+// ✅ Session admin expirée ou révoquée : on supprime le token et on renvoie vers la connexion
+api.interceptors.response.use(
+    (response) => response,
+    (error) => {
+        const status = error?.response?.status;
+        const url = error?.config?.url || '';
+        const hadToken = Boolean(error?.config?.headers?.Authorization);
+
+        if (status === 401 && hadToken && !url.startsWith('/login')) {
+            localStorage.removeItem('admin_token');
+            if (window.location.pathname.startsWith('/admin') && window.location.pathname !== '/admin/login') {
+                window.location.assign('/admin/login');
+            }
+        }
+        return Promise.reject(error);
+    }
+);
+
 // ✅ Export aussi l'URL de base "sans /api" pour afficher les médias (img/video)
 export const apiBase =
     process.env.NODE_ENV === 'development'

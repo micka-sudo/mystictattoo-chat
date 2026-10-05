@@ -120,13 +120,13 @@ const Gallery = () => {
                         navigate("/gallery", { replace: true });
                         return;
                     }
-                    const res = await api.get(`/media?style=${style}`);
+                    const res = await api.get('/media', { params: { style } });
                     setMedia(res.data);
                 } else {
                     const all = {};
                     await Promise.all(
                         filteredCategories.map(async (cat) => {
-                            const res = await api.get(`/media?style=${cat}`);
+                            const res = await api.get('/media', { params: { style: cat } });
                             all[cat] = res.data;
                         })
                     );
@@ -243,7 +243,8 @@ const Gallery = () => {
 
             <script
                 type="application/ld+json"
-                dangerouslySetInnerHTML={{ __html: JSON.stringify(SCHEMA_ORG) }}
+                // "<" échappé : le style vient de l'URL et ne doit pas pouvoir fermer la balise <script>
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(SCHEMA_ORG).replace(/</g, '\\u003c') }}
             />
 
             <div className={styles.gallery}>
