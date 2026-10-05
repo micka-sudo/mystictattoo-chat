@@ -44,6 +44,7 @@ const Reservation = () => {
                     <input
                         type="text"
                         name="name"
+                        maxLength={100}
                         placeholder="Votre nom"
                         value={form.name}
                         onChange={handleChange}
@@ -52,6 +53,7 @@ const Reservation = () => {
                     <input
                         type="email"
                         name="email"
+                        maxLength={254}
                         placeholder="Votre email"
                         value={form.email}
                         onChange={handleChange}
@@ -73,6 +75,7 @@ const Reservation = () => {
                     />
                     <textarea
                         name="message"
+                        maxLength={2000}
                         placeholder="Votre message (optionnel)"
                         value={form.message}
                         onChange={handleChange}

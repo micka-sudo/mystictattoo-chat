@@ -10,7 +10,7 @@
     bottom: 20px;
     left: 50%;
     transform: translateX(-50%);
-    z-index: 1000;
+    z-index: var(--z-sticky); // sous le header : le menu mobile ouvert le recouvre
 
     background: linear-gradient(135deg, var(--color-accent, #7c3aed) 0%, #9333ea 100%);
     color: #fff;
