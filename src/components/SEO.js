@@ -1,7 +1,9 @@
 // src/components/SEO.js
-import React from 'react';
-import { Helmet, HelmetProvider } from 'react-helmet-async';
+import React, { useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import { useConsent, isAdminSession } from '../lib/consent';
+import { loadGoogleAds } from '../lib/ads';
 
 /**
  * SEO
@@ -21,7 +23,7 @@ import { useConsent, isAdminSession } from '../lib/consent';
  *
  * Notes:
  * - Si tu passes plusieurs IDs (array), on injecte un <script> de config pour chacun.
- * - HelmetProvider est maintenu ici pour compatibilité. Idéalement, place-le une seule fois au plus haut niveau (ex: App.jsx).
+ * - HelmetProvider est placé une seule fois à la racine (src/index.js).
  */
 const SEO = ({
                  title = 'Mystic Tattoo - Tatoueur Nancy, Salon de tatouage à Nancy 54000',
@@ -34,82 +36,62 @@ const SEO = ({
                  googleAdsIds = 'AW-11430070412', // ✅ Par défaut, ton ID Google Ads fourni
              }) => {
     const consent = useConsent();
+    const { pathname } = useLocation();
+    const isAdminPage = pathname.startsWith('/admin');
 
     // Normalise: autoriser string OU array pour googleAdsIds.
     // Aucun traceur sans consentement, ni pendant une session admin.
-    const trackingAllowed = consent === 'granted' && !isAdminSession();
+    const trackingAllowed = consent === 'granted' && !isAdminSession() && !isAdminPage;
     const adsIds = !trackingAllowed
         ? []
         : Array.isArray(googleAdsIds)
             ? googleAdsIds.filter(Boolean)
             : (googleAdsIds ? [googleAdsIds] : []);
 
-    // Génère les scripts gtag.js + config pour chaque ID
-    const renderGtagScripts = () => {
-        if (!adsIds.length) return null;
-
-        return (
-            <>
-                {/* Charge gtag une seule fois */}
-                <script async src={`https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(adsIds[0])}`} />
-                <script
-                    // On utilise dangerouslySetInnerHTML pour initialiser proprement dataLayer + gtag
-                    dangerouslySetInnerHTML={{
-                        __html: `
-              window.dataLayer = window.dataLayer || [];
-              function gtag(){dataLayer.push(arguments);}
-              gtag('js', new Date());
-              ${adsIds.map(id => `gtag('config', '${id}');`).join('\n')}
-            `,
-                    }}
-                />
-            </>
-        );
-    };
+    // Google Ads chargé une seule fois, après consentement et jamais sur les pages admin
+    const adsKey = adsIds.join(',');
+    useEffect(() => {
+        if (adsKey && !isAdminPage) loadGoogleAds(adsKey.split(','));
+    }, [adsKey, isAdminPage]);
 
     return (
-        <HelmetProvider>
-            <Helmet>
-                {/* Lang HTML */}
-                <html lang="fr" />
+        <Helmet>
+            {/* Lang HTML */}
+            <html lang="fr" />
 
-                {/* Title / Description / Keywords */}
-                <title>{title}</title>
-                <meta name="description" content={description} />
-                {keywords && <meta name="keywords" content={keywords} />}
+            {/* Title / Description / Keywords */}
+            <title>{title}</title>
+            <meta name="description" content={description} />
+            {keywords && <meta name="keywords" content={keywords} />}
 
-                {/* Indexation (optionnel) */}
-                {noindex ? (
-                    <meta name="robots" content="noindex,nofollow" />
-                ) : (
-                    <meta name="robots" content="index,follow" />
-                )}
+            {/* Indexation (optionnel) */}
+            {noindex ? (
+                <meta name="robots" content="noindex,nofollow" />
+            ) : (
+                <meta name="robots" content="index,follow" />
+            )}
 
-                {/* Canonical */}
-                <link rel="canonical" href={url} />
+            {/* Canonical */}
+            <link rel="canonical" href={url} />
 
-                {/* Open Graph (Facebook, etc.) */}
-                <meta property="og:title" content={title} />
-                <meta property="og:description" content={description} />
-                <meta property="og:type" content="website" />
-                <meta property="og:url" content={url} />
-                <meta property="og:locale" content={locale} />
-                {image && <meta property="og:image" content={image} />}
+            {/* Open Graph (Facebook, etc.) */}
+            <meta property="og:title" content={title} />
+            <meta property="og:description" content={description} />
+            <meta property="og:type" content="website" />
+            <meta property="og:url" content={url} />
+            <meta property="og:locale" content={locale} />
+            {image && <meta property="og:image" content={image} />}
 
-                {/* Twitter Cards */}
-                <meta name="twitter:card" content="summary_large_image" />
-                <meta name="twitter:title" content={title} />
-                <meta name="twitter:description" content={description} />
-                {image && <meta name="twitter:image" content={image} />}
+            {/* Twitter Cards */}
+            <meta name="twitter:card" content="summary_large_image" />
+            <meta name="twitter:title" content={title} />
+            <meta name="twitter:description" content={description} />
+            {image && <meta name="twitter:image" content={image} />}
 
-                {/* Accessoires utiles */}
-                <meta name="theme-color" content="#333333" />
-                <meta name="format-detection" content="telephone=no" />
-
-                {/* ✅ Google Ads (gtag.js) */}
-                {renderGtagScripts()}
-            </Helmet>
-        </HelmetProvider>
+            {/* Accessoires utiles */}
+            <meta name="theme-color" content="#333333" />
+            <meta name="format-detection" content="telephone=no" />
+        </Helmet>
     );
 };
 
