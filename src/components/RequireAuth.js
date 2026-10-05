@@ -49,6 +49,26 @@ const RequireAuth = ({ children }) => {
         checkAndRefreshToken();
     }, [token]);
 
+    // Rafraîchissement de la session tant que le tableau de bord est ouvert
+    useEffect(() => {
+        if (!isValid) return undefined;
+
+        const interval = setInterval(async () => {
+            const current = localStorage.getItem('admin_token');
+            const decoded = decodeUsableToken(current);
+            if (!decoded) return; // l'intercepteur 401 renverra vers la connexion
+            if (decoded.exp * 1000 - Date.now() > 10 * 60 * 1000) return;
+            try {
+                const res = await api.post('/login/refresh-token', { token: current });
+                if (res.data.token) localStorage.setItem('admin_token', res.data.token);
+            } catch (err) {
+                console.error('❌ Rafraîchissement du token impossible :', err?.message);
+            }
+        }, 5 * 60 * 1000);
+
+        return () => clearInterval(interval);
+    }, [isValid]);
+
     if (isValid === null) return null; // En attente de validation
     if (!isValid) return <Navigate to="/admin/login" replace />;
     return children;

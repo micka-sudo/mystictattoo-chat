@@ -1,5 +1,6 @@
 import React from 'react';
 import { createPortal } from 'react-dom';
+import { useLocation } from 'react-router-dom';
 import { setConsent, useConsent, isAdminSession } from '../lib/consent';
 import styles from './CookieConsent.module.scss';
 
@@ -9,8 +10,10 @@ import styles from './CookieConsent.module.scss';
  */
 const CookieConsent = () => {
     const consent = useConsent();
+    const { pathname } = useLocation();
 
-    if (consent !== null || isAdminSession()) return null;
+    // Pas de bandeau sur les pages admin : aucun traceur n'y est chargé
+    if (consent !== null || isAdminSession() || pathname.startsWith('/admin')) return null;
 
     // Rendu dans <body> : un ancêtre transformé casserait le position: fixed
     return createPortal(

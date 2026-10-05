@@ -35,8 +35,8 @@ const AdminLogin = () => {
             if (res.status === 200 && res.data.token) {
                 localStorage.setItem('admin_token', res.data.token);
                 setStatus('✅ Connexion réussie');
-                startAutoRefresh(res.data.token);
-                navigate('/admin/dashboard');
+                // Rechargement complet : le tableau de bord démarre sans aucun script tiers en mémoire
+                window.location.assign('/admin/dashboard');
             } else {
                 setStatus('❌ Mot de passe incorrect');
             }
@@ -52,32 +52,6 @@ const AdminLogin = () => {
                 setStatus('❌ Erreur serveur');
             }
         }
-    };
-
-    // ✅ Mise à jour automatique du token toutes les 25 minutes
-    const startAutoRefresh = (initialToken) => {
-        const refresh = async () => {
-            const token = localStorage.getItem('admin_token');
-            if (!token) return;
-
-            try {
-                const res = await api.post('/login/refresh-token', { token });
-                if (res.status === 200 && res.data.token) {
-                    localStorage.setItem('admin_token', res.data.token);
-                } else {
-                    console.warn('❌ Token expiré, déconnexion');
-                    localStorage.removeItem('admin_token');
-                    navigate('/admin/login');
-                }
-            } catch (err) {
-                console.error('Erreur de rafraîchissement du token :', err?.message);
-                localStorage.removeItem('admin_token');
-                navigate('/admin/login');
-            }
-        };
-
-        // toutes les 25 minutes (en ms)
-        setInterval(refresh, 25 * 60 * 1000);
     };
 
     return (
