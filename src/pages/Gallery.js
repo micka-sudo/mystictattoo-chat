@@ -117,7 +117,7 @@ const Gallery = () => {
             try {
                 if (style) {
                     if (style.toLowerCase() === "flash") {
-                        navigate("/flash", { replace: true });
+                        navigate("/gallery", { replace: true });
                         return;
                     }
                     const res = await api.get(`/media?style=${style}`);

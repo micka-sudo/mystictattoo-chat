@@ -803,7 +803,26 @@
     gap: var(--space-md);
   }
 
+  // Une seule colonne : on affiche la photo entière au lieu de la recadrer
   .card {
-    aspect-ratio: 4 / 3;
+    aspect-ratio: auto;
+
+    &__image {
+      position: static;
+      height: auto;
+      min-height: 200px;
+      object-fit: contain;
+    }
+  }
+}
+
+// Écrans tactiles : le :hover reste « collé » après un tap et zoome l'image
+@media (hover: none) {
+  .card:hover {
+    transform: none;
+
+    .card__image {
+      transform: none;
+    }
   }
 }
