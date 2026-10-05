@@ -1,5 +1,5 @@
 import React, { Suspense, lazy } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 
 // Home chargé immédiatement (LCP critique)
 import Home from './pages/Home';
@@ -10,7 +10,6 @@ import useVisitTracker from './hooks/useVisitTracker';
 const Gallery = lazy(() => import('./pages/Gallery'));
 const Reservation = lazy(() => import('./pages/Reservation'));
 const Contact = lazy(() => import('./pages/Contact'));
-const Flash = lazy(() => import('./pages/Flash'));
 const TattooStyleLanding = lazy(() => import('./pages/seo/TattooStyleLanding'));
 
 // Lazy loading pour les routes admin
@@ -52,7 +51,8 @@ function App() {
                 <Route path="/gallery/:style" element={<Suspense fallback={<PageLoader />}><Gallery /></Suspense>} />
                 <Route path="/contact" element={<Suspense fallback={<PageLoader />}><Contact /></Suspense>} />
                 <Route path="/reservation" element={<Suspense fallback={<PageLoader />}><Reservation /></Suspense>} />
-                <Route path="/flash" element={<Suspense fallback={<PageLoader />}><Flash /></Suspense>} />
+                {/* Page Flash désactivée : redirige vers la galerie (le composant pages/Flash est conservé) */}
+                <Route path="/flash" element={<Navigate to="/gallery" replace />} />
 
                 {/* =================== SEO LANDING PAGES =================== */}
                 <Route path="/tatouage-japonais-nancy" element={<Suspense fallback={<PageLoader />}><TattooStyleLanding styleKey="japonais" /></Suspense>} />

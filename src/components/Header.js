@@ -15,6 +15,7 @@ const Header = () => {
     const isAdminLoggedIn = Boolean(localStorage.getItem('admin_token'));
 
     const showReservation = false;
+    const showFlash = false;
     const showLogin = true;
 
     // Ferme dropdown et menu mobile au clic extérieur
@@ -86,9 +87,11 @@ const Header = () => {
                         </ul>
                     </div>
 
-                    <Link className={styles.nav__link} to="/flash" onClick={closeMenus}>
-                        Flash
-                    </Link>
+                    {showFlash && (
+                        <Link className={styles.nav__link} to="/flash" onClick={closeMenus}>
+                            Flash
+                        </Link>
+                    )}
 
                     <Link className={styles.nav__link} to="/contact" onClick={closeMenus}>
                         Contact
